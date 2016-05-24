@@ -1,0 +1,88 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for admin
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function admin_schema() {
+    $schema = array();
+
+    $schema['admin'] = array(
+        'description' => 'admin Table',
+        'fields' => array(
+            'id' => array(
+                'description' => 'Primary Key id',
+                'type' => 'serial',
+                'not null' => TRUE,
+            ),
+            'email' => array(
+                'description' => 'Email',
+                 'type' => 'varchar',
+                 'length' => '255',
+                'not null' => TRUE,
+                 'default' => '',
+            ),
+            'password' => array(
+                'description' => 'Password',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+                 'default' => '',
+            ),
+            'fname' => array(
+                'description' => 'first name',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+                 'default' => '',
+            ),
+            'lname' => array(
+                'description' => 'last name',
+                 'type' => 'varchar',
+                'length' => '255',
+                 'not null' => TRUE,
+                  'default' => '',
+            ),
+
+            'address' => array(
+                'description' => 'address',
+                 'type' => 'text',
+                'not null' => false,
+            ),
+            'phone_no' => array(
+                'description' => 'phone',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+            ),
+            'mobile_no' => array(
+                'description' => 'mobile',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+            ),
+            'create_time' => array(
+                'description' => 'create time',
+                 'type' => 'varchar',
+                'length' => '255',
+                 'default' => '',
+            ),
+            'last_login' => array(
+                'description' => 'last login',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+            ),
+
+
+
+
+        ),
+        'primary key' => array('id'),
+
+    );
+    return $schema;
+}

@@ -1,0 +1,239 @@
+<div class="container-fluid signupheading">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h2>Sign Up</h2>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="container signupmainbody">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+            <div class="signup_icon2">
+                <img src="images/signupimage.png" alt="#" >
+            </div>
+
+     <div class="signupformgroup">
+         <form angular-validator-submit="submitsignupForm()" id="signup" name="signup" role="form" novalidate angular-validator>
+    <div class="form-group">
+        <label>First Name</label>
+        <input type="text" class="form-control" placeholder="First Name" name="fname"
+
+               ng-model="form.fname"
+               required-message="'first name can not be blank.'"
+               required>
+    </div>
+             <div class="form-group">
+                 <label >Last Name</label>
+                 <input type="text" class="form-control" placeholder="Last Name" name="lname"
+
+                        ng-model="form.lname"
+                        required-message="'Last name can not be blank.'"
+                        required>
+
+                 <!-- <span class="errormsg">erroe msg</span>-->
+             </div>
+
+
+             <div class="form-group email_div">
+                 <label >Email address</label>
+                 <input type="email" class="form-control" placeholder="Enter Email" name="email"
+
+                        ng-model="form.email"
+                        required-message="'Email can not be blank.'"
+                        invalid-message="'Enter valid email address.'"
+
+                        required>
+
+                 <!-- <span class="errormsg">erroe msg</span>-->
+             </div>
+             <div class="form-group">
+                 <label >Password</label>
+                 <input type="password" class="form-control"  placeholder="Password" name="password"
+
+                        ng-model="form.password"
+                        required-message="'Password can not be blank. '"
+                        required>
+
+             </div>
+             <div class="form-group">
+                 <label >Re-Type Password</label>
+                 <input type="password" class="form-control"  placeholder="Re-Type Password" name="re_password"
+
+                        ng-model="form.re_password"
+                        required-message="'Re-Type password can not be blank. '"
+                        validator="form.re_password === form.password"
+                        invalid-message="'Passwords do not match!'"
+                        required>
+
+             </div>
+             <div class="form-group">
+                 <label >Telephone number</label>
+                 <input type="text" class="form-control" placeholder="Telephone Number" name="phone_no"
+
+                        ng-model="form.phone_no"
+                        required-message="'Phone number can not be blank.'"
+                        required
+                 >
+
+                 <!-- <span class="errormsg">erroe msg</span>-->
+             </div>
+             <div class="form-group">
+                 <label >Mobile Number</label>
+                 <input type="text" class="form-control" placeholder="Mobile Number" name="mobile_no"
+
+                        ng-model="form.mobile_no"
+                        required-message="'Mobile number can not be blank.'"
+                        required
+                 >
+
+                 <!-- <span class="errormsg">erroe msg</span>-->
+             </div>
+
+
+             <div class="form-group">
+                 <label >Address</label>
+                 <input type="text" class="form-control" placeholder="Address" name="address"
+                        ng-model="form.address"
+                        required-message="'Address can not be blank.'"
+                        required>
+
+                 <!-- <span class="errormsg">erroe msg</span>-->
+             </div>
+
+
+    <div class="form-group">
+        <label>Country</label>
+       <select class="form-control" name="country" ng-model="form.country" required-message="'Please select country'" required>
+           <option value="" >Slect Country</option>
+           <option ng-repeat="item in countrylist" value="{{item.s_name}}">{{item.s_name}}</option>
+
+
+       </select>
+    </div>
+
+
+    <div class="form-group">
+        <label>State</label>
+        <input type="text" class="form-control" placeholder="State" name="state"
+               ng-model="form.state"
+               required-message="'State can not be blank.'"
+               required>
+
+    </div>
+
+
+         <div class="form-group">
+             <label> Date of Birth</label>
+             <input type="text" name="dob" placeholder="Date of Birth"
+
+                    validate-on="blur"
+
+                    class = "form-control input-form"
+
+                    ng-model = "form.dob"
+
+                    uib-datepicker-popup="{{format}}"
+
+                    is-open="opened" ng-required="true" show-weeks="false"
+
+                    ng-focus="open1()"
+
+                    required-message="'Date of birth cannot be blank.'"
+
+                    required>
+           <!--  <div class="col-md-12" style="padding-left: 0px;">
+                 <div class="row" style="padding-left: 0px;">
+                     <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style="padding-left: 0px;">
+
+                         <select class="form-control" name="">
+
+                             <option selected disabled>Month</option>
+                             <option value="">January</option>
+                             <option value="">February</option>
+                             <option value="">March</option>
+                             <option value="">April</option>
+                             <option selected value="">May</option>
+                             <option selected value="">May</option>
+                         </select>
+                     </div>
+                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                         <select name="" class="form-control">
+
+                             <option selected disabled>Date</option>
+                             <option value="">1</option>
+                             <option value="">2</option>
+                             <option value="">3</option>
+                             <option value="">4</option>
+                             <option selected value="">5</option>
+                         </select>
+                     </div>
+                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                         <select name="" class="form-control">
+                             <option selected disabled>Year</option>
+                             <option value="">1980</option>
+                             <option value="">1981</option>
+                             <option value="">1982</option>
+                             <option value="">1983</option>
+                             <option value="">1984</option>
+                             <option selected value="">1985</option>
+                         </select>
+                     </div>
+                     <div class="clearfix"></div>
+                 </div>
+             </div>-->
+             <div class="clearfix"></div>
+         </div>
+
+         <div class="form-group">
+             <label>
+                 Gender</label>
+             <div class="col-md-12 " style="padding-left: 0px;">
+                 <span style="color: #333;">
+                     <input type="radio"  name="gender" value="Male" ng-model="form.gender"
+
+                            validator = "clientgenderValidator() === true"
+                            invalid-message = "clientgenderValidator()"
+
+                     >
+
+                     Male
+                 </span>
+                 <span style="color: #333;">
+                     <input type="radio"  name="gender" value="Female" ng-model="form.gender"
+
+                            validator = "clientgenderValidator() === true"
+                            invalid-message = "clientgenderValidator()"
+
+                     >
+                     Female
+                 </span>
+                 <span class="clearfix validationMessage errormsg" ng-show="clientgenderValidatorerror"> Please select atleast one option !!</span>
+             </div>
+             <div class="clearfix"></div>
+         </div>
+
+    <button class="btn btn-primary signupbtn" type="submit">Sign up</button>
+
+
+</form>
+ </div>
+    </div></div></div>
+
+<script type="text/ng-template" id="signupsuccess.html">
+
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Thank You</h4>
+            </div>
+            <div class="modal-body">
+You have successfully signed up
+            </div>
+
+    </script>

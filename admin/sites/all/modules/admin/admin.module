@@ -1,0 +1,732 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: debasis
+ * Date: 16/6/15
+ * Time: 12:04 AM
+ */
+
+header('Content-type: text/html');
+header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+function admin_init() // init function called by defaulted when this module loaded by system
+{
+
+    //echo $GLOBALS['theme'];
+    //echo 5656;
+    //echo user_authenticate('debasis','Pp@ss1234');
+
+//echo "kl";
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+}
+
+function admin_menu()
+{
+    $items = array();
+
+    $items['addadmin'] = array(
+        'title' => 'Add admin',
+        'page callback' => 'addadmin',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['adminlist'] = array(
+        'title' => 'admin List',
+        'page callback' => 'adminlist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['updatestatus'] = array(
+        'title' => 'status Change',
+        'page callback' => 'updatestatus',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['deleteadmin'] = array(
+        'title' => 'admin Delete',
+        'page callback' => 'deleteadmin',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['admindetails'] = array(
+        'title' => 'admin details',
+        'page callback' => 'admindetails',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['adminupdates'] = array(
+        'title' => 'admin Updates',
+        'page callback' => 'adminupdates',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+
+    $items['adminlogin'] = array(
+        'title' => 'Login',
+        'page callback' => 'adminlogin',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+
+    $items['forgotpass'] = array(
+        'title' => 'Forgot Password',
+        'page callback' => 'forgotpass',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['forgotpassaccesscheck'] = array(
+        'title' => 'Access Code Check',
+        'page callback' => 'forgotpassaccesscheck',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['changepasswords'] = array(
+        'title' => 'Change Password',
+        'page callback' => 'changepassword1',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['countryList'] = array(
+        'title' => 'Country List',
+        'page callback' => 'countryList',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+
+
+    return $items;
+}
+
+
+function admindetails(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $queryu = db_select('users', 'u');
+    $queryu->join('admin', 'a', 'a.user_id = u.uid');
+     $queryu->fields('u', array('uid','created','status','login','mail'));
+    $queryu->fields('a',array('fname','lname','phone_no','mobile_no','address'))
+        ->condition('u.uid', $_POST['uid'], '=');
+
+    //->range(0, 20);
+    $resultu = $queryu->execute();
+
+   
+
+    while($recordu = $resultu->fetchAssoc()) {
+        $thisuser = user_load($recordu['uid']);
+         $picture=$thisuser->picture;
+         if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
+         else $picture='';
+
+        $userlist['uid'] = $recordu['uid'];
+        $userlist['created'] = $recordu['created'];
+        $userlist['status'] = $recordu['status'];
+        $userlist['login'] = $recordu['login'];
+        $userlist['email'] = $recordu['mail'];
+        $userlist['fname'] = $recordu['fname'];
+        $userlist['lname'] = $recordu['lname'];
+        $userlist['phone_no'] = $recordu['phone_no'];
+        $userlist['mobile_no'] = $recordu['mobile_no'];
+        $userlist['address'] = $recordu['address'];
+        $userlist['picture'] = $picture;
+    }
+    echo json_encode(@$userlist);
+
+}
+
+
+function adminlist()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $userlist = array();
+
+    $queryu = db_select('users', 'u');
+    $queryu->join('admin', 'f', 'f.user_id = u.uid');
+    $queryu->leftjoin('users_roles', 'ur', 'ur.uid = u.uid');
+    $queryu->fields('ur', array('rid'));
+    $queryu->fields('u', array('uid', 'created', 'status', 'login', 'mail'));
+    $queryu->fields('f', array('fname', 'lname', 'phone_no', 'mobile_no', 'address'));
+        // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
+        //->condition('ur.rid', 4, '=');
+    //->condition('u.uid', 74, '=');
+    //->range(0, 20);
+
+    if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'auditor'){
+        $queryu->condition('ur.rid', 7, '=');
+    }
+    if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'generaluser'){
+        $queryu->condition('ur.rid', 5, '=');
+    }
+
+    else{
+        $queryu->condition('ur.rid', 4, '=');
+    }
+
+
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            //print_r($record);
+            //$record['roles']=
+            //// echo "<br>";
+            $thisuser = user_load($recordu['uid']);
+            // var_dump($thisuser);
+            //$record['roles']=$thisuser->roles;
+            /*           foreach($thisuser->roles as $index=>$val){
+                           if($index!=2) $recordu['roles']=$index;
+                       }*/
+            $picture = $thisuser->picture;
+            //$record['picture']=$picture['uri'];
+            if (isset($picture->uri)) $picture = image_style_url('thumbnail', $picture->uri);
+            //if(isset($picture->uri))$record['picture-home']= image_style_url('home-idea', $picture->uri);
+            else $picture = '';
+            // echo "<br>";
+            //$userlist=$recordu;
+
+            $userlist[$i]['uid'] = $recordu['uid'];
+            $userlist[$i]['created'] = $recordu['created'];
+            $userlist[$i]['status'] = $recordu['status'];
+            $userlist[$i]['login'] = $recordu['login'];
+            $userlist[$i]['mail'] = $recordu['mail'];
+            $userlist[$i]['fname'] = $recordu['fname'];
+            $userlist[$i]['lname'] = $recordu['lname'];
+            $userlist[$i]['phone_no'] = $recordu['phone_no'];
+            $userlist[$i]['mobile_no'] = $recordu['mobile_no'];
+            $userlist[$i]['address'] = $recordu['address'];
+             $userlist[$i]['picture'] = $picture;
+            $userlist[$i]['roleid'] = $recordu['rid'];
+            $i++;
+
+    }
+}
+    //  $records['user']=$userlist;
+
+
+
+    echo json_encode(@$userlist);
+
+
+
+}
+
+function countryList()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+        $countrylist = array();
+
+        $queryu = db_select('country', 'co')
+    ->fields('co');
+           // ->condition('st.i_cnt_id', 294, '=');
+        $resultu = $queryu->execute();
+
+
+        if ($resultu->rowCount() > 0) {
+            $i = 0;
+            while ($recordu = $resultu->fetchAssoc()) {
+                $temparray=$recordu;
+
+                $statelist[$i]= $temparray;
+                $i++;
+
+
+            }
+        }
+
+        echo json_encode(@$statelist);
+
+
+
+}
+
+function addadmin(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $user = user_load_by_mail(trim(@$_POST['email']));
+    if(@$user->uid > 0){
+        $data['status'] = 'error';
+        $data['msg'] = 'Email already exists..';
+        echo json_encode($data);
+        return;
+    }
+    $country='';
+    $state='';
+    $dob='';
+    $gender='';
+    if(isset($_REQUEST['country']) && $_REQUEST['country']!=''){
+        $country=$_REQUEST['country'];
+
+    }
+    if(isset($_REQUEST['state']) && $_REQUEST['state']!=''){
+        $state=$_REQUEST['state'];
+
+    }
+    if(isset($_REQUEST['dob']) && $_REQUEST['dob']!=''){
+        $dob=$_REQUEST['dob'];
+
+    }
+    if(isset($_REQUEST['gender']) && $_REQUEST['gender']!=''){
+        $gender=$_REQUEST['gender'];
+
+    }
+
+    $roles = array(
+        DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+     );
+
+ if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'generaluser'){
+        $roles[5]=' generaluser';
+    }
+       else{
+           $roles[4]=' siteadmin';
+       }
+  //  }
+
+    $new_user = array(
+         'name' => $_POST['email'],
+         'pass' => $_POST['password'], // note: do not md5 the password
+         'mail' => $_POST['email'],
+         'status' => 0,
+         'roles' => $roles,
+         'access_code' => '',
+    );
+
+    $account=user_save('', $new_user);
+
+    if($account->uid>0){
+        $query = db_insert('admin')->fields(array('user_id','email','password', 'fname', 'lname','address','phone_no','mobile_no','create_time','last_login','country','state','dob','gender'));
+        //foreach ($values as $record) {
+        $query->values(array($account->uid,@$_POST['email'],'',@$_POST['fname'],@$_POST['lname'],
+            $_POST['address'],@$_POST['phone_no'],@$_POST['mobile_no'],time(),time(),$country,$state,$dob,$gender));
+        //}
+        $query->execute();
+    }
+
+    $op = 'register_pending_approval';
+    $status = _user_mail_notify($op, $account);
+    drupal_mail('admin', 'register_admin_created', $_POST['email'], NULL, array('account' => $account), variable_get('site_mail', 'support@voortal.com'));
+    $data['status'] = 'success';
+     echo json_encode($data);
+    return;
+}
+function adminupdates(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+   /*  $roles = array(
+        DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+        // 5 => 'General Users',
+    );
+     $user_fields = user_load(@intval($_POST['uid']));
+    $user_fields->roles=$roles;
+    user_save($user_fields);*/
+
+    db_update('admin')
+        //->expression('weight', 'weight + :weight', array(':weight' => 1))
+        ->fields(array('fname'=>@$_POST['fname'], 'lname'=>@$_POST['lname'],'email'=>@$_POST['email'],
+
+            'address'=>@$_POST['address'],'phone_no'=>@$_POST['phone_no'],'mobile_no'=>@$_POST['mobile_no']))
+        ->condition('user_id', intval($_POST['uid']))
+         ->execute();
+}
+
+function updatestatus(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    //print_r($_POST);
+    $user_fields = user_load(@intval($_POST['uid']));
+    //$user_fields = user_load(62);
+    $user_fields->status=1-intval($user_fields->status);
+    user_save($user_fields);
+
+    if($user_fields->status==1) drupal_mail('user', 'register_status_activated', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
+    else drupal_mail('user', 'register_status_blocked', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
+    //drupal_mail('user', 'register_status_blocked', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
+    //drupal_mail('user', 'register_no_approval_required', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
+    echo "true";
+}
+
+function adminlogin2(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    //$user = user_load_by_mail(trim(@$_POST['email']));
+
+    //print_r($_POST);
+    user_delete(@intval($_POST['uid']));
+    $num_deleted = db_delete('admin')
+        ->condition('user_id', @$_POST['uid'])
+        ->execute();
+
+}
+
+
+function adminlogin(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $user=user_load_by_mail(@$_POST['email']);
+    //print_r($user);
+    if($user==''){
+        $data['status']='error';
+        $data['msg']='Email does not exists';
+        echo json_encode($data);
+        return;
+    }
+    $user_check=user_authenticate($user->name,@$_POST['password']);
+    if($user_check>0 && $user->status==1){
+
+        //print_r($user->roles);
+
+        $queryu = db_select('users', 'u');
+        //if($user->roles[4]=='siteadmin')
+            $queryu->join('admin', 'a', 'a.user_id = u.uid');
+      if($user->roles[4]=='siteadmin' || $user->roles[7]=='auditor')$queryu->join('admin', 'a', 'a.user_id = u.uid');
+        //if($user->roles[6]=='pilot')$queryu->join('pilot', 'p', 'p.user_id = u.uid');
+        $queryu->fields('u', array('uid','created','status','login','mail'));
+        if($user->roles[4]=='siteadmin'|| $user->roles[7]=='auditor')$queryu->fields('a',array('fname','lname','phone_no','mobile_no','address','create_time'));
+        /*if($user->roles[6]=='pilot')
+            $queryu->fields('p',array('fname','lname'));*/
+        $queryu->condition('u.uid', $user->uid, '=');
+
+        //->range(0, 20);
+        $resultu = $queryu->execute();
+        $userlist=array();
+
+
+        while($recordu = $resultu->fetchAssoc()) {
+            //echo 5435;
+            $thisuser = user_load($recordu['uid']);
+            $picture=$thisuser->picture;
+            if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
+            else $picture='';
+
+            //print_r($recordu);
+            //exit;
+
+            /*            $userlist['uid'] = $recordu['uid'];
+                        $userlist['created'] = $recordu['created'];
+                        $userlist['status'] = $recordu['status'];
+                        $userlist['login'] = $recordu['login'];
+             */         $userlist['email'] = $recordu['mail'];
+            $userlist['fname'] = $recordu['fname'];
+            $userlist['lname'] = $recordu['lname'];
+            /*            $userlist['phone_no'] = $recordu['phone_no'];
+                        $userlist['mobile_no'] = $recordu['mobile_no'];
+                        $userlist['address'] = $recordu['address'];
+                        $userlist['contact_time'] = $recordu['contact_time'];
+                        $userlist['refferal_code'] = $recordu['refferal_code'];
+                        $userlist['bname'] = $recordu['bname'];
+                        $userlist['picture'] = $picture;*/
+        }
+
+        $userlist['id']=$user->uid;
+        $userlist['roles']=$user->roles;
+        $userlist['username']=$user->name;
+        $data['status'] = 'success';
+        $data['userdetails'] = $userlist;
+        echo json_encode($data);
+        return;
+
+    }
+    else {
+        if($user_check>0 && $user->status==0) {
+            $data['status'] = 'error';
+            $data['msg'] = 'User is either not activated by admin yet or blocked !';
+            echo json_encode($data);
+            return;
+
+        }
+        //$data['status'] = 'error';
+        //$data['msg'] = 'Invalid access';
+        //echo json_encode($data);
+
+    }
+
+}
+
+
+
+function forgotpass(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $queryu1 = db_select('users', 'u')
+        ->fields('u')
+        ->condition('u.mail', @$_POST['email'], '=');
+    $resultu1 = $queryu1->execute();
+    if($resultu1->rowCount()>0) {
+
+        $user=user_load_by_mail(@$_POST['email']);
+
+
+        while ($recordu = $resultu1->fetchAssoc()) {
+            $userlist['email'] = $recordu['mail'];
+            $userlist['user_id'] = $recordu['uid'];
+            $data['status']='success';
+            $data['userdetails'] = $userlist;
+
+        }
+
+
+        $randomdom_string=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',6)),0,6);
+        $query = db_update('users')->fields(array('access_code' => $randomdom_string))
+            ->condition('mail', @$_POST['email'], '=');
+
+        $result = $query->execute();
+
+/*        $to =$_POST['email'];
+        $subject = "Change Password Of JungleDrones";
+        $output="Change Your Password. Your Access Code Is <b>".$randomdom_string."</b>";
+        $headers= "From: support@jungledrones.com\r\nReply-To: support@jungledrones.com";
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+        $data['mail']=@mail($to, $subject, $output, $headers);*/
+        $language=LANGUAGE_NONE;
+        $d=drupal_mail('customuser', 'sendaccesscode', "info@spectrumiq.com", $language, $params = array('email'=>@$_POST['email'],'random_string'=>$randomdom_string), $from = "info@spectrumiq.com", $send = TRUE);
+
+    }
+    else{
+        $data['msg']='Invalid email';
+        $data['status']='error';
+    }
+    echo json_encode($data);
+    return;
+
+}
+
+function forgotpassaccesscheck()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: ' . CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $queryu1 = db_select('users', 'u')
+        ->fields('u')
+        ->condition('u.mail', @$_POST['email'], '=')
+        ->condition('u.access_code', @$_POST['access_code'], '=');
+    $resultu1 = $queryu1->execute();
+    if($resultu1->rowCount()>0) {
+
+        $user = user_load_by_mail(@$_POST['email']);
+        //print_r($user);
+
+
+
+        while ($recordu = $resultu1->fetchAssoc()) {
+            $userlist['email'] = $recordu['mail'];
+            $userlist['user_id'] = $recordu['uid'];
+            $data['status'] = 'success';
+            $data['userdetails'] = $userlist;
+
+        }
+
+
+    }
+    else{
+        $data['msg']='Invalid access code';
+        $data['status']='error';
+
+    }
+    echo json_encode($data);
+    return;
+
+
+}
+
+function changepassword1(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: ' . CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+    //print_r($_POST);
+    $queryu = db_select('users', 'u')
+        ->fields('u')
+        ->condition('u.uid', @$_POST['user_id'], '=')
+        ->condition('u.mail', @$_POST['email'], '=');
+
+    $resultu = $queryu->execute();
+
+    if ($resultu->rowCount() > 0) {
+
+        while ($recordu = $resultu->fetchAssoc()) {
+            $pass = $recordu['pass'];
+
+        }
+
+    }
+    $user_fields = user_load(@intval($_POST['user_id']));
+    $x= user_authenticate($user_fields->name,$pass);
+    // print_r($user_fields);
+    //if($x>0 ) {
+    require_once 'includes/password.inc';
+    $user_fields->pass=user_hash_password(@$_POST['password']);
+    user_save($user_fields);
+    $data['status'] = 'success';
+    //$data['userdetails'] = $userarr;
+    echo json_encode($data);
+    $language=LANGUAGE_NONE;
+    $d=drupal_mail('customuser', 'resetpasswordsuccess', "support@jungledrones.com", $language, $params = array('email'=>@$user_fields->mail), $from = "support@jungledrones.com", $send = TRUE);
+
+    return;
+    /* }else{
+         if($x>0 && $user_fields->status==0){
+         $data['status'] = 'error';
+         $data['msg'] = 'User not valid';
+
+         echo json_encode($data);
+         return;
+
+         }*/
+    // }
+
+
+
+}
+
+
+function admin_mail ($key, &$message, $params) {
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: ' . CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    switch ($key) {
+
+        case 'resetsuccess':
+            // Set headers etc
+            $message['to'] = $params['email'];
+            $message['subject'] = t('Password Change was successfull');
+            $message['headers']['MIME-Version'] = '1.0';
+            $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+            $message['headers']['Content-Transfer-Encoding'] = '8Bit';
+            $message['headers']['X-Mailer'] = 'Drupal';
+
+            //$message['body'][] = t('Hello @username,', array('@username' => $params['username']));
+            $message['body'][] = "You have changed your password successfully ! -- JungleDrones team";
+            break;
+    }
+}
+
+function customuser_mail ($key, &$message, $params) {
+    switch ($key) {
+        case 'resetpasswordsuccess':
+            // Set headers etc
+            $message['to'] = $params['email'];
+            $message['subject'] = t('Password Change have been changed successfully');
+            $message['headers']['MIME-Version'] = '1.0';
+            $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+            $message['headers']['Content-Transfer-Encoding'] = '8Bit';
+            $message['headers']['X-Mailer'] = 'Drupal';
+
+            //$message['body'][] = t('Hello @username,', array('@username' => $params['username']));
+            $message['body'][] = "You have changed your password successfully ! -- Influx IQ team";
+            break;
+
+
+        case 'sendaccesscode':
+            // Set headers etc
+            $message['to'] = $params['email'];
+            $message['subject'] = t('Change Password Of Totalroree');
+            $message['headers']['MIME-Version'] = '1.0';
+            $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+            $message['headers']['Content-Transfer-Encoding'] = '8Bit';
+            $message['headers']['X-Mailer'] = 'Drupal';
+            $message['body'][] = "Change Your Password. Your Access Code Is <b>".$params['random_string']."</b>";
+            break;
+    }
+}

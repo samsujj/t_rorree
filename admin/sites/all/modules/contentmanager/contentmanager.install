@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for faq
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function contentmanager_schema() {
+    $schema = array();
+
+    $schema['contentmanager'] = array(
+        'description' => 'content manager Table',
+        'fields' => array(
+            'id' => array(
+                'description' => 'Primary Key user',
+                'type' => 'int',
+                'length'=>30,
+                'not null' => TRUE,
+            ),
+
+            'cname' => array(
+                'description' => 'content name',
+                'type' => 'text',
+                'not null' => false,
+            ),
+            'content' => array(
+                'description' => 'last name',
+                'type' => 'text',
+                'not null' => false,
+            ),
+            'ctype' => array(
+                'description' => 'Content Type ',
+                'type' => 'text',
+                'not null' => false,
+            ),
+
+
+
+
+
+
+
+
+        ),
+        //'primary key' => array('id'),
+
+    );
+    return $schema;
+}

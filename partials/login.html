@@ -1,0 +1,57 @@
+<div class="trloginbody">
+
+    <img src="images/logo-totallyrorree.png" alt="#" class="totallyrorreeloginlogo">
+
+    <img src="images/loginimage.png" alt="#" class="loginimage">
+
+    <form angular-validator-submit="adminloginsubmit()"  name="loginForm"  class="trloginwrapper" novalidate angular-validator>
+
+        <h2>User Login</h2>
+        <div class="logindevider"></div>
+        <div ng-show="errormsg" class="errormsg">{{errormsg}}</div>
+        <div class="form-group">
+        <label>Your Email</label>
+            <input type="text" class="form-control" name="email" ng-model="form.email"
+                   required-message="'Email can not be blank.'"
+                   invalid-message="'Enter valid email address.'"
+                   required>
+            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        </div>
+
+
+        <div class="form-group">
+            <label>Your Password</label>
+            <input type="Password" class="form-control" name="password"
+                   ng-model="form.password"
+
+                   required-message="'Password can not be blank.'"
+                   required>
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        </div>
+
+        <div class="checkboxdiv">
+            <label>
+                <input type="checkbox" value="">
+                Remember me
+            </label>
+        </div>
+
+
+        <a class="forgotpassword" ui-sref="forgot-password" href="javascript:void(0)">Forgot your password?</a>
+
+
+        <div class="clearfix"></div>
+
+
+        <button class="btn btn-primary loginbtn" type="submit">Login</button>
+
+</form>
+
+
+
+</div>
+
+
+
+
+

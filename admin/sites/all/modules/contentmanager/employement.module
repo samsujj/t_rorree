@@ -1,0 +1,360 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: debasis
+ * Date: 16/6/15
+ * Time: 12:04 AM
+ */
+header('Content-type: text/html');
+header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+function employement_init() // init function called by defaulted when this module loaded by system
+{
+
+    //echo $GLOBALS['theme'];
+    //echo 5656;
+    //echo user_authenticate('debasis','Pp@ss1234');
+
+//echo "kl";
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+}
+
+function employement_menu()
+{
+    $items = array();
+
+    $items['addemployement'] = array(
+        'title' => 'Add event',
+        'page callback' => 'addemployement',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['employementlist'] = array(
+        'title' => 'event List',
+        'page callback' => 'employementlist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['uploadresume'] = array(
+        'title' => 'event Updates',
+        'page callback' => 'uploadresume',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+
+
+    return $items;
+}
+
+
+function employementdetails(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $eventlist = array();
+
+
+    $queryu = db_select('event', 'ev');
+
+    $queryu->fields('ev', array('id','event_name','event_description','event_image','event_status', 'event_daterange', 'event_timerange','event_create_time'));
+    $queryu->condition('ev.id', $_POST['id'], '=');
+    $resultu = $queryu->execute();
+
+
+    while($recordu = $resultu->fetchAssoc()) {
+
+        $eventlist['id'] = $recordu['id'];
+        $eventlist['event_name'] = $recordu['event_name'];
+        $eventlist['event_description'] = $recordu['event_description'];
+        if($recordu['event_image']=='Null' ||  $recordu['event_image']==''){
+            $eventlist['event_image'] =  'images/user2-160x160.jpg';
+        }
+        else{
+            $eventlist['event_image'] =  image_style_url('thumbnail',(@$recordu['event_image']));
+
+        }
+        $eventlist['event_status'] = $recordu['event_status'];
+        $eventlist['event_daterange'] = $recordu['event_daterange'];
+        $eventlist['event_timerange'] = $recordu['event_timerange'];
+        $eventlist['event_create_time'] = $recordu['event_create_time'];
+    }
+    echo json_encode(@$eventlist);
+
+}
+
+
+function employementlist()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $userlist = array();
+
+    $queryu = db_select('employement', 'ev');
+
+    //'fname','lname','email','phone', 'country','city','resume'
+
+    $queryu->fields('ev', array('id','fname','lname','email','phone', 'country', 'city','resume'));
+    // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
+    // ->condition('ur.rid', 5, '=');
+    //->condition('u.uid', 74, '=');
+    //->range(0, 20);
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            // $picture=$recordu['event_image'];
+            // if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
+            // else $picture='';
+
+            $eventlist[$i]['id'] = $recordu['id'];
+            $eventlist[$i]['fname'] = $recordu['fname'];
+            $eventlist[$i]['lname'] = $recordu['lname'];
+            $eventlist[$i]['email'] = $recordu['email'];
+            $eventlist[$i]['phone'] = $recordu['phone'];
+
+            $eventlist[$i]['city'] = $recordu['city'];
+            $eventlist[$i]['country'] = $recordu['country'];
+            $eventlist[$i]['resume'] = $recordu['resume'];
+            //$eventlist[$i]['event_create_time'] = $recordu['event_create_time'];
+
+
+            $i++;
+
+        }
+    }
+    echo json_encode(@$eventlist);
+
+}
+function employementlistfrontlisting()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $eventlist = array();
+    $queryu = db_select('event', 'ev');
+
+    $queryu->fields('ev', array('id','event_name','event_description','event_image','event_status', 'event_daterange', 'event_timerange','event_create_time'));
+    $queryu->condition('ev.event_status', 1, '=');
+    $queryu->range(0, 5);
+    $queryu->orderBy('event_daterange','desc');
+    // ->condition('ur.rid', 5, '=');
+    //->condition('u.uid', 74, '=');
+    //->range(0, 20);
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            // $picture=$recordu['event_image'];
+            // if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
+            // else $picture='';
+
+            $eventlist[$i]['id'] = $recordu['id'];
+            $eventlist[$i]['user_id'] = $recordu['user_id'];
+            $eventlist[$i]['event_name'] = $recordu['event_name'];
+            $eventlist[$i]['event_description'] = $recordu['event_description'];
+            if($recordu['event_image']=='Null' ||  $recordu['event_image']==''){
+                // $eventlist[$i]['event_image'] =  'images/user2-160x160.jpg';
+                $eventlist[$i]['event_image'] =  'images/event_de.png';
+            }
+            else{
+                $eventlist[$i]['event_image'] =  image_style_url('frontend-event',(@$recordu['event_image']));
+
+            }
+            $eventlist[$i]['event_status'] = $recordu['event_status'];
+            $eventlist[$i]['event_daterange'] = $recordu['event_daterange'];
+            $eventlist[$i]['event_timerange'] = $recordu['event_timerange'];
+            $eventlist[$i]['event_create_time'] = $recordu['event_create_time'];
+
+
+            $i++;
+
+        }
+    }
+    echo json_encode(@$eventlist);
+
+}
+
+
+function addemployement(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $user = user_load_by_mail(trim(@$_POST['email']));
+
+    print_r($_POST);
+    ///exit;
+
+
+
+    $query = db_insert('employement')->fields(array('fname','lname','email','phone', 'country','city','resume'));
+    //foreach ($values as $record) {
+    $query->values(array(@$_POST['fname'],@$_POST['lname'],@$_POST['email'],@$_POST['phone'],@$_POST['country']['s_name'],@$_POST['city'],@$_POST['resume']));
+    //}
+    $query->execute();
+
+
+    $data['status'] = 'success';
+    echo json_encode($data);
+    return;
+}
+function employementupdates(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $roles = array(
+        DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+        // 5 => 'General Users',
+    );
+    $roles[5]='event';
+    $user_fields = user_load(@intval($_POST['uid']));
+    $user_fields->roles=$roles;
+    user_save($user_fields);
+
+
+    db_update('event')
+        //->expression('weight', 'weight + :weight', array(':weight' => 1))
+        ->fields(array( 'fname'=>@$_POST['fname'], 'lname'=>@$_POST['lname'], 'bname'=>$_POST['bname'],'address'=>@$_POST['address'],'phone_no'=>@$_POST['phone_no'],'mobile_no'=>@$_POST['mobile_no'],'contact_time'=>@$_POST['contact_time']))
+        ->condition('user_id', intval($_POST['uid']))
+        ->execute();
+}
+
+function updateemployementstatus(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $event_status=1-intval($_POST['event_status']);
+    db_update('event')
+        //->expression('weight', 'weight + :weight', array(':weight' => 1))
+        ->fields(array( 'event_status'=>@$event_status))
+        ->condition('id', intval($_POST['id']))
+        ->execute();
+
+    echo "true";
+}
+
+function deleteemployement(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $num_deleted = db_delete('event')
+        ->condition('id', @$_POST['id'])
+        ->execute();
+
+}
+
+function uploadresume(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $target_dir = realpath(dirname(__FILE__))."/uploads/";
+    $path_parts = pathinfo($_FILES['Filedata']['name']);
+    $filename = rand().'_'.time().'.'.$path_parts['extension'];
+
+    $profile_url = '';
+
+    if (move_uploaded_file($_FILES["Filedata"]["tmp_name"], $target_dir.$filename)) {
+        //$account = user_load($_POST['userid']);
+
+        $filepath = ($target_dir.$filename);
+
+        $file = (object) array(
+            'uid' => 1,
+            'uri' => $filepath,
+            'filemime' => file_get_mimetype($filepath),
+            'status' => 1,
+        );
+        if ($file) {
+// Move the file, into the Drupal file system
+            if ($file = file_copy($file, 'public://')) {
+                $file->status = FILE_STATUS_PERMANENT;
+                // $file->file_display = 1;
+                $file = file_save($file);
+                //set the extra values needed to make node_save work
+                $file->display = 1;
+                $file->description = "";
+            }
+
+            /* db_update('ideas')
+                 //->expression('weight', 'weight + :weight', array(':weight' => 1))
+                 ->fields(array( 'logo'=>@$file->uri))
+                 ->condition('id', intval($_POST['id']))
+                 //->condition('type', 'module')
+                 ->execute();*/
+        }
+
+        /*$file = file_copy($file, 'public://');
+        $edit['picture'] = $file;
+        user_save($account, $edit);
+
+        $filepath = $file->uri;
+        $profile_url = image_style_url('thumbnail', $filepath);*/
+    }
+
+    $data['image_url']= file_create_url((@$file->uri));
+    $data['image_name']= (@$_FILES['Filedata']['name']);
+    echo json_encode(@$data) ;
+
+}
+
+

@@ -1,0 +1,630 @@
+/* ==========================================================================
+   Media Queries for Responsive Design
+
+   @media only screen and (max-width: 640px) {img {max-width: 100%;}}
+   ========================================================================== */
+
+@media(max-width:1920px) {
+
+}
+
+@media(max-width:1800px) {
+    .navbar-default .navbar-nav > li > a {padding: 10px 14px; margin-right: 4px;}
+}
+
+@media(max-width:1680px) {
+    .navbar-default .navbar-nav > li > a {padding: 10px 14px; margin-right: 0px;}
+}
+
+@media(max-width:1660px) {
+    .navbar-default .navbar-nav > li > a {padding: 10px 12px; margin-right: 0px;}
+    .header-top-right {margin-right: 68px; }
+}
+
+
+
+
+@media(max-width:1600px) {
+    .navbar-default .navbar-nav > li > a {padding: 10px 11px; margin-right: 0px;}
+    .socialmedia {margin-left: 118px;}
+    .header-top-right {margin-right: 102px;}
+}
+
+/*---- responsive-design -----*/
+@media(max-width:1440px){
+    .navbar-default .navbar-nav > li > a {padding: 10px 11px; margin-right: 0px; font-size: 14px;}
+    #services .servicesright {
+        height: 159px;
+    }
+
+}
+@media(max-width:1366px){
+
+    .servicesright {
+        height: 159px;
+    }
+    .socialmedia {
+        margin-left: 255px;
+    }
+    .navbar-default .navbar-nav > li > a {padding: 10px 11px; margin-right: 0px; font-size: 13px;}
+    .header-top-right {
+        margin-right: 182px;
+    }
+}
+
+@media(max-width:1360px){
+
+    .socialmedia {
+        margin-left: 253px;
+    }
+
+    .header-top-right {
+        margin-right: 183px;
+    }
+}
+
+@media(max-width:1280px){
+    .sitamet-left h1 {font-size: 65px;}
+    .sitamet-left h2 {font-size: 65px;}
+    .dolar-content .purchaseimg img {
+        display: block;
+        clear: both;
+        display: block;
+        max-width: 100%;
+    }
+    img{max-width: 100%; display: block;}    
+    .navbar-default .navbar-nav > li > a {padding: 10px 10px; margin-right: 1px; font-size: 12px;}
+}
+
+@media(max-width:1199px) {
+    .socialmedia {
+        width: 205px;
+        margin-left: 0;
+    }
+
+    .header-top-right {
+        float: none;
+        margin-right: 0;
+        text-align: center;
+    }
+    .socialmedia{margin-top: 10px;}
+    .socialmedia ul li{margin-top: 0px;}
+    .header-top-right{padding: 0;margin-top: 20px; margin-bottom: 20px;}
+    .socialmedia ul li:last-child{padding-right: 0px;}
+    img {
+        max-width: 100%;
+    }
+	.logo {
+        width: 242px;
+		margin: 0 auto;
+		padding-top: 12px;
+		padding-bottom: 12px;
+    }
+	
+    .sitamet-left h1 {font-size: 65px;}
+    .sitamet-left h2 {font-size: 60px;}
+
+    .navbar-header {float: none;}
+    .navbar-toggle {display: block;}
+    .navbar-collapse {border-top: 1px solid transparent; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);}
+    .navbar-collapse.collapse {display: none!important;}
+    .navbar-nav {float: none!important; margin: 7.5px -15px;}
+    .navbar-nav>li {float: none;}
+    .navbar-nav>li>a {padding-top: 10px; padding-bottom: 10px;}
+    .navbar-text {float: none; margin: 15px 0;}
+    /* since 3.1.0 */
+    .navbar-collapse.collapse.in { display: block!important;}
+    .collapsing {overflow: hidden!important;}
+	.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus, .navbar-default .navbar-nav > li > a:active {border-radius: 0px;}
+	.col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {padding-left:0px;padding-right:0px;}
+    #roreemanlive {height: auto;}   
+	.navbar-default .navbar-nav > li > a {padding: 10px 12px; margin-right: 0px;}
+
+}
+@media(min-width:1199px) {
+    .navbar-default .navbar-brand {display: none;}
+	
+
+
+
+}
+
+@media(max-width:1198px) {
+    .navbar-default .navbar-brand {display: block;}
+    .navbar-header {background-color: #333;}
+    .navbar-brand {padding: 12px 15px;}
+	.sitamet-left h2 {font-size: 65px;}
+	.sitamet-left h1 {font-size: 65px;}
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(1){width: 50%}
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(2){width: 50%}
+    #menu .col-xs-12 .mainmenu .col-xs-12:last-child{width: 100%}
+    .contact-right {margin-right: 25px;}
+    .dolar-content p {max-width: 703px;}
+    .dolar-content .lineimg1 img {right: -4px; bottom: -11px;}
+    .dolar-content h3 {font-size: 17px;}
+    .dolar-content h3 {max-width: 100%;}
+    .dolar-content .lineimg img, .dolar-content .lineimg1 img {display: none;}
+    .trainer-content-top h4{margin-bottom: 4px;}
+    .trainer-inner .trainer-content-top p {margin: 0px auto;}
+    .trainer-content-bottom img {height: auto; width: 100%;}
+    #personaldevlspeaker .trainer-content-bottom img {height: auto; width: 100%;}
+    #personaldevlspeaker .trainer-content-bottom {margin-top: 2px;}
+    #personaldevlspeaker .trainer-content-top h4 {padding-bottom: 3px;}
+    .servicesright h2 {font-size: 24px;}
+    #services .servicesright {
+        height: 132px;
+    }
+    .singletestimonials .testiimg i {padding: 17px;}
+    .singletestimonials .testiimg i {right: 65px;}
+    .mainmenu { margin: 0px 0px 20px 0px; }
+    .contact-right {float: right; margin-top: 12px;}
+}
+
+
+@media(max-width:1080px){
+    .sitamet-left h1 {font-size: 65px;}
+    .sitamet-left h2 {font-size: 60px;}
+
+}
+@media(max-width:1024px){
+    img{max-width: 100%; margin: 0 auto;}
+    .dolar-content {margin-top: 30px;}
+    #dolarsit {margin: 60px 0px;}
+    .trainer-content-top {max-width: 100%; margin: 30px 0px;}
+    .sitamet_content .inner-info-top h1{font-size: 65px;}
+    .sitamet_content .inner-info-top h2 {font-size: 60px;}
+    .trainer-inner{ margin: 30px 0px 0px;}
+    .servicesright h2 {font-size: 24px;}
+    #services .servicesright {height: 132px; }
+
+}
+
+@media(max-width:1023px){    
+    .dolar-content p {text-align: left;}
+}
+
+@media(max-width:991px){
+    .productslist {
+        max-width: 649px;
+        margin: 0 auto;
+        padding-top: 30px;
+    }
+    .logo {
+        margin-top: 24px;
+        max-width: 190px;
+        margin-left: 40px;
+    }
+
+    #slider .item {
+        margin: 0px 0 0 -834px;
+        width: 210%;
+    }
+	.trainer-content-bottom {margin: 0 auto;}
+	#services img{width:100%;}
+	.servicesright {
+		height: auto;
+		padding: 0px 0px 18px 0px;
+	}
+    .singletestimonials {padding-top: 36px;}
+    #personaldevlspeaker .trainer-inner img {
+        float: none;
+    }
+    #personaldevlspeaker .trainer-content-top {max-width: 100%; margin: 0 auto;}
+    #personaldevlspeaker .trainer-content-bottom {max-width: 100%; margin: 0 auto;}
+
+}
+@media(max-width:950px) {
+    #slider .item {
+        margin: 0px 0 0 -740px;
+        width: 210%;
+    }
+}
+@media(max-width:900px) {
+    #slider .item {
+        margin: 0px 0 0 -716px;
+        width: 210%;
+    }
+}
+@media(max-width:800px){
+    .header-top-right .cart label:first-child{display: block;}
+    .header-top-right .cart label:last-child{display: none;}
+    #slider .item {
+        margin: 0px 0 0 -710px;
+        width: 218%;
+    }
+    .servicesright {
+        height: 151px;
+    }
+ }
+
+
+@media(max-width:768px){
+
+    .navbar-nav {background-color: #fff;}
+    .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > ul > li > a:hover{
+        border-radius:0px;
+    }
+    .nav > li > a {
+        padding: 10px 8px;
+        margin-top: 0;
+        text-align: center;
+    }
+    .navbar-toggle {margin-top: 0px;}
+    .footer-bg {text-align: center;}
+    .dolar-content .lineimg img, .dolar-content .lineimg1 img { display: none;}
+    #dolarsit { height: auto; margin-bottom: 24px;}
+    #dolarsit .dolarsitimgright img{margin-bottom: 0px;}
+    #dolarsit .dolarsitimgleft img {margin-bottom: 10px;}
+    #dolarsit .dolatsit_content .inner-info-top h2{margin-bottom: 30px;}
+    #roreemanlive{height: auto; margin-bottom: 30px; }
+
+    .btnview .btneye {
+        font-size: 16px;
+    }
+    img{max-width: 100%;}
+    #sitamet {
+        height: auto;
+        padding-bottom: 30px;
+        margin-bottom: 30px;
+    }
+
+    .sitamet-right{background-color: rgba(255, 255, 255, 0.8); width: 100%; padding: 10px;}
+    .sitamet-right p{padding-top: 0px;text-align: center;}
+    .sitamet-right .btnview {max-width: 288px; float: none;}
+    .dolar-content .purchaseimg img { max-width: 600px; margin: 0 auto; display: block; clear: both;}
+    .dolar-content h3{max-width: 100%;}
+    .dolar-content p { max-width: 100%; text-align: left;}
+    .trainer-content-bottom img {
+        height: auto;
+        width: auto;
+        margin-bottom: 10px;
+    }
+    .trainer-inner {
+        margin-top: 0px;
+    }
+    .dolatsit_content .inner-info-top h2 span {font-size: 33px;}
+    .singletestimonials {margin-bottom: 50px;}
+    .productslist {
+        max-width: 434px;
+        margin: 0 auto;
+        padding-top: 30px;
+    }
+    .productdetail{margin-bottom: 25px;}
+    #trainer {padding: 10px 0px 0px;}
+	.dolar-content ul {margin-bottom: 30px;}
+	#dolarsit {background: transparent;background-color: #92bdb1; padding-bottom: 20px;}
+	.dolatsit_content {margin-top: 20px;}
+    .sitamet_content .inner-info-top h1{font-size: 43px; margin-left: 0px;}
+    .sitamet_content .inner-info-top h2 {font-size: 34px;}
+    .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .dolar-content {margin-top: 0px;}
+    .header-top-right .cart label:first-child{display: block;}
+    .header-top-right .cart label:last-child{display: none;}
+    .header-top-right .cart {
+        margin-top: 6px;
+        width: 64px;
+        float: right;
+    }
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(1){width: 50%}
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(2){width: 50%}
+    #menu .col-xs-12 .mainmenu .col-xs-12:last-child{width: 100%}
+    #slider .item {
+        margin: 0px 0 0 -685px;
+        width: 218%;
+    }
+    #ftmenu ul.ftmenu {margin: 0 auto; padding: 10px 0;}
+    #ftmenu ul.ftmenu li {display: block; float: left;  width: 100%;  text-align: center; border-bottom: 1px solid #c3c3c3; padding: 4px 0px; }
+    #ftmenu ul.ftmenu li::after{display: none;}
+    .singletestimonials .testiimg i {right: 0px;padding: 17px;}
+    #ftmenu .logo {margin: 0 auto;}
+    .socialmedia {width: 220px; }
+    .footer-bg .socialmedia {float: none;}
+    .mainmenu {
+        margin: 0px 0px;
+    }
+    .contact-right {margin-top: 24px;}
+}
+@media(max-width:720px){
+    #slider .item {
+        margin: 0px 0 0 -639px;
+        width: 218%;
+    }
+}
+
+@media(max-width:680px){
+    #slider .item {
+        margin: 0px 0 0 -600px;
+        width: 216%;
+    }
+}
+
+@media(max-width:640px){
+    .header-top-right {
+        width: 96%;
+        margin-left:auto;
+        margin-right: auto;
+    }
+    .inner-info-top h2 {
+        font-size: 34px; margin-bottom: 31px;
+    }
+
+    .trainer-content-bottom img {
+        height: auto;
+        width: auto;
+        margin-bottom: 10px;
+    }
+    .dolar-content .purchaseimg img {
+        max-width: 100%;
+        margin: 0 auto
+        margin-top: 30px;
+    }
+    .sitamet-left h1{font-size: 36px;}
+    .sitamet-left h2{font-size: 28px;margin: 9px 0px 15px 0px;}
+    .row{margin:0px;}
+    .mainmenu {margin: 0px 0px;}
+    .singletestimonials {margin-bottom: 50px;}
+    .singletestimonials {position: relative; max-width: 293px; margin: 0 auto;}
+    #ftmenu ul.ftmenu { margin-top: 10px;}
+    #services .servicesright {height: auto;}
+    .testimonialslist {
+        max-width: 298px;
+        margin: 0 auto;
+    }
+    #testimonials {
+        margin: 30px 0px 0px 0px;
+    }
+
+    .socialmedia {
+        width: 220px;
+        margin: 0 auto;
+    }
+    .socialmedia {margin-top: 9px;}
+    .header-top-right .cart{width: 36px; margin-top: 6px;}
+    #slider .item {
+        margin: 0px 0 0 -547px;
+        width: 210%;
+    }
+
+
+}
+@media(max-width:600px){
+    #slider .item {
+        margin: 0px 0 0 -520px;
+        width: 216%;
+    }
+
+}
+
+
+@media(max-width:560px){
+    #slider .item {
+        margin: 0px 0 0 -478px;
+        width: 216%;
+    }
+
+}
+
+@media(max-width:520px){
+    #slider .item {
+        margin: 0px 0 0 -463px;
+        width: 216%;
+    }
+
+}
+@media(max-width:500px){
+    #slider .item {
+        margin: 0px 0 0 -449px;
+        width: 216%;
+    }
+
+}
+
+
+@media(max-width:480px){
+    .singletestimonials .testiimg i {
+        padding: 17px;
+    }
+    .roreemanlive_content .inner-info-top h3 {
+        font-size: 28px;
+    }
+    .roreemanlive_content {
+        margin-top: 36px;
+    }
+    .testimonialslist {
+        max-width: 298px;
+        margin: 0 auto;
+    }
+    .logo{margin: 0 auto;}
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(1){width: 100%}
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(2){width: 100%}
+    #menu .col-xs-12 .mainmenu .col-xs-12:last-child{width: 100%}
+    .singletestimonials {margin-bottom: 50px;}
+    .contact-right {margin: 0 auto;max-width: 180px; float: none;margin-top:0px;}
+    .contact-right label:first-child{margin-right: 10px;}
+    #slider .item {
+        margin: 0px 0 0 -466px;
+        width: 230%;
+    }
+    .rorreeliveMRL{width: 190%; margin: 0 0 0 -337px;}
+    .btnview {width: 260px; margin: 0 auto;}
+    .servicesright h2 {font-size: 26px;}
+    .servicesright:last-child h2::after{top: 82px;}
+    #personaldevlspeaker .trainer-content-bottom img {
+        height: auto;
+        width: 100%;
+    }
+    #personaldevlspeaker .trainer-inner{margin-top: 20px;}
+    .sitamet_content .btnview {width: 220px;}
+    .sitamet_content .btneye img, .btneye i {margin-top: 0px;}
+    .sitamet_content .btnview .btneye {font-size: 16px;}
+    .singletestimonials .testiimg i {right: 0px;}
+
+}
+
+@media(max-width:470px) {
+    #slider .item {
+        margin: 0px 0 0 -415px;
+        width: 218%;
+    }
+    .rorreeliveMRL{width: 190%; margin: 0 0 0 -286px;}
+}
+
+@media(max-width:450px){
+    #slider .item {
+        margin: 0px 0 0 -382px;
+        width: 216%;
+    }
+    .rorreeliveMRL{width: 190%; margin: 0 0 0 -286px;}
+}
+
+@media(max-width:430px) {
+    #slider .item {
+        margin: 0px 0 0 -382px;
+        width: 227%;
+    }
+    .rorreeliveMRL{width: 200%; margin: 0 0 0 -300px;}
+}
+@media(max-width:390px) {
+    #slider .item {
+        margin: 0px 0 0 -362px;
+        width: 227%;
+    }
+    .rorreeliveMRL{width: 193%; margin: 0 0 0 -247px;}
+}
+
+@media(max-width:360px) {
+    #slider .item {
+        margin: 1px 0 0 -348px;
+        width: 228%;
+    }
+    .rorreeliveMRL{width: 209%; margin: 0 0 0 -267px;}
+}
+
+@media(max-width:320px){
+    #slider .item {
+        margin: 1px 0 0 -308px;
+        width: 228%;
+    }
+    .rorreeliveMRL{width: 189%;  margin: 0 0 0 -206px;}
+
+}
+/*--//responsive-design---*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media print,
+(-webkit-min-device-pixel-ratio: 1.25),
+(min-resolution: 1.25dppx),
+(min-resolution: 120dpi) {
+
+}
+
+/* ==========================================================================
+   Print styles
+   ========================================================================== */
+
+@media print {
+    *,
+    *:before,
+    *:after,
+    *:first-letter,
+    *:first-line {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    a[href^="#"]:after,
+    a[href^="javascript:"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}

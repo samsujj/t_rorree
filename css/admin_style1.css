@@ -1,0 +1,142 @@
+ a{ text-decoration:none; outline:none;}
+  a:hover{ text-decoration:none; outline:none;}
+    a:focus{ text-decoration:none; outline:none;}
+	
+	  button:focus{ text-decoration:none; outline:none;}
+   button{ text-decoration:none; outline:none;}
+.errormsg{ font-size:12px; color:#ff0000;}
+
+.navbar-static-top{background:#00c0ef; color:#fff;}
+.skin-blue .main-header .navbar{background:#00c0ef; color:#fff;}
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover{background:#13b1d8; }
+
+.logo{background:#fff!important; height:auto; padding:0!important;}
+
+.logo-mini{ padding:0 5px!important;}
+
+.navbar-static-top a{color:#fff!important;}
+.navbar-static-top *{color:#fff!important;}
+
+
+
+body{ background:#232f38;}
+
+.box-primary{ font-family:Arial, Helvetica, sans-serif;}
+.main-footer{ font-family:Arial, Helvetica, sans-serif;}
+.skin-blue .sidebar-menu > li:hover > a,
+.skin-blue .sidebar-menu > li.active > a {
+  color: #ffffff;
+  background: #00c0ef;
+  border-left-color: #f5d504; text-shadow:none; 
+}
+
+.skin-blue .sidebar-form input[type="text"], .skin-blue .sidebar-form .btn{ border:none;}
+
+.logo-lg img{ width:100%; }
+.skin-blue .wrapper,.skin-blue .main-sidebar,.skin-blue .left-side{ background:#232f38!important;}
+ .skin-blue .sidebar-form .btn { background:#ecf0f5!important; color:#000!important;}
+
+.skin-blue .sidebar-form input[type="text"]{ background:#ecf0f5!important; color:#000!important;}
+
+
+.skin-blue .sidebar-form input[type="text"]::-webkit-input-placeholder {
+    color:    #000;
+}
+.skin-blue .sidebar-form input[type="text"]:-moz-placeholder {
+    color:    #000;
+}
+.skin-blue .sidebar-form input[type="text"]::-moz-placeholder {
+    color:    #000;
+}
+.skin-blue .sidebar-form input[type="text"]:-ms-input-placeholder {
+    color:    #000;
+}
+
+
+.skin-blue .sidebar-menu > li.header {
+    background: #62bc45;
+    color: #fff; font-size:16px;
+}
+
+.skin-blue .sidebar-menu > li > .treeview-menu {
+    background: #0f1a22;
+    margin: 0 1px;
+}
+
+.skin-blue .sidebar-menu > li > .treeview-menu a{ color:#cbd4d8;}
+
+.skin-blue .sidebar-menu > li > .treeview-menu a:hover{ color:#fff;}
+
+.skin-blue .main-header li.user-header{ background-color: #5d6a6f;}
+
+.btn-default {
+    background-color: #3e4a4f;
+    border-color: #2d3539;
+ 
+}
+
+.btn-default:hover {
+    background-color: #232c2f;
+    border-color: #2d3539;
+ 
+}
+
+.login-box{ background:#cbd6cf; overflow:hidden; border:solid 8px #455561; padding:8px; }
+
+.login-boxwrapper{background:#fff; overflow:hidden;}
+.login-logo{ margin:0 auto;}
+
+.btn-primary{  border:none!important; font-size:18px;   font-family: "Source Sans Pro",sans-serif; margin-bottom:18px; padding:8px 20px;}
+
+.login-box-body, .register-box-body{ padding-top:10px;}
+
+.loginbtn{ background:#03b4f5; font-size:18px; border:none!important;}
+
+.info-box-number{ width:180px; margin:0 auto; height:80px; display:table-cell; text-align:center; vertical-align:middle;font-size:16px;  text-transform:uppercase;}
+
+.info-box{ box-shadow:0 0 8px #ccc; border:solid 1px #f1f1f1;}
+
+.formsection{ width:600px; margin:25px auto; background:#faf8f8; padding:10px; border:solid 1px #d9dadc;}
+
+.formsection label{ font-weight:normal!important; font-size:15px;}
+
+.checkbox{ font-size:12px;}
+
+@media screen and (max-width:991px){
+.formsection{ width:80%;}
+}
+
+@media screen and (max-width:767px){
+.logo-lg img{ width:290px; }
+.info-box-number{  width:300px; text-align:left;}
+}
+
+@media screen and (max-width:380px){
+.info-box-number{  width:180px; text-align:center;}
+}
+
+.newblock1{ width: 300px; float: right; margin-top: 10px;}
+
+ .newblock1 .search1{ width: 175px;
+     height: 30px; border-radius: 0px;
+     padding: 2px; float: left; border: solid 1px #ccc; }
+
+
+ .newblock1 .addfrinderbtn{ width: 100px; height: 30px; float: right;     color: #FFF;
+
+     background-color: #00C0EF; border: none;
+    font-size: 13px; text-align: center; line-height: 30px;
+ }
+
+.paginationblock{ width: 300px; margin: 0 auto;}
+
+.selectboxnew{  background-color: #FFF;
+    background-image: none; border-radius: 0px; height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857;
+    color: #555; border: solid 1px #ccc; text-decoration: none; outline: none;}
+
+ .selectboxnew *{text-decoration: none; outline: none;}
+ .error_msg1{color: red;}
