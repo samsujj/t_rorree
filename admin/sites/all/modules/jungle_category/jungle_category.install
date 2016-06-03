@@ -1,0 +1,78 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for jungle category
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function jungle_category_schema() {
+    $schema = array();
+
+    $schema['junglecategory'] = array(
+        'description' => 'jungle category Table',
+        'fields' => array(
+            'id' => array(
+                'description' => 'Primary Key id',
+                'type' => 'serial',
+                'not null' => TRUE,
+            ),
+             'cat_name' => array(
+                 'description' => 'category name',
+                  'type' => 'varchar',
+                  'length' => '255',
+                 'not null' => TRUE,
+                  'default' => '',
+             ),
+             'cat_desc' => array(
+                 'description' => 'category name',
+                  'type' => 'text',
+                  'length' => '255',
+                 'not null' => FALSE,
+             ),
+             'parent_cat' => array(
+                 'description' => 'parent category',
+                  'type' => 'int',
+                  'length' => '11',
+                 'not null' => TRUE,
+                  'default' => 0,
+             ),
+              'cat_image' => array(
+                  'description' => 'category image',
+                   'type' => 'varchar',
+                   'length' => '255',
+                  'not null' => TRUE,
+                   'default' => '',
+              ),
+
+             'status' => array(
+                 'description' => 'status',
+                 'type' => 'int',
+                 'length' => '11',
+                 'not null' => TRUE,
+                 'default' => 0,
+             ),
+
+              'priority' => array(
+                  'description' => 'status',
+                  'type' => 'int',
+                  'length' => '11',
+                  'not null' => TRUE,
+                  'default' => 0,
+              ),
+             'type' => array(
+                 'description' => 'status',
+                 'type' => 'varchar',
+                 'length' => '255',
+                 'not null' => TRUE,
+                 'default' => '',
+             ),
+
+
+        ),
+        'primary key' => array('id'),
+
+    );
+    return $schema;
+}

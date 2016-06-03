@@ -1,0 +1,442 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: debasis
+ * Date: 16/6/15
+ * Time: 12:04 AM
+ */
+
+header('Content-type: text/html');
+header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+function jungle_category_init() // init function called by defaulted when this module loaded by system
+{
+
+    //echo $GLOBALS['theme'];
+    //echo 5656;
+    //echo user_authenticate('debasis','Pp@ss1234');
+
+//echo "kl";
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+}
+
+function jungle_category_menu()
+{
+    $items = array();
+
+    $items['addjunglecategory'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'addjunglecategory',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['junglecategorylist'] = array(
+        'title' => 'junglecategory List',
+        'page callback' => 'junglecategorylist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['parentcategorylist'] = array(
+        'title' => 'parent category List',
+        'page callback' => 'parentcategorylist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['deletejunglecategory'] = array(
+        'title' => 'junglecategory Delete',
+        'page callback' => 'deletejunglecategory',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['junglecategorydetails'] = array(
+        'title' => 'junglecategory details',
+        'page callback' => 'junglecategorydetails',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['junglecategoryupdates'] = array(
+        'title' => 'junglecategory Updates',
+        'page callback' => 'junglecategoryupdates',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['jungleupdatestatus'] = array(
+        'title' => 'junglecategory Updates Status',
+        'page callback' => 'jungleupdatestatus',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['uploadjunglecategoryimage'] = array(
+        'title' => 'junglecategory Image Upload',
+        'page callback' => 'uploadjunglecategoryimage',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+
+
+
+    return $items;
+}
+
+function uploadjunglecategoryimage(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $target_dir = realpath(dirname(__FILE__))."/uploads/";
+    $path_parts = pathinfo($_FILES['Filedata']['name']);
+    $filename = rand().'_'.time().'.'.$path_parts['extension'];
+
+    $profile_url = '';
+    $extarray=array('jpg','png','gif');
+    if(in_array($path_parts['extension'],$extarray)) {
+        if (move_uploaded_file($_FILES["Filedata"]["tmp_name"], $target_dir . $filename)) {
+            //$account = user_load($_POST['userid']);
+
+            $filepath = ($target_dir . $filename);
+
+            $file = (object)array(
+                'uid' => 1,
+                'uri' => $filepath,
+                'filemime' => file_get_mimetype($filepath),
+                'status' => 1,
+            );
+            if ($file) {
+// Move the file, into the Drupal file system
+                if ($file = file_move($file, 'public://')) {
+                    $file->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file = file_save($file);
+                    //set the extra values needed to make node_save work
+                    $file->display = 1;
+                    $file->description = "";
+                }
+
+            }
+        }
+        // echo file_create_url(@$file->uri);
+//print_r($file);
+            $data['image_url'] = image_style_url('large', (@$file->uri));
+
+        //
+
+        $data['image_name'] = (@$file->uri);
+        // $data['status'] = 'success';
+    }
+    else{
+        $data['status']='error';
+    }
+    echo json_encode(@$data) ;
+}
+function junglecategorydetails(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $queryu = db_select('junglecategory', 'ca');
+    $queryu->fields('ca')
+        ->condition('ca.id', $_POST['id'], '=');
+    $resultu = $queryu->execute();
+
+    while($recordu = $resultu->fetchAssoc()) {
+        $temparray=$recordu;
+
+        if($recordu['cat_image']!='') {
+
+
+                 $temparray['image_url'] = image_style_url('large', (@$recordu['cat_image']));
+
+        }
+
+                $junglecategorylist=$temparray;
+     }
+    echo json_encode(@$junglecategorylist);
+
+}
+
+
+function junglecategorylist()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $junglecategorylist = array();
+
+
+    $queryu = db_select('junglecategory', 'ca');
+     $queryu->fields('ca');
+    if(isset($_POST['type']) && $_POST['type']!=''){
+        $queryu->condition('ca.type',$_POST['type'],'=')  ;
+    }
+    if(isset($_POST['fonttype']) && $_POST['fonttype']=='font'){
+        $queryu->condition('ca.type','General','<>');
+    }
+
+
+    if( $_REQUEST['filter']=='status'){
+        $queryu->condition('ca.status',1,'=')  ;
+    }
+     $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+
+            $temparray['product_img_urls'] = array();
+
+            if($recordu['cat_image']!=''){
+                $temparray['image_url'] = image_style_url('front-photo_600_600_', (@$recordu['cat_image']));
+           }
+
+            $temparray['priority']=intval($recordu['priority']);
+
+
+            $queryu1 = db_select('junglecategory', 'ca');
+                $queryu1->fields('ca');
+                //$queryu1->condition('ca.parent_cat', 0, '=');
+                $queryu1->condition('ca.id', $recordu['parent_cat'], '=');
+                $resultu1 = $queryu1->execute();
+                if ($resultu1->rowCount() > 0) {
+
+                    while ($recordu1 = $resultu1->fetchAssoc()) {
+
+                        $temparray['parent_cat_name']=$recordu1['cat_name'];
+                    }
+                }
+                else{
+                    $temparray['parent_cat_name']='';
+                }
+
+/*            $queryu5 = db_select('jungleproduct', 'jp');
+            $queryu5->fields('jp');
+            $queryu5->condition('jp.category_id',$recordu['id'],'=');
+            $queryu5->range(0,3);
+            $queryu5->orderRandom();
+
+            $resultu5 = $queryu5->execute();
+            $k=1;
+            if ($resultu5->rowCount() > 0) {
+                while ($recordu5 = $resultu5->fetchAssoc()) {
+                    if($recordu5['product_file']!='') {
+                        $productextns = explode('.', $recordu5['product_file']);
+
+                        $tempimage['id'] =$k;
+
+                        if ($productextns['1'] == 'mp4') {
+                            $tempimage['image'] = image_style_url('420_230', ('public://'.$productextns['0'].'.jpg'));
+                        } else {
+                            $tempimage['image'] = image_style_url('420_230', (@$recordu5['product_file']));
+                        }
+
+                        $temparray['product_img_urls'][] =  $tempimage;
+                    }
+
+                    $k++;
+                }
+            }*/
+
+
+/*            $no_p = count($temparray['product_img_urls']);
+            if($no_p < 3){
+                $no_i = 3-$no_p;
+                for($j=0;$j<$no_i;$j++){
+
+                    $tempimage['id'] =$k;
+                    $tempimage['image'] = 'images/demojdlogo.png';
+
+                    $temparray['product_img_urls'][] = $tempimage;
+
+                    $k++;
+                }
+            }*/
+
+
+
+
+            $junglecategorylist[$i]= $temparray;
+            $i++;
+
+
+        }
+}
+     // $records['user']=$userlist;
+
+
+
+
+    echo json_encode(@$junglecategorylist);
+
+
+
+}
+function parentcategorylist()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $junglecategorylist = array();
+
+    $queryu = db_select('junglecategory', 'ca');
+    $queryu->fields('ca');
+    $queryu->condition('ca.parent_cat',0,'=');
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+
+             $junglecategorylist[$i]= $temparray;
+            $i++;
+
+/*            $junglecategorylist[$i]['cat_name'] = $recordu['cat_name'];
+            $junglecategorylist[$i]['id'] = $recordu['id'];
+            $junglecategorylist[$i]['parent_cat'] = $recordu['parent_cat'];
+            $junglecategorylist[$i]['status'] = $recordu['status'];
+            $i++;*/
+
+        }
+    }
+    // $records['user']=$userlist;
+
+
+
+
+    echo json_encode(@$junglecategorylist);
+
+
+
+}
+
+
+
+
+function addjunglecategory(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $parent_cat=0;
+    $cat_image='';
+    if(isset($_POST['parent_cat']) && $_POST['parent_cat']>0){
+        $parent_cat=$_POST['parent_cat']['id'];
+    }
+    if(isset($_POST['cat_image']) && $_POST['cat_image']!=''){
+        $cat_image=$_POST['cat_image'];
+    }
+
+    $query = db_insert('junglecategory')->fields(array('cat_name','cat_desc','parent_cat','cat_image','status','priority'));
+        //foreach ($values as $record) {
+        $query->values(array(@$_POST['cat_name'],@$_POST['cat_desc'],@$parent_cat,$cat_image,1,@$_POST['priority']));
+        //}
+        $query->execute();
+
+
+    $data['status'] = 'success';
+     echo json_encode($data);
+    return;
+}
+function junglecategoryupdates(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    db_update('junglecategory')
+        ->fields(array('cat_name'=>@$_POST['cat_name'],'cat_desc'=>@$_POST['cat_desc'],'parent_cat'=>@$_POST['parent_cat']['id'],'cat_image'=>@$_POST['cat_image'],'priority'=>@$_POST['priority']))
+        ->condition('id', intval($_POST['id']))
+         ->execute();
+}
+
+
+
+function deletejunglecategory(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $num_deleted = db_delete('junglecategory')
+        ->condition('id', @$_POST['id'])
+        ->execute();
+
+}
+
+function jungleupdatestatus(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $status=1-intval($_POST['status']);
+    $query=db_update('junglecategory')
+        ->fields(array('status'=>@$status))
+        ->condition('id', intval($_POST['id']))
+        ->execute();
+
+    echo "true";
+}
+
+
+
+

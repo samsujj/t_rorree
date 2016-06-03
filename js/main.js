@@ -3,5 +3,5 @@
  */
 
 $(document).ready(function(){
-
+   // $(".newcss").parent().next(".editableicon")
 });

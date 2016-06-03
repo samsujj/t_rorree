@@ -1,0 +1,482 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: debasis
+ * Date: 16/6/15
+ * Time: 12:04 AM
+ */
+header('Content-type: text/html');
+header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+function blog_init() // init function called by defaulted when this module loaded by system
+{
+
+    //echo $GLOBALS['theme'];
+    //echo 5656;
+    //echo user_authenticate('debasis','Pp@ss1234');
+
+//echo "kl";
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+}
+
+function blog_menu()
+{
+    $items = array();
+
+    $items['addblog'] = array(
+        'title' => 'Add blog',
+        'page callback' => 'addblog',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['bloglist'] = array(
+        'title' => 'blog List',
+        'page callback' => 'bloglist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['updateblogstatus'] = array(
+        'title' => 'status Change',
+        'page callback' => 'updateblogstatus',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['deleteblog'] = array(
+        'title' => 'blog Delete',
+        'page callback' => 'deleteblog',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['blogdetails'] = array(
+        'title' => 'blog details',
+        'page callback' => 'blogdetails',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['blogupdates'] = array(
+        'title' => 'blog Updates',
+        'page callback' => 'blogupdates',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['uploadblogbanner'] = array(
+        'title' => 'blog Updates',
+        'page callback' => 'uploadblogbanner',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['bloglistfrontlisting'] = array(
+        'title' => 'blog',
+        'page callback' => 'bloglistfrontlisting',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['adminblogrsvp'] = array(
+        'title' => 'blog',
+        'page callback' => 'adminblogrsvp',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+/*    $items['backup'] = array(
+        'title' => 'backup',
+        'page callback' => 'backup',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );*/
+
+
+     return $items;
+}
+
+/*function backup(){
+
+    echo 5;
+
+    $dbhost = 'localhost';
+    $dbuser = 'debasis';
+    $dbpass = 'P@ss7890';
+    $dbname='jungledrone_drupal';
+
+    $backup_file = $dbname . date("Y-m-d-H-i-s") . '.gz';
+    $command = "mysqldump --opt -h $dbhost -u $dbuser -p $dbpass ". "test_db | gzip > $backup_file";
+
+    $x=system($command);
+    print_r($x);
+}
+*/
+function blogdetails(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $bloglist = array();
+
+
+    $queryu = db_select('blog', 'bl');
+
+    $queryu->fields('bl', array('id','blog_name','user_id','blog_description','blog_asset','blog_file','blog_status','blog_create_time'));
+    $queryu->condition('bl.id', $_POST['id'], '=');
+    $resultu = $queryu->execute();
+
+
+    while($recordu = $resultu->fetchAssoc()) {
+
+        $bloglist['id'] = $recordu['id'];
+        $bloglist['user_id'] = $recordu['user_id'];
+        $bloglist['blog_name'] = $recordu['blog_name'];
+        $bloglist['blog_description'] = $recordu['blog_description'];
+        $bloglist['blog_asset'] = $recordu['blog_asset'];
+        $bloglist['blog_file'] = $recordu['blog_file'];
+        if($recordu['blog_file']=='Null' ||  $recordu['blog_file']==''){
+            $bloglist['image_url'] =  'images/user2-160x160.jpg';
+        }
+        else{
+            if($bloglist['blog_asset']=='Image') {
+                $bloglist['image_url'] = image_style_url('large', (@$recordu['blog_file']));
+                $bloglist['blog_details_image_url'] = image_style_url('blogdetails_1132x421_', (@$recordu['blog_image']));
+            }
+
+
+        }
+
+        $bloglist['blog_status'] = $recordu['blog_status'];
+        $bloglist['blog_create_time'] = $recordu['blog_create_time'];
+    }
+    echo json_encode(@$bloglist);
+
+}
+
+
+function bloglist()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $userlist = array();
+
+    $queryu = db_select('blog', 'bl');
+    $queryu->join('admin', 'a', 'a.user_id = bl.user_id');
+
+    $queryu->fields('bl', array('id','user_id','blog_name','blog_description','blog_asset','blog_file','blog_status','blog_create_time'));
+    $queryu->fields('a', array('fname', 'lname'));
+        // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
+       // ->condition('ur.rid', 5, '=');
+    //->condition('u.uid', 74, '=');
+    //->range(0, 20);
+    if(isset($_POST['type']) && $_POST['type']=='front' ){
+        $queryu->condition('bl.blog_status',1,'=')  ;
+    }
+    $queryu->orderBy('blog_create_time','DESC');
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+           // $picture=$recordu['blog_image'];
+           // if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
+           // else $picture='';
+
+            $bloglist[$i]['id'] = $recordu['id'];
+            $bloglist[$i]['user_id'] = $recordu['user_id'];
+            $bloglist[$i]['blog_name'] = $recordu['blog_name'];
+            $bloglist[$i]['blog_description'] = $recordu['blog_description'];
+            if(isset($_POST['type']) && $_POST['type']=='front' ) {
+                if (strlen($recordu['blog_description']) > 130) {
+                    $bloglist[$i]['blog_description']= substr($recordu['blog_description'], 0, strpos($recordu['blog_description'],' ',130)).'...';             //strpos to find ‘ ‘ after 30 characters.
+                } else {
+                    $bloglist[$i]['blog_description']=  $recordu['blog_description'];
+                }
+            }
+
+            $bloglist[$i]['blog_file'] = $recordu['blog_file'];
+            if($recordu['fname']!='' && $recordu['lname']){
+                $bloglist[$i]['name']=$recordu['fname'].' '.$recordu['lname'];
+            }
+            $bloglist[$i]['blog_asset'] = $recordu['blog_asset'];
+            $bloglist[$i]['ps'] = $recordu['blog_asset'];
+            if($recordu['blog_file']=='Null' ||  $recordu['blog_file']==''){
+                $bloglist[$i]['blog_file_url'] =  'images/user2-160x160.jpg';
+            }
+            else{
+                if($recordu['blog_asset']=='Image'){
+                    $bloglist[$i]['blog_file_url'] =  image_style_url('blogadmin_160x130_',(@$recordu['blog_file']));
+                    $bloglist[$i]['blog_file_front_url'] =  image_style_url('blogfront_602x338_',(@$recordu['blog_file']));
+
+
+                }
+
+            }
+            $bloglist[$i]['blog_status'] = $recordu['blog_status'];
+
+            if($recordu['blog_create_time']!=''){
+/*                $evtime=explode('to',$recordu['blog_timerange']);
+                $bloglist[$i]['timee']=date('H:i:s A',$evtime[0]);
+
+                if($recordu['blog_timerange']=='all day'){*/
+                    $bloglist[$i]['blog_create_time']=date('d/m/y',$recordu['blog_create_time']);
+                    $bloglist[$i]['blog_create_date']=date('d F',$recordu['blog_create_time']);
+                    $bloglist[$i]['blog_create_year']=date('Y',$recordu['blog_create_time']);
+                //}
+               // $bloglist[$i]['datee']=date('d',strtotime($evdate[0]));
+            }
+            $i++;
+
+    }
+        echo json_encode(@$bloglist);
+}
+
+
+}
+function bloglistfrontlisting()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $bloglist = array();
+    $queryu = db_select('blog', 'ev');
+
+    $queryu->fields('ev', array('id','blog_name','blog_description','blog_image','blog_status', 'blog_daterange', 'blog_timerange','blog_create_time'));
+    $queryu->condition('ev.blog_status', 1, '=');
+    $queryu->range(0, 5);
+    $queryu->orderBy('blog_daterange','desc');
+    // ->condition('ur.rid', 5, '=');
+    //->condition('u.uid', 74, '=');
+    //->range(0, 20);
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            // $picture=$recordu['blog_image'];
+            // if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
+            // else $picture='';
+
+            $bloglist[$i]['id'] = $recordu['id'];
+            $bloglist[$i]['user_id'] = $recordu['user_id'];
+            $bloglist[$i]['blog_name'] = $recordu['blog_name'];
+            $bloglist[$i]['blog_description'] = $recordu['blog_description'];
+            if($recordu['blog_image']=='Null' ||  $recordu['blog_image']==''){
+               // $bloglist[$i]['blog_image'] =  'images/user2-160x160.jpg';
+                $bloglist[$i]['blog_image'] =  'images/blog_de.png';
+            }
+            else{
+                $bloglist[$i]['blog_image'] =  image_style_url('frontend-blog',(@$recordu['blog_image']));
+
+            }
+            $bloglist[$i]['blog_status'] = $recordu['blog_status'];
+            $bloglist[$i]['blog_daterange'] = $recordu['blog_daterange'];
+            $bloglist[$i]['blog_timerange'] = $recordu['blog_timerange'];
+            $bloglist[$i]['blog_create_time'] = $recordu['blog_create_time'];
+
+
+            $i++;
+
+        }
+    }
+    echo json_encode(@$bloglist);
+
+}
+
+function addblog(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $user = user_load_by_mail(trim(@$_POST['email']));
+
+    //print_r($_POST);
+    ///exit;
+    $user_id=0;
+    $blog_status=0;
+    if(isset($_POST['user_id']) && $_POST['user_id'] ){
+        $user_id=$_POST['user_id'];
+    }
+
+
+        $query = db_insert('blog')->fields(array('user_id','blog_name','blog_description','blog_asset','blog_file','blog_status','blog_create_time'));
+        //foreach ($values as $record) {
+        $query->values(array($user_id,@$_POST['blog_name'],@$_POST['blog_description'],@$_POST['blog_asset'],@$_POST['blog_file'],@$blog_status, time()));
+        //}
+        $query->execute();
+
+
+    $data['status'] = 'success';
+     echo json_encode($data);
+    return;
+}
+function blogupdates(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+   /*  $roles = array(
+        DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+        // 5 => 'General Users',
+    );
+    $roles[5]='blog';
+    $user_fields = user_load(@intval($_POST['uid']));
+    $user_fields->roles=$roles;
+    user_save($user_fields);*/
+
+
+    if($_POST['blog_status']) $_POST['blog_status']=1;
+    else $_POST['blog_status']=0;
+    db_update('blog')
+        //->expression('weight', 'weight + :weight', array(':weight' => 1))
+
+            //$query = db_insert('blog')->fields(array('user_id','blog_name','blog_description','blog_image','blog_status', 'blog_daterange', 'blog_timerange','blog_create_time'));
+        //foreach ($values as $record) {
+       // $query->values(array(1,@$_POST['blog_name'],@$_POST['blog_description'],@$_POST['blog_image'],@$_POST['blog_status'],@$_POST['blog_daterange'],@$_POST['timer'], time()));
+        //}
+        ->fields(array('user_id'=>@$_POST['user_id'], 'blog_name'=>@$_POST['blog_name'], 'blog_description'=>$_POST['blog_description'], 'blog_asset'=>$_POST['blog_asset'],'blog_file'=>@$_POST['blog_file'],'blog_status'=>@$_POST['blog_status']))
+        ->condition('id', intval($_POST['id']))
+         ->execute();
+}
+
+function updateblogstatus(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $blog_status=1-intval($_POST['blog_status']);
+    db_update('blog')
+        //->expression('weight', 'weight + :weight', array(':weight' => 1))
+        ->fields(array( 'blog_status'=>@$blog_status))
+        ->condition('id', intval($_POST['id']))
+        ->execute();
+
+    echo "true";
+}
+
+function deleteblog(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $num_deleted = db_delete('blog')
+        ->condition('id', @$_POST['id'])
+        ->execute();
+
+}
+
+ function uploadblogbanner(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+     set_time_limit(0);
+
+     $target_dir = realpath(dirname(__FILE__))."/uploads/";
+     $path_parts = pathinfo($_FILES['Filedata']['name']);
+     $filename = rand().'_'.time().'.'.$path_parts['extension'];
+
+     $profile_url = '';
+
+     if (move_uploaded_file($_FILES["Filedata"]["tmp_name"], $target_dir.$filename)) {
+         //$account = user_load($_POST['userid']);
+
+         $filepath = ($target_dir.$filename);
+
+         $file = (object) array(
+             'uid' => 1,
+             'uri' => $filepath,
+             'filemime' => file_get_mimetype($filepath),
+             'status' => 1,
+         );
+         if ($file) {
+// Move the file, into the Drupal file system
+             if ($file = file_move($file, 'public://')) {
+                 $file->status = FILE_STATUS_PERMANENT;
+                 // $file->file_display = 1;
+                 $file = file_save($file);
+                 //set the extra values needed to make node_save work
+                 $file->display = 1;
+                 $file->description = "";
+             }
+
+             /* db_update('ideas')
+                  //->expression('weight', 'weight + :weight', array(':weight' => 1))
+                  ->fields(array( 'logo'=>@$file->uri))
+                  ->condition('id', intval($_POST['id']))
+                  //->condition('type', 'module')
+                  ->execute();*/
+         }
+
+         /*$file = file_copy($file, 'public://');
+         $edit['picture'] = $file;
+         user_save($account, $edit);
+
+         $filepath = $file->uri;
+         $profile_url = image_style_url('thumbnail', $filepath);*/
+     }
+
+     //$data['image_url']= image_style_url('thumbnail',(@$file->uri));
+     $data['image_url'] = image_style_url('large', (@$file->uri));
+     $data['image_name']= (@$file->uri);
+     echo json_encode(@$data) ;
+
+}
+
+

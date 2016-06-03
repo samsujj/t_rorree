@@ -1,0 +1,293 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: debasis
+ * Date: 16/6/15
+ * Time: 12:04 AM
+ */
+
+header('Content-type: text/html');
+header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+function order_init() // init function called by defaulted when this module loaded by system
+{
+
+    //echo $GLOBALS['theme'];
+    //echo 5656;
+    //echo user_authenticate('debasis','Pp@ss1234');
+
+//echo "kl";
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+}
+
+function order_menu()
+{
+    $items = array();
+
+    $items['addorder'] = array(
+        'title' => 'Add order',
+        'page callback' => 'addorder',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['orderlist'] = array(
+        'title' => 'order List',
+        'page callback' => 'orderlist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['parentorderlist'] = array(
+        'title' => 'parent order List',
+        'page callback' => 'parentorderlist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['deleteorder'] = array(
+        'title' => 'order Delete',
+        'page callback' => 'deleteorder',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['orderdetails'] = array(
+        'title' => 'order details',
+        'page callback' => 'orderdetails',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['orderupdates'] = array(
+        'title' => 'order Updates',
+        'page callback' => 'orderupdates',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['orderupdatestatus'] = array(
+        'title' => 'order Updates Status',
+        'page callback' => 'orderupdatestatus',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['uploadorderimage'] = array(
+        'title' => 'order Image Upload',
+        'page callback' => 'uploadorderimage',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+
+
+
+    return $items;
+}
+
+function orderdetails(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $queryu = db_select('order', 'ca');
+    $queryu->fields('ca')
+        ->condition('ca.id', $_POST['id'], '=');
+    $resultu = $queryu->execute();
+
+    while($recordu = $resultu->fetchAssoc()) {
+        $temparray=$recordu;
+
+        if($recordu['cat_image']!='') {
+
+
+                 $temparray['image_url'] = image_style_url('large', (@$recordu['cat_image']));
+
+        }
+
+                $orderlist=$temparray;
+     }
+    echo json_encode(@$orderlist);
+
+}
+
+
+function orderlist()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $orderlist = array();
+
+
+    $queryu = db_select('order_details', 'o');
+    $queryu->join('admin', 'a', 'a.user_id = o.user_id');
+    $queryu->fields('o');
+    $queryu->fields('a', array('fname', 'lname'));
+
+
+    if(isset($_POST['type']) && $_POST['type']!=''){
+        $queryu->condition('ca.type',$_POST['type'],'=')  ;
+    }
+
+
+      $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+            if($recordu['affiliate_id']!=0){
+                $queryaffi = db_select('admin', 'ad');
+                $queryaffi->fields('ad', array('fname', 'lname'))
+                ->condition('ad.user_id', $recordu['affiliate_id'], '=');
+                $resultuaffi = $queryaffi->execute();
+                if ($resultuaffi->rowCount() > 0) {
+
+                    while ($recorduaffi = $resultuaffi->fetchAssoc()) {
+                        $affiliatename= $recorduaffi['fname'].' '.$recorduaffi['lname'];
+                        $temparray['affiliatename']=$affiliatename;
+                    }
+                }
+
+            }
+
+
+
+        if($recordu['fname']!='' && $recordu['fname']!=''){
+            $temparray['orderby']=$recordu['fname'].' '.$recordu['lname'];
+        }
+
+            if($recordu['order_time']!=''){
+                $temparray['orderdate']=date('d F Y H:i:s',$recordu['order_time']);
+            }
+
+
+            $orderlist[$i]= $temparray;
+            $i++;
+
+
+        }
+}
+     // $records['user']=$userlist;
+
+
+
+
+    echo json_encode(@$orderlist);
+
+
+
+}
+
+function addorder(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $parent_cat=0;
+    $cat_image='';
+    if(isset($_POST['parent_cat']) && $_POST['parent_cat']>0){
+        $parent_cat=$_POST['parent_cat']['id'];
+    }
+    if(isset($_POST['cat_image']) && $_POST['cat_image']!=''){
+        $cat_image=$_POST['cat_image'];
+    }
+
+    $query = db_insert('order')->fields(array('cat_name','cat_desc','parent_cat','cat_image','status','priority'));
+        //foreach ($values as $record) {
+        $query->values(array(@$_POST['cat_name'],@$_POST['cat_desc'],@$parent_cat,$cat_image,1,@$_POST['priority']));
+        //}
+        $query->execute();
+
+
+    $data['status'] = 'success';
+     echo json_encode($data);
+    return;
+}
+function orderupdates(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    db_update('order')
+        ->fields(array('cat_name'=>@$_POST['cat_name'],'cat_desc'=>@$_POST['cat_desc'],'parent_cat'=>@$_POST['parent_cat']['id'],'cat_image'=>@$_POST['cat_image'],'priority'=>@$_POST['priority']))
+        ->condition('id', intval($_POST['id']))
+         ->execute();
+}
+
+
+
+function deleteorder(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $num_deleted = db_delete('order')
+        ->condition('id', @$_POST['id'])
+        ->execute();
+
+}
+
+function orderupdatestatus(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $status=1-intval($_POST['status']);
+    $query=db_update('order_details')
+        ->fields(array('order_status'=>@$status))
+        ->condition('id', intval($_POST['id']))
+        ->execute();
+
+    echo "true";
+}
+
+
+
+

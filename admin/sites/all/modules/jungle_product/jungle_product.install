@@ -1,0 +1,85 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for jungle product
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function jungle_product_schema() {
+    $schema = array();
+
+    $schema['jungleproduct'] = array(
+        'description' => 'jungle product Table',
+        'fields' => array(
+            'id' => array(
+                'description' => 'Primary Key id',
+                'type' => 'serial',
+                'not null' => TRUE,
+            ),
+             'product_name' => array(
+                 'description' => 'product name',
+                  'type' => 'varchar',
+                  'length' => '255',
+                 'not null' => TRUE,
+                  'default' => '',
+             ),
+             'product_desc' => array(
+                 'description' => 'product name',
+                  'type' => 'text',
+                  'length' => '255',
+                 'not null' => FALSE,
+             ),
+             'category_id' => array(
+                 'description' => 'category id',
+                  'type' => 'int',
+                  'length' => '11',
+                 'not null' => TRUE,
+                  'default' => 0,
+             ),
+             'product_file' => array(
+                 'description' => 'product file',
+                  'type' => 'varchar',
+                  'length' => '255',
+                 'not null' => TRUE,
+                  'default' => '',
+             ),
+             'product_file_width' => array(
+                 'description' => 'product file width',
+                  'type' => 'varchar',
+                  'length' => '255',
+                 'not null' => TRUE,
+                  'default' => '',
+             ),
+             'product_file_height' => array(
+                 'description' => 'product file height',
+                  'type' => 'varchar',
+                  'length' => '255',
+                 'not null' => TRUE,
+                  'default' => '',
+             ),
+
+             'status' => array(
+                 'description' => 'status',
+                 'type' => 'int',
+                 'length' => '11',
+                 'not null' => TRUE,
+                 'default' => 0,
+             ),
+
+              'priority' => array(
+                  'description' => 'status',
+                  'type' => 'int',
+                  'length' => '11',
+                  'not null' => TRUE,
+                  'default' => 0,
+              ),
+
+
+        ),
+        'primary key' => array('id'),
+
+    );
+    return $schema;
+}

@@ -1,0 +1,73 @@
+<div class="container-fluid blogpageheading">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <!--blog-->
+            <h2><content name='blogpageheading202' id='202' > </content></h2>
+        </div>
+    </div>
+</div>
+
+<div class="container blogpagebody">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 blogpagebodyheader">
+            <div class="about_icon2" style="margin-top: -82px;">
+                <img src="../images/blog-icon2.png" alt="#">
+            </div>
+            <h2><content name='blogpagebody203' id='203' > </content></h2>
+        </div>
+    </div>
+
+    <div class="pageinner" ng-show="bloglist.length>0">
+
+        <div class="row blogpagebodyblock1 blogpagebodyblock" ng-repeat="item in bloglist | startFrom:(currentPage-1)*perPage | limitTo:perPage">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 blogleft">
+                <div class="videoWrapper">
+                    <img ng-if="item.blog_asset=='Image'" src="{{item.blog_file_front_url}}">
+                    <!--<iframe class="embed-responsive-item" src="//www.youtube.com/embed/ePbKGoIGAXY"></iframe>-->
+                    <youtube-video ng-if="item.blog_asset=='Video'" class="embed-responsive-item" video-id="item.blog_file"></youtube-video>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 blogright">
+                <div class="blogrightheader">
+                    <h3>{{item.blog_name}}</h3>
+                    <!--<h3>Lorem ipsum dolor sit amet,incidunt tortor sit amet.</h3>-->
+                    <h2><span>{{item.blog_create_date}}</span>{{item.blog_create_year}}</h2>
+                </div>
+                <p>By <span>{{item.name}}</span></p>
+                <p>{{item.blog_description}}</p>
+<!--
+                <p>Morbi ante nunc, dictum eu orci in, venenatis aliquet elit. Integer pulvinar quis metus a maximus. Sed nec nibh odio. Vivamus in ante efficitur, accumsan mauris id, lobortis orci. Fusce aliquam in nunc vel accumsan. Duis odio urna, mattis sed nulla sit amet, gravida cursus sem. Sed scelerisque velit ut sem fringilla, sit amet auctor nulla pulvinar. Proin luctus est eu eros posuere, at elementum orci varius..</p>
+-->
+                <div class="reddivider"></div>
+                <div class="clearfix"></div>
+                <a ng-click="blogdetails(item)" href="javascript:void(0)" class="readmore">Read More</a>
+            </div>
+        </div>
+       <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 blogpagination text-center">
+                <uib-pagination total-items="bloglist.length" ng-model="currentPage" items-per-page="perPage" max-size="4"></uib-pagination>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/ng-template" id="blogdetails.html">
+    <div class="confirm_delpopup" >
+        <a ng-click="cancel()" class="shutter-close2 ng-scope" href="javascript:void(0)"><img src="images/popup-Close.png"> </a>
+        <h2 class="ng-scope">Blog Details</h2>
+        <div class="clearfix"></div>
+        <p style="padding-left:10px;">{{blogdescription}}</p>
+        <!--<h2 class="ng-scope">Are you sure you want to delete this blog?</h2>-->
+        <div class="confirm_delbtn ng-scope text-center">
+<!--
+            <input type="button" ng-click="confirmblogdelete()" class="subbtn" value="Confirm">
+            <input type="button" ng-click="cancel()" class="subbtn" value="Cancel">
+-->
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</script>

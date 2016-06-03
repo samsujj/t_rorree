@@ -21,6 +21,7 @@
 
      <div class="signupformgroup">
          <form angular-validator-submit="submitsignupForm()" id="signup" name="signup" role="form" novalidate angular-validator>
+             <div ng-show="errormsg" class="alert alert-danger alert-dismissible">{{errormsg}}</div>
     <div class="form-group">
         <label>First Name</label>
         <input type="text" class="form-control" placeholder="First Name" name="fname"
@@ -226,7 +227,8 @@
  </div>
     </div></div></div>
 
-<script type="text/ng-template" id="signupsuccess.html">
+
+<!--<script type="text/ng-template" id="signupsuccess.html">
 
             <div class="modal-header">
                 <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">×</button>
@@ -236,4 +238,44 @@
 You have successfully signed up
             </div>
 
-    </script>
+    </script>-->
+
+<script type="text/ng-template" id="signupsuccess.html">
+
+    <div class="newlogin-box">
+
+        <a href="javascript:void(0);" ng-click="cancel()" ><img src=images/newloginclose.png alt=#  class="closebtn"/></a>
+
+        <div class="newloginwrapper">
+            <div class="newaccountbtnwrapper">
+                <h2>Please check your email to activate the account!</h2>
+            </div>
+        </div>
+
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="acountsuccess.html">
+
+    <div class="newlogin-box">
+
+        <a href="javascript:void(0);" ng-click="cancel123()" ><img src=images/newloginclose.png alt=#  class="closebtn"/></a>
+        <div class="newloginwrapper">
+            <div class="newaccountbtnwrapper">
+                <h2>Your account activation has been successfull</h2>
+            </div>
+        </div>
+
+
+        <!-- <div class="newloginwrapper" style="padding-left:5%; padding-right:5%;">
+
+
+             <h2 style="text-align:center; font-size: 24px; ">Your account activation has been successfull</h2>
+
+
+         </div>
+ -->
+    </div>
+
+</script>

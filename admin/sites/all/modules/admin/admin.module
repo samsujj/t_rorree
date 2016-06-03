@@ -130,6 +130,55 @@ function admin_menu()
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
+    $items['addaffiliatehit'] = array(
+        'title' => 'Add Affiliate Hit',
+        'page callback' => 'addaffiliatehit',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['affiliatetracklist'] = array(
+        'title' => 'Affiliate Hit List',
+        'page callback' => 'affiliatetracklist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['affiliatetrackdetailslist1'] = array(
+        'title' => 'Affiliatte Tracking Details  List',
+        'page callback' => 'affiliatetrackdetailslist1',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['deleteaffiliatehit'] = array(
+        'title' => 'Affiliatte Hit  List Delete',
+        'page callback' => 'deleteaffiliatehit',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['userchangepassword'] = array(
+        'title' => 'User Change PAssword',
+        'page callback' => 'userchangepassword',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['addcontact'] = array(
+        'title' => 'Add Contact',
+        'page callback' => 'addcontact',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
 
 
 
@@ -148,7 +197,7 @@ function admindetails(){
     $queryu = db_select('users', 'u');
     $queryu->join('admin', 'a', 'a.user_id = u.uid');
      $queryu->fields('u', array('uid','created','status','login','mail'));
-    $queryu->fields('a',array('fname','lname','phone_no','mobile_no','address'))
+    $queryu->fields('a',array('fname','lname','phone_no','mobile_no','address','country','state','gender','dob','commission_type','commission'))
         ->condition('u.uid', $_POST['uid'], '=');
 
     //->range(0, 20);
@@ -173,6 +222,15 @@ function admindetails(){
         $userlist['mobile_no'] = $recordu['mobile_no'];
         $userlist['address'] = $recordu['address'];
         $userlist['picture'] = $picture;
+        $userlist['commission_type'] = $recordu['commission_type'];
+        $userlist['country'] = $recordu['country'];
+        $userlist['state'] = $recordu['state'];
+        $userlist['gender'] = $recordu['gender'];
+        if($recordu['dob']!=''){
+            $userlist['dob']=date('d M Y',strtotime($recordu['dob']));
+            $userlist['dobedit']=date('m/d/Y',strtotime($recordu['dob']));
+        }
+
     }
     echo json_encode(@$userlist);
 
@@ -195,7 +253,7 @@ function adminlist()
     $queryu->leftjoin('users_roles', 'ur', 'ur.uid = u.uid');
     $queryu->fields('ur', array('rid'));
     $queryu->fields('u', array('uid', 'created', 'status', 'login', 'mail'));
-    $queryu->fields('f', array('fname', 'lname', 'phone_no', 'mobile_no', 'address'));
+    $queryu->fields('f', array('fname', 'lname', 'phone_no', 'mobile_no', 'address','commission_type','commission'));
         // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
         //->condition('ur.rid', 4, '=');
     //->condition('u.uid', 74, '=');
@@ -204,8 +262,11 @@ function adminlist()
     if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'auditor'){
         $queryu->condition('ur.rid', 7, '=');
     }
-    if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'generaluser'){
+    else if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'generaluser'){
         $queryu->condition('ur.rid', 5, '=');
+    }
+    else if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'affiliate'){
+        $queryu->condition('ur.rid', 6, '=');
     }
 
     else{
@@ -237,6 +298,9 @@ function adminlist()
             //$userlist=$recordu;
 
             $userlist[$i]['uid'] = $recordu['uid'];
+            if($recordu['uid']){
+                $userlist[$i]['product_affiliate_code']= base64_encode(base64_encode($recordu['uid']));
+            }
             $userlist[$i]['created'] = $recordu['created'];
             $userlist[$i]['status'] = $recordu['status'];
             $userlist[$i]['login'] = $recordu['login'];
@@ -248,6 +312,8 @@ function adminlist()
             $userlist[$i]['address'] = $recordu['address'];
              $userlist[$i]['picture'] = $picture;
             $userlist[$i]['roleid'] = $recordu['rid'];
+            $userlist[$i]['commission_type'] = $recordu['commission_type'];
+            $userlist[$i]['commission'] = $recordu['commission'];
             $i++;
 
     }
@@ -316,6 +382,17 @@ function addadmin(){
     $state='';
     $dob='';
     $gender='';
+    $commission_type='';
+    $commission=0.00;
+    if(isset($_REQUEST['commission_type']) && $_REQUEST['commission_type']!=''){
+        $commission_type=$_REQUEST['commission_type'];
+
+    }
+    if(isset($_REQUEST['commission']) && $_REQUEST['commission']!=''){
+        $commission=floatval($_REQUEST['commission']);
+
+    }
+
     if(isset($_REQUEST['country']) && $_REQUEST['country']!=''){
         $country=$_REQUEST['country'];
 
@@ -340,7 +417,11 @@ function addadmin(){
  if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'generaluser'){
         $roles[5]=' generaluser';
     }
-       else{
+    else if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'affiliate'){
+        $roles[6]=' affiliate';
+    }
+
+    else{
            $roles[4]=' siteadmin';
        }
   //  }
@@ -356,21 +437,32 @@ function addadmin(){
 
     $account=user_save('', $new_user);
 
-    if($account->uid>0){
-        $query = db_insert('admin')->fields(array('user_id','email','password', 'fname', 'lname','address','phone_no','mobile_no','create_time','last_login','country','state','dob','gender'));
-        //foreach ($values as $record) {
-        $query->values(array($account->uid,@$_POST['email'],'',@$_POST['fname'],@$_POST['lname'],
-            $_POST['address'],@$_POST['phone_no'],@$_POST['mobile_no'],time(),time(),$country,$state,$dob,$gender));
-        //}
-        $query->execute();
-    }
+        if($account->uid>0){
+            $query = db_insert('admin')->fields(array('user_id','email','password', 'fname', 'lname','address','phone_no','mobile_no','create_time','last_login','country','state','dob','gender','commission_type','commission'));
+            //foreach ($values as $record) {
+            $query->values(array($account->uid,@$_POST['email'],'',@$_POST['fname'],@$_POST['lname'],
+                $_POST['address'],@$_POST['phone_no'],@$_POST['mobile_no'],time(),time(),$country,$state,$dob,$gender,$commission_type,$commission));
+            //}
+            $query->execute();
 
-    $op = 'register_pending_approval';
-    $status = _user_mail_notify($op, $account);
-    drupal_mail('admin', 'register_admin_created', $_POST['email'], NULL, array('account' => $account), variable_get('site_mail', 'support@voortal.com'));
-    $data['status'] = 'success';
-     echo json_encode($data);
-    return;
+        $randomdom_string = base64_encode($account->uid);
+        $link = CUSTOM_URL . '/url/' . $randomdom_string;
+
+
+        if ((isset($_REQUEST['type']) && $_REQUEST['type'] == 'contributor') || (isset($_REQUEST['type']) && $_REQUEST['type'] == 'generaluser')) {
+            $language = LANGUAGE_NONE;
+            $d = drupal_mail('customuser', 'signupactivationmail', "support@jungledrones.com", $language, $params = array('email' => @$_POST['email'], 'link' => $link), $from = "support@jungledrones.com", $send = TRUE);
+
+        }
+        else {
+            $op = 'register_pending_approval';
+            $status = _user_mail_notify($op, $account);
+            drupal_mail('admin', 'register_admin_created', $_POST['email'], NULL, array('account' => $account), variable_get('site_mail', 'support@voortal.com'));
+        }
+        $data['status'] = 'success';
+         echo json_encode($data);
+        return;
+    }
 }
 function adminupdates(){
 
@@ -388,12 +480,43 @@ function adminupdates(){
      $user_fields = user_load(@intval($_POST['uid']));
     $user_fields->roles=$roles;
     user_save($user_fields);*/
+    $country='';
+    $state='';
+    $dob='';
+    $gender='';
+
+    $commission_type='';
+    $commission=0.00;
+    if(isset($_REQUEST['commission_type']) && $_REQUEST['commission_type']!=''){
+        $commission_type=$_REQUEST['commission_type'];
+
+    }
+    if(isset($_REQUEST['commission']) && $_REQUEST['commission']!=''){
+        $commission=floatval($_REQUEST['commission']);
+
+    }
+    if(isset($_REQUEST['country']) && $_REQUEST['country']!=''){
+        $country=$_REQUEST['country'];
+
+    }
+    if(isset($_REQUEST['state']) && $_REQUEST['state']!=''){
+        $state=$_REQUEST['state'];
+
+    }
+    if(isset($_REQUEST['dob']) && $_REQUEST['dob']!=''){
+        $dob=$_REQUEST['dob'];
+
+    }
+    if(isset($_REQUEST['gender']) && $_REQUEST['gender']!=''){
+        $gender=$_REQUEST['gender'];
+
+    }
 
     db_update('admin')
         //->expression('weight', 'weight + :weight', array(':weight' => 1))
         ->fields(array('fname'=>@$_POST['fname'], 'lname'=>@$_POST['lname'],'email'=>@$_POST['email'],
 
-            'address'=>@$_POST['address'],'phone_no'=>@$_POST['phone_no'],'mobile_no'=>@$_POST['mobile_no']))
+            'address'=>@$_POST['address'],'phone_no'=>@$_POST['phone_no'],'mobile_no'=>@$_POST['mobile_no'],'country'=>@$_POST['country'],'state'=>@$_POST['state'],'dob'=>@$_POST['dob'],'gender'=>@$_POST['gender'],'commission_type'=>@$commission_type,'commission'=>@$commission))
         ->condition('user_id', intval($_POST['uid']))
          ->execute();
 }
@@ -408,20 +531,42 @@ function updatestatus(){
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
 
     //print_r($_POST);
-    $user_fields = user_load(@intval($_POST['uid']));
-    //$user_fields = user_load(62);
-    $user_fields->status=1-intval($user_fields->status);
-    user_save($user_fields);
+    if(isset($_POST['linktype']) && $_POST['linktype']=='front'){
+        $uid=base64_decode($_POST['uid']) ;
+    }
+    else{
+        $uid=$_POST['uid'];
+    }
 
-    if($user_fields->status==1) drupal_mail('user', 'register_status_activated', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
-    else drupal_mail('user', 'register_status_blocked', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
-    //drupal_mail('user', 'register_status_blocked', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
-    //drupal_mail('user', 'register_no_approval_required', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
-    echo "true";
+    $uid=intval($uid);
+    if($uid>0) {
+        $user_fields = user_load(@intval($uid));
+        //$user_fields = user_load(62);
+        if (isset($_POST['linktype']) && $_POST['linktype'] == 'front') {
+            $user_fields->status = 1;
+        } else {
+            $user_fields->status = 1 - intval($user_fields->status);
+        }
+
+        //$user_fields->status=1-intval($user_fields->status);
+        user_save($user_fields);
+
+        if ($user_fields->status == 1) {
+            // drupal_mail('user', 'register_status_activated', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
+            $language = LANGUAGE_NONE;
+            drupal_mail('customuser', 'signupactive', "support@jungledrones.com", $language, $params = array('email' => @$user_fields->mail), $from = "support@jungledrones.com", $send = TRUE);
+        } else drupal_mail('user', 'register_status_blocked', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
+        //drupal_mail('user', 'register_status_blocked', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
+        //drupal_mail('user', 'register_no_approval_required', $_POST['email'], NULL, array('account' => $user_fields), variable_get('site_mail', 'support@voortal.com'));
+        $data['status']='success';
+    }
+
+    else{
+        $data['status']='error';
+    }
+    echo json_encode($data);
 }
-
-function adminlogin2(){
-
+function addaffiliatehit(){
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
     header("Access-Control-Allow-Credentials: true");
@@ -429,15 +574,110 @@ function adminlogin2(){
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
 
-    //$user = user_load_by_mail(trim(@$_POST['email']));
+if(isset($_POST['code']) && $_POST['code']!='' ) {
+    $id=base64_decode(base64_decode($_POST['code']));
+    $ip = "";
 
-    //print_r($_POST);
-    user_delete(@intval($_POST['uid']));
-    $num_deleted = db_delete('admin')
-        ->condition('user_id', @$_POST['uid'])
-        ->execute();
+    if (!empty($_SERVER["HTTP_CLIENT_IP"])) {
+        //check for ip from share internet
+        $ip = $_SERVER["HTTP_CLIENT_IP"];
+    } elseif (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+        // Check for the Proxy User
+        $ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+    } else {
+        $ip = $_SERVER["REMOTE_ADDR"];
+    }
+    $query = db_insert('affiliate_hit_details')->fields(array('affiliate_id', 'affiliate_hit_time', 'affiliate_hit_ip', 'affiliate_hit_status'));
+    //foreach ($values as $record) {
+    $query->values(array(@$id, time(), $ip, 1));
+    //}
+    $affiliate_hit_id = $query->execute();
+
+
+    $data['affiliate_hit_id'] = $affiliate_hit_id;
+    echo json_encode($data);
+    return;
+}
 
 }
+function affiliatetracklist()
+{
+header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $userlist = array();
+
+    $queryu = db_select('affiliate_hit_details', 'ahd');
+    $queryu->join('admin','ad','ad.user_id=ahd.affiliate_id');
+    $queryu->fields('ahd', array('affiliate_hit_id'));
+    $queryu->fields('ad', array('id','user_id', 'fname','lname'));
+    $queryu->addExpression('COUNT(ahd.affiliate_hit_id)', 'total_hit');
+    $queryu->groupBy('ad.user_id');
+
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        $temparray =array();
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray =$recordu;
+            $temparray['affiliate_name']=$recordu['fname'].' '.$recordu['lname'];
+            $affiliatetrack[$i]= $temparray;
+            $i++;
+
+        }
+    }
+    echo json_encode(@$affiliatetrack);
+}
+function affiliatetrackdetailslist1()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $userlist = array();
+
+    $queryu = db_select('affiliate_hit_details', 'ahd');
+    $queryu->fields('ahd');
+    $queryu->condition('ahd.affiliate_id',@$_POST['affiliate_id'],'=');
+
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        $temparray =array();
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray =$recordu;
+            $temparray['hit_time']=date('Y-m-d H:i:s',$recordu['affiliate_hit_time']);
+            $affiliatetrack[$i]= $temparray;
+            $i++;
+
+        }
+    }
+    echo json_encode(@$affiliatetrack);
+}
+function deleteaffiliatehit(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $num_deleted = db_delete('affiliate_hit_details')
+        ->condition('affiliate_hit_id', @$_POST['affiliate_hit_id'],'=')
+        ->execute();
+}
+
 
 
 function adminlogin(){
@@ -448,7 +688,7 @@ function adminlogin(){
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
     $user=user_load_by_mail(@$_POST['email']);
-    //print_r($user);
+
     if($user==''){
         $data['status']='error';
         $data['msg']='Email does not exists';
@@ -456,74 +696,75 @@ function adminlogin(){
         return;
     }
     $user_check=user_authenticate($user->name,@$_POST['password']);
-    if($user_check>0 && $user->status==1){
+    if($user_check>0){
 
         //print_r($user->roles);
+            if($user->status==1) {
+                $queryu = db_select('users', 'u');
+                //if($user->roles[4]=='siteadmin')
+                $queryu->join('admin', 'a', 'a.user_id = u.uid');
+                $queryu->fields('u', array('uid', 'created', 'status', 'login', 'mail'));
+               // if ($user->roles[4] == 'siteadmin' || $user->roles[7] == 'auditor')
+                    $queryu->fields('a', array('fname', 'lname', 'phone_no', 'mobile_no', 'address', 'create_time'));
+                /*if($user->roles[6]=='pilot')
+                    $queryu->fields('p',array('fname','lname'));*/
+                $queryu->condition('u.uid', $user->uid, '=');
 
-        $queryu = db_select('users', 'u');
-        //if($user->roles[4]=='siteadmin')
-            $queryu->join('admin', 'a', 'a.user_id = u.uid');
-      if($user->roles[4]=='siteadmin' || $user->roles[7]=='auditor')$queryu->join('admin', 'a', 'a.user_id = u.uid');
-        //if($user->roles[6]=='pilot')$queryu->join('pilot', 'p', 'p.user_id = u.uid');
-        $queryu->fields('u', array('uid','created','status','login','mail'));
-        if($user->roles[4]=='siteadmin'|| $user->roles[7]=='auditor')$queryu->fields('a',array('fname','lname','phone_no','mobile_no','address','create_time'));
-        /*if($user->roles[6]=='pilot')
-            $queryu->fields('p',array('fname','lname'));*/
-        $queryu->condition('u.uid', $user->uid, '=');
-
-        //->range(0, 20);
-        $resultu = $queryu->execute();
-        $userlist=array();
+                //->range(0, 20);
+                $resultu = $queryu->execute();
+                $userlist = array();
 
 
-        while($recordu = $resultu->fetchAssoc()) {
-            //echo 5435;
-            $thisuser = user_load($recordu['uid']);
-            $picture=$thisuser->picture;
-            if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
-            else $picture='';
+                while ($recordu = $resultu->fetchAssoc()) {
+                    //echo 5435;
+                    $thisuser = user_load($recordu['uid']);
+                    $picture = $thisuser->picture;
+                    if (isset($picture->uri)) $picture = image_style_url('thumbnail', $picture->uri);
+                    else $picture = '';
 
-            //print_r($recordu);
-            //exit;
+                    //print_r($recordu);
+                    //exit;
 
-            /*            $userlist['uid'] = $recordu['uid'];
-                        $userlist['created'] = $recordu['created'];
-                        $userlist['status'] = $recordu['status'];
-                        $userlist['login'] = $recordu['login'];
-             */         $userlist['email'] = $recordu['mail'];
-            $userlist['fname'] = $recordu['fname'];
-            $userlist['lname'] = $recordu['lname'];
-            /*            $userlist['phone_no'] = $recordu['phone_no'];
-                        $userlist['mobile_no'] = $recordu['mobile_no'];
-                        $userlist['address'] = $recordu['address'];
-                        $userlist['contact_time'] = $recordu['contact_time'];
-                        $userlist['refferal_code'] = $recordu['refferal_code'];
-                        $userlist['bname'] = $recordu['bname'];
-                        $userlist['picture'] = $picture;*/
-        }
+                    /*            $userlist['uid'] = $recordu['uid'];
+                                $userlist['created'] = $recordu['created'];
+                                $userlist['status'] = $recordu['status'];
+                                $userlist['login'] = $recordu['login'];
+                     */
+                    $userlist['email'] = $recordu['mail'];
+                    $userlist['fname'] = $recordu['fname'];
+                    $userlist['lname'] = $recordu['lname'];
+                    /*            $userlist['phone_no'] = $recordu['phone_no'];
+                                $userlist['mobile_no'] = $recordu['mobile_no'];
+                                $userlist['address'] = $recordu['address'];
+                                $userlist['contact_time'] = $recordu['contact_time'];
+                                $userlist['refferal_code'] = $recordu['refferal_code'];
+                                $userlist['bname'] = $recordu['bname'];
+                                $userlist['picture'] = $picture;*/
+                }
 
-        $userlist['id']=$user->uid;
-        $userlist['roles']=$user->roles;
-        $userlist['username']=$user->name;
-        $data['status'] = 'success';
-        $data['userdetails'] = $userlist;
-        echo json_encode($data);
-        return;
+                        $userlist['id'] = $user->uid;
+                        $userlist['roles'] = $user->roles;
+                        $userlist['username'] = $user->name;
+                        $data['status'] = 'success';
+                        $data['userdetails'] = $userlist;
+            }
+             else{
+                $data['status'] = 'error';
+                $data['msg'] = 'User is either not activated by admin yet or blocked !';
+                //echo json_encode($data);
+
+            }
+
 
     }
     else {
-        if($user_check>0 && $user->status==0) {
             $data['status'] = 'error';
-            $data['msg'] = 'User is either not activated by admin yet or blocked !';
-            echo json_encode($data);
-            return;
+            $data['msg'] = 'Invalid email id / password';
 
-        }
-        //$data['status'] = 'error';
-        //$data['msg'] = 'Invalid access';
-        //echo json_encode($data);
+         }
+    echo json_encode($data);
+    return;
 
-    }
 
 }
 
@@ -675,7 +916,68 @@ function changepassword1(){
 
 
 }
+function userchangepassword()
+{
+    require_once 'includes/password.inc';
+    //$pass = user_hash_password(@$_POST['original_password']);
 
+    $user_fields = user_load(@intval($_POST['user_id']));
+    $x= user_authenticate($user_fields->name,@$_POST['original_password']);
+    if($x>0 && $user_fields->status==1) {
+        //$x = user_authenticate($user_fields->name, $pass);
+        // print_r($user_fields);
+        $newpass = user_hash_password(@$_POST['password']);
+        $user_fields->pass=$newpass;
+        user_save($user_fields);
+        $data['status'] = 'success';
+    }
+    else{
+        $data['status'] = 'error';
+    }
+    //$data['userdetails'] = $userarr;
+    echo json_encode($data);
+}
+
+function addcontact(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $queryu = db_select('contact', 'c')
+        ->fields('c')
+
+        ->condition('c.email', @$_POST['email'], '=');
+
+    $resultu = $queryu->execute();
+
+    if ($resultu->rowCount() > 0) {
+
+        $data['status'] = 'error';
+
+    }
+    else {
+
+
+        $query = db_insert('contact')->fields(array('full_name', 'email', 'phone', 'message','contact_time'));
+        //foreach ($values as $record) {
+        $query->values(array(@$_POST['full_name'], @$_POST['email'],@$_POST['phone'], @$_POST['message'],time()));
+        //}
+        $query->execute();
+
+       // $randomdom_string = base64_encode($account->uid);
+
+            // $language = LANGUAGE_NONE;
+           // $d = drupal_mail('customuser', 'signupactivationmail', "support@jungledrones.com", $language, $params = array('email' => @$_POST['email'], 'link' => $link), $from = "support@jungledrones.com", $send = TRUE);
+
+            $data['status'] = 'success';
+    }
+        echo json_encode($data);
+        return;
+
+}
 
 function admin_mail ($key, &$message, $params) {
     header('Content-type: text/html');
@@ -728,5 +1030,30 @@ function customuser_mail ($key, &$message, $params) {
             $message['headers']['X-Mailer'] = 'Drupal';
             $message['body'][] = "Change Your Password. Your Access Code Is <b>".$params['random_string']."</b>";
             break;
+        case 'signupactivationmail':
+            // Set headers etc
+            $message['to'] = $params['email'];
+            $message['subject'] = t('Account Activation Link');
+            $message['headers']['MIME-Version'] = '1.0';
+            $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+            $message['headers']['Content-Transfer-Encoding'] = '8Bit';
+            $message['headers']['X-Mailer'] = 'Drupal';
+            $message['body'][] = "To activate your account. Click the link  ".$params['link'];
+            break;
+
+        case 'signupactive':
+
+            // Set headers etc
+            $message['to'] = $params['email'];
+            $message['subject'] = t('Your Account Activated');
+            $message['headers']['MIME-Version'] = '1.0';
+            $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+            $message['headers']['Content-Transfer-Encoding'] = '8Bit';
+            $message['headers']['X-Mailer'] = 'Drupal';
+
+            //$message['body'][] = t('Hello @username,', array('@username' => $params['username']));
+            $message['body'][] = "Your account have been activated successfully ! -- Totalroree team";
+            break;
+
     }
 }

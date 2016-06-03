@@ -1,0 +1,838 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: debasis
+ * Date: 16/6/15
+ * Time: 12:04 AM
+ */
+
+header('Content-type: text/html');
+header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+function cart_init() // init function called by defaulted when this module loaded by system
+{
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+}
+
+function cart_menu()
+{
+    $items = array();
+
+    $items['cart/addtocart'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'addtocart',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['cart/updatecartuser'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'updatecartuser',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['cart/updatecart'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'updatecart',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['cart/carttotal'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'carttotal',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['cart/cartdetail'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'cartdetail',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['cart/deletecartbyid'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'deletecartbyid',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['cart/checkout'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'checkout',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['cart/getCountry'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'getCountry',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['cart/getState'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'getState',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['cart/getPrevAddr'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'getPrevAddr',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    return $items;
+}
+
+function addtocart(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $conn = Database::getConnection();
+    $saved_class = $conn->getAttribute(PDO::ATTR_STATEMENT_CLASS);
+
+    $conn->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('PDOStatement'));
+
+    $statement = $conn->prepare("Call addtocart(?,?,?)");
+
+
+    $op_status = $statement->bindParam(1, $_POST['pid'], PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT, 25);
+    $op_status = $statement->bindParam(2, $_POST['qty'], PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT);
+    $op_status = $statement->bindParam(3, $_POST['userid'], PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT);
+
+
+
+    $exec_result = $statement->execute();
+
+
+
+}
+
+function updatecartuser(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+
+    db_update('cart')
+        ->fields(array('userid'=>@$_POST['newuserid']))
+        ->condition('userid', intval($_POST['olduserid']))
+        ->execute();
+
+}
+
+function deletecartbyid(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+
+    $num_deleted = db_delete('cart')
+        ->condition('pid', @$_POST['pid'])
+        ->condition('userid', intval($_POST['userid']))
+        ->execute();
+
+}
+
+function updatecart(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+
+    db_update('cart')
+        ->fields(array('userid'=>@$_POST['userid'],'qty'=>@$_POST['qty']))
+        ->condition('userid', intval($_POST['userid']))
+        ->condition('pid', intval($_POST['pid']))
+        ->execute();
+
+}
+
+function carttotal(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+
+    $queryu = db_select('cart', 'ca');
+    $queryu->fields('ca');
+    $queryu->condition('ca.userid',$_REQUEST['user'],'=');
+    $queryu->addExpression('SUM(qty)', 'qty');
+    $resultu = $queryu->execute();
+    $recordu = $resultu->fetchAssoc();
+    if(@$recordu['qty']>0)echo ($recordu['qty']);
+    else echo 0;
+
+}
+
+function cartdetail(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+
+    $cartarr=[];
+    $i=0;
+
+    $queryu = db_select('cart', 'ca');
+    ini_set('memory_limit', '128M');
+    $queryu->innerJoin('jungleproduct', 'jp','ca.pid=jp.id');
+    $queryu->fields('ca');
+    $queryu->fields('jp')
+        ->condition('ca.userid', $_REQUEST['user'], '=');
+    $queryu->addField('jp', 'id', 'product_id');
+    $queryu->addField('ca', 'id', 'cart_id');
+    $resultu = $queryu->execute();
+
+    $quantity = 0;
+    $subtotal = 0;
+
+    while($recordu = $resultu->fetchAssoc()) {
+
+        //print_r($recordu);
+        $recordu['textdesc']=strip_tags($recordu['product_desc']);
+        //$recordu['id']=($recordu['ca.id']);
+        $recordu['cartimage'] = image_style_url('featureimage_222x174_', (@$recordu['product_file']));
+
+        $recordu['subtotal'] = floatval($recordu['price']*$recordu['qty']);
+        $recordu['subtotal'] = number_format($recordu['subtotal'], 2, '.', '');
+
+        $cartarr[]=$recordu;
+
+        $quantity += intval($recordu['qty']);
+
+        $subtotal += floatval($recordu['subtotal']);
+
+    }
+
+    $subtotal = number_format($subtotal, 2, '.', '');
+
+    echo json_encode(array('quantity'=>$quantity,'subtotal'=>$subtotal,'cartarr'=>$cartarr));
+}
+
+function checkout(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $affliate_str = $_POST['affiliate_id'];
+
+    $affiliate_id = base64_decode($affliate_str);
+    $affiliate_id = base64_decode($affiliate_id);
+
+    $billaddress = $_POST['billform'];
+    $shipaddress = $_POST['shipform'];
+    $product_details= $_POST['product_det'];
+    $cartform= $_POST['cartform'];
+
+
+    if ($billaddress['billshipchk'] == 'true') {
+        $shipaddress = $billaddress;
+    }
+
+    $affiliate['id'] = 0;
+    $affiliate['com_type'] = '';
+    $affiliate['com_value'] = 0.00;
+    $affiliate['com_amount'] = 0.00;
+
+    if(intval($affiliate_id) > 0){
+        $queryu = db_select('admin','c');
+        $queryu->fields('c');
+        $queryu->condition('user_id', intval($affiliate_id), '=');
+        $resultu = $queryu->execute();
+        $recordu_arr = $resultu->fetchAssoc();
+
+        if(count($recordu_arr)){
+            $affiliate['id'] = intval($affiliate_id);
+            $affiliate['com_type'] = $recordu_arr['commission_type'];
+            $affiliate['com_value'] = $recordu_arr['commission'];
+            $affiliate['com_amount'] = 0.00;
+
+            if($affiliate['com_type'] == 'Percentage'){
+                $affiliate['com_amount'] = (($_POST['subtotal'] * $affiliate['com_value'])/100);
+                $affiliate['com_amount'] = number_format ( $affiliate['com_amount'],2 );
+            }else{
+                if($_POST['subtotal'] > $affiliate['com_value']){
+                    $affiliate['com_amount'] = number_format ($affiliate['com_value'],2 );
+                }else{
+                    $affiliate['com_amount'] = number_format ($_POST['subtotal'],2 );
+                }
+            }
+
+        }
+
+    }
+
+
+    /*--------------For Payment Gateway Start-------------*/
+    require 'lib/shared/AuthorizeNetRequest.php';
+    require  'lib/shared/AuthorizeNetTypes.php';
+    require  'lib/shared/AuthorizeNetXMLResponse.php';
+    require  'lib/shared/AuthorizeNetResponse.php';
+    require  'lib/AuthorizeNetAIM.php';
+    require 'lib/AuthorizeNetARB.php';
+    require 'lib/AuthorizeNetCIM.php';
+    require  'lib/AuthorizeNetSIM.php';
+    require  'lib/AuthorizeNetDPM.php';
+    require  'lib/AuthorizeNetTD.php';
+    require 'lib/AuthorizeNetCP.php';
+
+//if (class_exists("SoapClient")) {
+    require 'lib/AuthorizeNetSOAP.php';
+//}
+    /**
+     * Exception class for AuthorizeNet PHP SDK.
+     *
+     * @package AuthorizeNet
+     */
+
+
+
+    $transaction = new AuthorizeNetAIM('5Qt5Ye7838', '8B4rXM8pD3486Has'); // For sandbox account
+
+    $transaction->amount = number_format($_POST['total'],2);
+    $transaction->card_num = $_POST['cartform']['card_no'];
+    $transaction->exp_date = $_POST['cartform']['card_exp_mon'].'/'.$_POST['cartform']['card_exp_year'];
+    $transaction1 = (object)array();
+    $transaction1->first_name = $billaddress['bname'];
+    $transaction1->last_name = $billaddress['bname'];
+    $transaction1->company = "";
+    $transaction1->address = $billaddress['address'];
+    $transaction1->city = $billaddress['city'];
+    $transaction1->state = $billaddress['state'];
+    $transaction1->zip = $billaddress['zip'];
+    $transaction1->country = "US";
+    $transaction1->phone = $billaddress['phone'];
+    $transaction1->fax = "";
+    $transaction1->email = $billaddress['email'];
+    $transaction1->ship_to_first_name=$shipaddress['bname'];
+    $transaction1->ship_to_last_name=$shipaddress['bname'];
+    $transaction1->ship_to_address=$shipaddress['address'];
+    $transaction1->ship_to_city=$shipaddress['city'];
+    $transaction1->ship_to_state=$shipaddress['state'];
+    $transaction1->ship_to_zip=$shipaddress['zip'];
+    $transaction1->ship_to_country="US";
+    $transaction1->tax=0;
+    $transaction1->email_customer=FALSE;
+    $transaction1->customer_ip = '10.25.025.23';
+    $transaction->setFields($transaction1);
+    //if(YII_DEBUG)
+    $transaction->setSandbox(TRUE);
+
+    $response = $transaction->authorizeAndCapture();
+
+    // print_r($response);
+    $transactionid=$response->transaction_id;
+
+    if($transactionid>0) {
+
+
+
+        $address_id = $billaddress['prevaddress1'];
+
+        if (empty($billaddress['prevaddress1'])) {
+
+            $address_id = db_insert('user_address')
+                ->fields(array(
+                    'user_id' => $billaddress['userid'],
+                    'address_title' => $billaddress['address_title'],
+                    'name' => $billaddress['bname'],
+                    'company' => $billaddress['company'],
+                    'address' => $billaddress['address'],
+                    'address2' => $billaddress['address2'],
+                    'city' => $billaddress['city'],
+                    'country' => $billaddress['country']['id'],
+                    'state' => $billaddress['state']['id'],
+                    'zip' => $billaddress['zip'],
+                    'phone' => $billaddress['phone'],
+                    'email' => $billaddress['email'],
+                ))
+                ->execute();
+        } else {
+            db_update('user_address')
+                ->fields(array('address_title' => $billaddress['address_title']))
+                ->condition('id', intval($billaddress['prevaddress1']))
+                ->execute();
+        }
+
+        /*--------------End For Payment Gateway-------------*/
+
+        $order_id = db_insert('order_details')
+            ->fields(array(
+                'user_id' => $billaddress['userid'],
+                'transaction_id' => $transactionid,
+                'order_time' => time(),
+                'order_subtotal' => $_POST['subtotal'],
+                'order_total' => $_POST['total'],
+                'tax' => 0.00,
+                'shipping_charge' => 0.00,
+                'order_status' => 1,
+                'bill_name' => $billaddress['bname'],
+                'bill_company' => $billaddress['company'],
+                'bill_address' => $billaddress['address'],
+                'bill_address2' => $billaddress['address2'],
+                'bill_city' => $billaddress['city'],
+                'bill_country' => $billaddress['country']['id'],
+                'bill_state' => $billaddress['state']['id'],
+                'bill_zip' => $billaddress['zip'],
+                'bill_phone' => $billaddress['phone'],
+                'bill_email' => $billaddress['email'],
+                'ship_name' => $shipaddress['bname'],
+                'ship_company' => $shipaddress['company'],
+                'ship_address' => $shipaddress['address'],
+                'ship_address2' => $shipaddress['address2'],
+                'ship_city' => $shipaddress['city'],
+                'ship_country' => $shipaddress['country']['id'],
+                'ship_state' => $shipaddress['state']['id'],
+                'ship_zip' => $shipaddress['zip'],
+                'ship_phone' => $shipaddress['phone'],
+                'affiliate_id' => $affiliate['id'],
+                'aff_commission_type' => $affiliate['com_type'],
+                'aff_commission_value' => $affiliate['com_value'],
+                'aff_commission_amount' => $affiliate['com_amount']
+            ))
+            ->execute();
+
+
+        if (intval($order_id) > 0) {
+            foreach ($product_details as $row) {
+                db_insert('order_product_details')
+                    ->fields(array(
+                        'order_id' => intval($order_id),
+                        'product_id' => intval($row['product_id']),
+                        'product_name' => $row['product_name'],
+                        'product_price' => $row['price'],
+                        'quantity' => $row['qty'],
+                    ))
+                    ->execute();
+            }
+
+
+            db_delete('cart')
+                ->condition('userid', intval($billaddress['userid']))
+                ->execute();
+
+            $orderquery = db_select('order_details','od');
+            $orderquery->join('country', 'bc', 'bc.id = od.bill_country');
+            $orderquery->join('country', 'sc', 'sc.id = od.ship_country');
+            $orderquery->join('state', 'bs', 'bs.id = od.bill_state');
+            $orderquery->join('state', 'ss', 'ss.id = od.ship_state');
+            $orderquery->fields('od');
+
+            $orderquery->fields('od');
+            $orderquery->addExpression("bc.s_name", 'bill_country');
+            $orderquery->addExpression("sc.s_name", 'ship_country');
+            $orderquery->addExpression("bs.s_st_name", 'bill_state');
+            $orderquery->addExpression("ss.s_st_name", 'ship_state');
+
+            $orderquery->condition('od.id', intval($order_id), '=');
+            $orderqueryre = $orderquery->execute();
+            $orderrecordu_arr = $orderqueryre->fetchAssoc();
+            $orderdate=date('d/m/Y',$orderrecordu_arr['order_time']);
+            $invoicedate=date('jS,F Y',$orderrecordu_arr['order_time']);
+
+
+            $orderproductquery = db_select('order_product_details','opd');
+            $orderproductquery->fields('opd');
+            $orderproductquery->condition('order_id', intval($order_id), '=');
+            $orderproqueryre = $orderproductquery->execute();
+            if ($orderproqueryre->rowCount() > 0) {
+               $productlisthtml='';
+                $productsubtotal=0.00;
+                while ($recorduorderpro = $orderproqueryre->fetchAssoc()) {
+                    $productsubtotal =$recorduorderpro['quantity']*$recorduorderpro['product_price'];
+                    $productlisthtml .='<tr>
+                        <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">'.$recorduorderpro['product_id'].'</td>
+                        <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >'.$recorduorderpro['product_name'].'</td>
+                        <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >'.$recorduorderpro['quantity'].'</td>
+                        <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"><span style="display:inline-block; text-align:right; width:76px;">$'.$productsubtotal.'</span></td>
+                      </tr>';
+
+                        }
+                $shipping1=0.00;
+                $tax1=0.00;
+                $total=$productsubtotal+$shipping1+$tax1;
+
+                }
+
+                    $productlisthtml .='
+                    <tr>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                    <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                    <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <span style="display:inline-block; padding-right:5px; text-align:right; width:76px;">Sub total</span>          <span style="display:inline-block; text-align:right;  width:76px;">$'.$orderrecordu_arr['order_subtotal'].'</span></td>
+                  </tr>
+
+                   <tr>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                    <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                    <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <span style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Shipping </span>          <span style="display:inline-block; text-align:right; width:76px;"> $'.$orderrecordu_arr['shipping_charge'].'</span></td>
+                  </tr>
+                   <tr>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                    <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                    <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <span style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Tax Rate </span>           <span style="display:inline-block; text-align:right; width:76px;">$'.$orderrecordu_arr['tax'].'</span></td>
+                  </tr>
+                  <tr>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                    <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                    <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <span style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Total </span>           <span style="display:inline-block; text-align:right; width:76px;">$'.$orderrecordu_arr['order_total'].'</span></td>
+                  </tr>';
+
+
+
+
+            $mail_body='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TOTALLY RORREE</title>
+</head>
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+    <td align="center">
+      <table width="600" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:14px;">
+  <tr>
+    <td colspan="2" align="center" valign="middle" style=" background:#fff; border-bottom:solid 2px #fff; padding:15px 0;"><a href="#"><img src="http://tr.influxiq.com/images/logo-totallyrorree.png"  alt="#"/></a></td>
+       </tr>
+
+    <tr>
+    <td style="border-top:solid 2px #40bbaf; width:48%; padding:15px 0 0 2%;" align="left">
+    <strong style="font-size:26px; color:#363636; font-weight:normal; font-style:italic;">Invoice '.$order_id.'</strong><br />
+
+    <span style="font-size:14px; color:#40bbaf;">'.$invoicedate.'</span>
+    </td>
+     <td style="border-top:solid 2px #40bbaf; width:48%; padding:15px 2% 0 0; font-size:14px; color:#363636; line-height:25px;" align="right">
+     Order ID: '.$order_id.'<br />
+
+Order Date: '.$orderdate.'
+     </td>
+  </tr>
+
+  <tr>
+    <td style=" width:48%; padding:25px 0 0 2%;" align="left" valign="top">
+     <span style="background:#40bbaf; width:89%; padding:8px 0 7px 5%;  font-size:18px; color:#fff; display:block;">Bill To</span>
+
+     </td>
+     <td style=" width:48%; padding:25px 2% 0 0;" align="right" >
+
+      <span style="background:#40bbaf; width:89%; padding:8px 0 7px 5%;  font-size:18px; color:#fff; text-align:left; display:block;">Ship To</span>
+      </td>
+  </tr>
+
+  <tr>
+    <td style=" width:48%; padding:0px 0 0 2%;" align="left" valign="top">
+   <table width="94%" border="0" cellspacing="5" cellpadding="0" style="border:solid 1px #e0e0e0; font-size:14px; color:#929292; padding:1%;">
+
+  <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Name : '.$orderrecordu_arr['bill_name'].'</td>
+  </tr>
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Address : '.$orderrecordu_arr['bill_address'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">City : '.$orderrecordu_arr['bill_city'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">State : '.$orderrecordu_arr['bill_state'].'</td>
+  </tr>
+
+     <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Zip : '.$orderrecordu_arr['bill_zip'].'</td>
+  </tr>
+    <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Country : '.$orderrecordu_arr['bill_country'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Email : '.$orderrecordu_arr['bill_email'].'</td>
+  </tr>
+
+</table>
+    </td>
+     <td style=" width:48%; padding:0px 2% 0 0;" align="right">
+
+     <table width="94%" border="0" cellspacing="5" cellpadding="0" style="border:solid 1px #e0e0e0; font-size:14px; color:#929292; padding:1%;">
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Name : '.$orderrecordu_arr['ship_name'].'</td>
+  </tr>
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Address : '.$orderrecordu_arr['ship_address'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">City : '.$orderrecordu_arr['ship_city'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">State : '.$orderrecordu_arr['ship_state'].'</td>
+  </tr>
+
+     <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Zip : '.$orderrecordu_arr['ship_zip'].'</td>
+  </tr>
+    <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Country : '.$orderrecordu_arr['ship_country'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Email : '.$orderrecordu_arr['ship_email'].'</td>
+  </tr>
+
+
+</table>
+
+
+
+     </td>
+  </tr>
+
+  <tr>
+    <td colspan="2" align="center" valign="middle" style=" font-size:18px; color:#40bbaf; padding:15px 0;">Shipping Method: Standard Shipping (Residential)</td>
+       </tr>
+
+
+         <tr>
+    <td colspan="2" align="center" valign="middle">
+
+    <table width="96%" border="0" cellspacing="0" cellpadding="0" style="margin:5px 0; border:solid 1px #c6c6c6; border-bottom:none; font-size:13px;">
+  <tr>
+    <th width="15%"  align="left" valign="middle" style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Item</th>
+    <th   width="15%" align="left" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Name</th>
+    <th  width="34%" align="left" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Quantity</th>
+    <th  width="36%" align="right" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Amount</th>
+  </tr>'.$productlisthtml.'
+
+</table>
+
+
+
+    </td>
+          </tr>
+
+
+          <tr>
+    <td colspan="2" align="center" valign="middle">
+
+    <table width="96%" border="0" cellspacing="0" cellpadding="0" style="margin:5px 0; border:solid 1px #c6c6c6; font-size:13px;">
+  <tr>
+    <th  align="left" valign="middle" style="background:#40bbaf; color:#fff; font-size:18px; padding:10px 2%; font-family:Arial, Helvetica, sans-serif; ">Download</th>
+
+  </tr>
+
+   <tr>
+    <td style="padding:10px 2% 30px 2%;">
+    <h2 style="font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#000; font-weight:normal;">New product <span style="color:#868484;">like can be downloaded 7 times</span></h2>
+
+
+    <a href="#" style=" color:#40bbaf; font-size:14px; border-bottom:dotted 2px #40bbaf; display:inline-block; margin:8px 0 0 0; text-decoration:none;">Download Product1.pdf</a><br />
+
+
+     <a href="#" style=" color:#40bbaf; font-size:14px; border-bottom:dotted 2px #40bbaf; display:inline-block; margin:8px 0 0 0; text-decoration:none;">Download Product2.pdf</a>
+
+
+    </td>
+
+  </tr>
+
+
+
+
+
+</table>
+
+
+
+    </td>
+          </tr>
+
+
+          <tr>
+    <td colspan="2" align="center" valign="middle"><a href="'.CUSTOM_URL.'/products" style="background:#40bbaf; display:inline-block; color:#fff; font-size:16px; font-weight:bold; padding:15px 18px; margin:20px auto; text-decoration:none; border: solid 1px #31a499;">Continue Shopping</a></td>
+       </tr>
+
+       <tr>
+    <td colspan="2" align="center" valign="middle" style="font-size:12px; color:#fff; text-align:center; background:#1b1b1b; padding:25px 10px;">&copy; Copyright 2016 Totally Roree. All Rights Reserved. </td>
+       </tr>
+
+</table>
+
+
+    </td>
+  </tr>
+</table>
+
+
+
+</body>
+</html>
+';
+
+            $to =$orderrecordu_arr['bill_email'];
+            $subject = "Your order details ";
+
+
+            $output=$mail_body;
+            //  $headers= "From: info@spectrumiq.com\r\nReply-To: info@spectrumiq.com";
+            $headers  = 'MIME-Version: 1.0' . "\r\n";
+            $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+            $data['mail']=@mail($to, $subject, $output, $headers);
+
+        }
+        $data['status']='success';
+    }
+    else{
+        $data['status']='error';
+    }
+
+    echo json_encode(@$data);
+}
+
+function getCountry(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $arr = array();
+
+    $queryu = db_select('country','c');
+    $queryu->fields('c',array('id','s_name'));
+    $queryu->orderBy('s_name', 'ASC');
+    $resultu = $queryu->execute();
+    while($recordu = $resultu->fetchAssoc()) {
+
+        $arr[] = $recordu;
+
+    }
+
+    echo json_encode($arr);
+
+}
+
+function getState(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+
+    $arr = array();
+
+    $queryu = db_select('state','s');
+    $queryu->fields('s',array('id','s_st_name','i_cnt_id'));
+    if(isset($_POST['country_id']) && intval($_POST['country_id']) > 0)
+        $queryu->condition('i_cnt_id', $_POST['country_id'], '=');
+    $queryu->orderBy('s_st_name', 'ASC');
+    $resultu = $queryu->execute();
+    while($recordu = $resultu->fetchAssoc()) {
+
+        $arr[] = $recordu;
+
+    }
+
+    echo json_encode($arr);
+
+}
+
+function getPrevAddr(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $arr = array();
+
+    $queryu = db_select('user_address','u');
+    $queryu->fields('u');
+    $queryu->condition('user_id', intval($_POST['user']), '=');
+    $resultu = $queryu->execute();
+    while($recordu = $resultu->fetchAssoc()) {
+
+        $arr[] = $recordu;
+
+    }
+
+    echo json_encode($arr);
+
+
+}

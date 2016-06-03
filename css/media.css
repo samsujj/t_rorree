@@ -32,8 +32,10 @@
     .mainmenu .navbar-default .navbar-nav > li > a {padding: 10px 10px; margin-right: 1px; font-size: 15px;}
 
     .mainmenu .navbar-default{ width: 830px;}
-    .contact-right {margin-top: 30px;}
+    .contact-right {margin-top: 30px;margin-right: 22px;}
+    .contact-right label:last-child {margin-left: 4px;}
     .contact-right label{font-size: 16px;}
+
 }
 
 @media(max-width:1300px) {
@@ -80,6 +82,7 @@
 
 @media(max-width:1600px) {
     .navbar-default .navbar-nav > li > a {padding: 10px 11px; margin-right: 0px;}
+    .mainmenu .navbar-default .navbar-nav > li > a {font-size: 16px;}
     .socialmedia {margin-left: 0px;}
     .header-top-right {margin-right: 0px;}
 }
@@ -103,6 +106,10 @@
     .contact-right img{ width: 50px;}
 
     .contact-right label:last-child{ margin-top: 13px;}
+    .mainmenu .navbar-nav {
+        margin-top: 4px;
+        margin-left: 0px;
+    }
 }
 @media(max-width:1366px){
 
@@ -116,6 +123,21 @@
     .header-top-right {
         margin-right: 0px;
     }
+
+    .adminleft {
+        width: 25%;
+        float: left;
+        margin-left: 6%;
+    }
+    .admincontain {
+        width: 62%;
+        float: right;
+        margin-right: 6%;
+    }
+    .contact-right {
+        margin-top: 22px;
+        margin-right: 22px;
+    }
 }
 
 @media(max-width:1360px){
@@ -126,6 +148,10 @@
 
     .header-top-right {
         margin-right: 0px;
+    }
+    .blogleft{margin-right: 0px; }
+    .contact-right {
+        margin-top: 24px;
     }
 }
 
@@ -140,7 +166,6 @@
         display: block;
         max-width: 100%;
     }
-    img{max-width: 100%; display: block;}
     .mainmenu .navbar-default .navbar-nav > li > a {padding: 10px 10px; margin-right: 1px; font-size: 13px;}
 
     .mainmenu .navbar-default{ width: 830px;}
@@ -149,6 +174,9 @@
 }
 
 @media(max-width:1199px) {
+
+
+    .checkout_block_wrapper .errormsg{padding-left: 230px;}
 
     #dolar{margin: 12px 0px 0px 0px; clear: both; display: block;}
     #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom{ margin-top: 18px!important;}
@@ -324,8 +352,51 @@
     #trainer .trainer-content-top h2, #personaldevlspeaker .trainer-content-top h2 {font-size: 24px;}
     .trainer-content-top h4 {line-height: 22px;font-size: 15px;}
     #trainer .trainer-content-top p, #personaldevlspeaker .trainer-content-top p {font-size: 16px;}
-
+    .pageinner {
+        margin-right: auto;
+        padding: 0 0 0 15px;
+    }
+    .blogleft{margin-right: 28px; width: 47%;}
+    .blogrightheader h3 {font-size: 29px;}
+    .eventdetailblock1{padding-right: 20px; padding-left: 20px;}
+    .contactmeblockright{padding-left: 20px;}
 }
+
+@media(max-width:1082px){
+    .contactme_block_wrapper .contactmeblockleft {margin-left: auto; margin-right: auto; text-align: center;}
+    .contactmeblockright.col-sm-6 {width: 100%; text-align: center;}
+    .contactmedetailbody1 h2 {margin-top: 20px;margin-bottom: 10px;}
+    .customersrv p {margin-left: 0px;}
+    .contactmeblockright {padding-left: 0px; text-align: center;}
+    .contactmedetailbody1 h2 {line-height: 23px;}
+    .customersrv {border-left: 0px solid #dfdcdc;margin-top: 20px;}
+    .contactmedetailbody1 .box-body {padding-top: 20px;}
+    .contactme_block_wrapper .box-footer .btn-submit {bottom: 0; position: relative; right: 0;}
+    .contactme_block_wrapper .text-right {text-align: center;}
+    .contactme_block_wrapper .box-footer {margin-top: 20px;}
+    .contactme_block_wrapper .captuablock label {float: left;}
+    .retreatsblock1left .retreatsblock1left h3{margin-top: 0px;}
+    .retreatsblock1right img {margin-top: 20px; max-width: 100%;}
+    .retreatsblock5 .devider {margin-bottom: 20px;}
+    .retreatsblock2 { margin-top: 18px; }
+    .retreatsblock1 h5 {margin-top: 20px;}
+    .retreatsblock5 h2 {margin-bottom: 20px;}
+    .retreatsblock5 h4 {margin-bottom: 20px;}
+    .retreatsblock5 img {margin-bottom: 20px;}
+    .retreatsblock7left{margin-bottom: 20px;}
+    .retreatsblock8 .devider {margin-top: 20px;}
+    .retreatsblock8 .devider {margin-bottom: 20px;}
+    .retreatsblock8 h2 {margin-bottom: 20px;}
+    .retreatsblock8 h4 {margin-bottom: 20px;}
+    .retreatsblock8 img {margin-bottom: 20px;}
+    .retreatsblock8 p:first-of-type {margin-bottom: 20px;}
+    .retreatsblock9 .devider {margin-bottom: 20px;}
+    .retreatsblock9 h2 {margin-bottom: 20px;}
+    .retreatsblock9 h4 {margin-bottom: 20px;}
+    .retreatsblock9right img {margin-top: 10px;}
+    .contactmedetailbody1 {width: 90%; margin-left: auto; margin-right: auto;}
+}
+
 
 
 @media(max-width:1080px){
@@ -353,6 +424,9 @@
 }
 
 @media(max-width:991px){
+
+
+    .checkout_block_wrapper .errormsg{padding-left:194px;}
 
     .roreemanlive_content .inner-info-top p{ text-align: center; padding-bottom: 25px; padding-left: 10px;  padding-right: 10px;}
     .productslist {
@@ -391,7 +465,7 @@
     .affiliatpagebody1 ol li{ text-align: center;}
 
     .affiliatpagebody1 h2{ text-align: center;}
-
+    .contactmeheading h2{text-align: center;}
 
     .affiliatpagebody2 h2{ text-align: center;}
 
@@ -400,7 +474,47 @@
     .affiliatpagebody2 .affiliate2_img2{ display: block; float: none;   margin: 0 auto; margin-bottom: 20px; width: 100%;}
 
     .affiliatpagebody2 .affiliate2_img2 img{ display: block; margin: 0 auto; max-width: 100%;}
+    .blogleft{width: 98%; margin-right: auto; margin-left: auto; }
+    .blogright{width: 98%; margin-right: auto; margin-left: auto; }
+    .blogright{margin-top: 30px;}
+    .blogleft img, .embed-responsive .embed-responsive-item, .embed-responsive iframe,
+    .embed-responsive embed, .embed-responsive object  {
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+    .readmore {margin-bottom: 30px;}
+    .blogpagebodyheader h2{text-align: center; margin-top: 20px;}
 
+
+    .adminleft {
+        width: 90%;
+        float: none;
+        margin: 25px auto;
+    }
+
+    .admincontain {
+        width: 90%;
+        float: none;
+        margin: 25px auto;
+    }
+
+    .cartdetailheading{ height: auto;}
+    .retreatsblock8 .devider {margin-top: 45px;}
+    .contactme_block_wrapper .contactmeblockleft {
+        float: none;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
+    .box-footer.text-right{text-align: center;}
+    .contactme_block_wrapper .box-footer .btn-submit {
+        position: relative;
+        text-align: center;
+    }
+    .blogpagebodyblock1, .blogpagebodyblock2, .blogpagebodyblock3, .blogpagebodyblock4 {
+        margin-bottom: 0px;
+    }
 }
 
 @media(max-width:950px) {
@@ -418,6 +532,10 @@
     .roreemanlive_content .inner-info-top h2{ padding-left: 5px; padding-right: 5px;}
 
     .roreemanlive_content .inner-info-top h3{ padding-left: 5px; padding-right: 5px;}
+    .pull-left .socialmedia {
+        margin: 0 auto !important;
+        width: 219px !important;
+    }
 }
 @media(max-width:800px){
 
@@ -433,21 +551,31 @@
     }
 
     #dolarsit{ width: 96%; margin: 12px auto;}
+
  }
 
+@media(max-width:767px){
+
+    .checkout_block_wrapper .errormsg{padding-left:0px; padding-top: 2px;}
+    .blogpagebody{
+        width: 90%; margin-left: auto; margin-right: auto;}
+}
 
 @media(max-width:768px){
 
 
+
     .pull-left .socialmedia {
         margin: 0 auto!important;
-        width: 222px!important;
+        width: 217px!important;
     }
+    .pull-right .headerlink:first-of-type{padding-left: 0px;float: left;}
+    .pull-right .headerlink:nth-last-of-type(3){padding-right: 0px;float: right;}
 
     .header-top .pull-right {
         float: none !important;
         margin: 0 auto !important;
-        width:196px !important;
+        width:188px !important;
         margin-top: 44px!important;
     }
 
@@ -574,7 +702,7 @@
 
     .aboutpageheading h2{ font-size: 60px!important;}
 
-    .affiliateageheading h2{ font-size: 60px!important;}
+    .affiliateageheading h2{ font-size: 50px!important;}
 
     .affiliatpagebody1{ width: 90%;}
 
@@ -584,9 +712,55 @@
 
 
     .signupheading h2{ background:none; width: 100%; text-align: center;  font-size: 60px!important;}
-
     .signupheading{ height: auto;}
+
+    .blogpageheading {height: auto;}
+    .blogpageheading h2 { background:none; font-size: 60px !important;text-align: center;width: 100%;}
+
+    .cartdetailheading{ height: auto;}
+
+    .cartdetailheading h2 {  background: none;
+        font-size: 60px !important;
+        padding: 28px 0 35px;
+        text-align: center;
+        width: 100%;
+    }
+    .cartdetailbody1 { width: 90%;margin-right: auto; margin-left: auto;}
+    .testimonialbody1 {width: 90%; margin-right: auto; margin-left: auto;}
+    .eventdetailbody {width: 90%; margin-right: auto; margin-left: auto;}
+
+    .retreatsblock1left h3 {font-size: 24px; padding-right: 0; text-align: center; }
+
+    .testimonialheading h2{ background:none; width: 100%; text-align: center;  font-size: 60px!important;}
+    .testimonialheading{ height: auto;}
+
+    .contactmedetailbody1 .box-body {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .contactmedetailbody1 .box-body {
+        padding-top: 30px;
+    }
+
+    .contactmeheading h2{ background:none; width: 100%; text-align: center; font-size: 60px !important;}
+    .contactmeheading{ height: auto;}
+    .customersrv{margin-top: 25px;}
+
+    .eventdetailheading h2{ background:none; width: 100%; text-align: center; font-size: 60px !important;}
+    .eventdetailheading{ height: auto;}
+
+    .retreatsheading h2{ background:none; width: 100%; text-align: center; font-size: 60px !important;}
+    .retreatsheading{ height: auto;}
+    .retreatsblock1left{margin-top: 0px;}
+    .pull-left .socialmedia {
+        margin: 0 auto !important;
+        width: 220px !important;
+    }
+
+
 }
+
 
 @media(max-width:720px){
     #slider .item {
@@ -690,15 +864,40 @@
     #testimonials .inner-info-top p {margin-bottom: 21px;}
     .sitamet_content .inner-info-top h2 {padding-bottom: 0px !important;}
     .trainer-inner .trainer-content-top h2 {padding: 21px 0 11px 0;}
+    .featured_product_body h4 {
+        display: block;
+        width: 100%;
+    }
+    .captuablock label {
+        font-size: 20px;
+    }
 }
 @media(max-width:600px){
     #slider .item {
         margin: 0px 0 0 -520px;
         width: 216%;
     }
-
 }
 
+/*@media (max-width: 760px){
+    .cartdetailbody1 .cart_block_wrapper table, .cartdetailbody1 .cart_block_wrapper thead,
+    .cartdetailbody1 .cart_block_wrapper tbody, .cartdetailbody1 .cart_block_wrapper th, .cartdetailbody1 .cart_block_wrapper td,
+    .cartdetailbody1 .cart_block_wrapper tr {display: block;}
+    .cartdetailbody1 .cart_block_wrapper thead tr {position: absolute; top: -9999px; left: -9999px;}
+    .cartdetailbody1 .cart_block_wrapper tr { border: 1px solid #ccc; margin-bottom: 20px; }
+    .cartdetailbody1 .cart_block_wrapper td {border: none; border-bottom: 1px solid #dedede; position: relative;  padding-left: 45%;}
+    .cartdetailbody1 .cart_block_wrapper td:before {position: absolute; top: 6px; left: 6px; width: 45%;  padding-right: 10px; white-space: nowrap;}
+
+    .cartdetailbody1 .cart_block_wrapper td:nth-of-type(1):before { content: "Item"; color: #69d3c9; font-size: 16px; font-family: 'PTSans-Bold'; text-transform: uppercase;}
+    .cartdetailbody1 .cart_block_wrapper td:nth-of-type(2):before { content: "Description"; color: #69d3c9; font-size: 16px; font-family: 'PTSans-Bold'; text-transform: uppercase; }
+    .cartdetailbody1 .cart_block_wrapper td:nth-of-type(3):before { content: "QTY"; color: #69d3c9; font-size: 16px;font-family: 'PTSans-Bold'; text-transform: uppercase; }
+    .cartdetailbody1 .cart_block_wrapper td:nth-of-type(4):before { content: "PRICE"; color: #69d3c9; font-size: 16px;font-family: 'PTSans-Bold'; text-transform: uppercase; }
+    .cartdetailbody1 .cart_block_wrapper td:nth-of-type(5):before { content: "Remove"; color: #69d3c9; font-size: 16px;font-family: 'PTSans-Bold'; text-transform: uppercase; }
+
+    .cartdetailbody1 .cart_block_wrapper td, .cartdetailbody1 .cart_block_wrapper th {text-align: left; }
+    .cartdetailbody1 .carttotalbox { width: 100%;}
+}
+*/
 
 @media(max-width:560px){
     #slider .item {
@@ -796,6 +995,15 @@
     .sitamet_content .btnview .btneye {font-size: 16px;}
     .singletestimonials .testiimg i {right: 0px;}
     #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {height: 136px;}
+    .captuablock label {font-size: 18px;}
+    .contactmeheading h2 {font-size: 53px !important;}
+    .pull-left .socialmedia {
+        margin: 0 auto !important;
+        width:219px !important;
+    }
+    .contactme_block_wrapper {
+        padding: 0 10px;
+    }
 }
 
 @media(max-width:470px) {
@@ -816,6 +1024,9 @@
     #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
         height: 128px;
     }
+    .captuablock label {
+        font-size: 16px;
+    }
 }
 
 @media(max-width:430px) {
@@ -834,6 +1045,9 @@
     #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
         height: 121px;
     }
+    .captuablock label {
+        font-size: 14px;
+    }
 }
 @media(max-width:390px) {
     #slider .item {
@@ -844,6 +1058,10 @@
     #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
         height: 113px;
     }
+}
+@media(max-width:374px){
+    .cartdetailheading h2 {font-size: 50px !important;}
+    .cart_block_wrapper{ padding: 0;}
 }
 
 @media(max-width:360px) {
@@ -878,6 +1096,7 @@
     #trainer .trainer-content-bottom {
         height: 83px;
     }
+    .captuablock label{font-size: 11px;}
 }
 /*--//responsive-design---*/
 

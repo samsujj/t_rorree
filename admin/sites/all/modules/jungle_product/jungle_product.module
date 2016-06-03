@@ -1,0 +1,1381 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: debasis
+ * Date: 16/6/15
+ * Time: 12:04 AM
+ */
+
+header('Content-type: text/html');
+header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+function jungle_product_init() // init function called by defaulted when this module loaded by system
+{
+
+    //echo $GLOBALS['theme'];
+    //echo 5656;
+    //echo user_authenticate('debasis','Pp@ss1234');
+
+//echo "kl";
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+}
+
+function jungle_product_menu()
+{
+    $items = array();
+
+    $items['imguploadproduct'] = array(
+        'title' => 'Add jungleproduct',
+        'page callback' => 'imguploadproduct',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+
+    $items['addjungleproduct'] = array(
+        'title' => 'Add jungleproduct',
+        'page callback' => 'addjungleproduct',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['jungleproductlist'] = array(
+        'title' => 'jungleproduct List',
+        'page callback' => 'jungleproductlist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['parentproductlist'] = array(
+        'title' => 'parent product List',
+        'page callback' => 'parentproductlist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['deletejungleproduct'] = array(
+        'title' => 'jungleproduct Delete',
+        'page callback' => 'deletejungleproduct',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+   $items['jungleproductdetails'] = array(
+        'title' => 'jungleproduct details',
+        'page callback' => 'jungleproductdetails',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['jungleproductupdates'] = array(
+        'title' => 'jungleproduct Updates',
+        'page callback' => 'jungleproductupdates',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['jungleproductupdatestatus'] = array(
+        'title' => 'jungleproduct Updates Status',
+        'page callback' => 'jungleproductupdatestatus',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['uploadjungleproductimage'] = array(
+        'title' => 'jungleproduct File Upload',
+        'page callback' => 'uploadjungleproductimage',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['uploadjungleproductimage1'] = array(
+        'title' => 'jungleproduct File Upload',
+        'page callback' => 'uploadjungleproductimage1',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['filedownload'] = array(
+        'title' => 'jungleproduct File Upload',
+        'page callback' => 'filedownload',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['filedownloadvideo'] = array(
+        'title' => 'jungleproduct File Upload',
+        'page callback' => 'filedownloadvideo',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+    $items['imagestamp'] = array(
+        'title' => 'jungleproduct File Upload',
+        'page callback' => 'imagestamp',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+
+
+    return $items;
+}
+
+
+function imguploadproduct(){
+
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $x=arg();
+    //print_r($x[1]);
+
+    $queryu = db_select('jungleproduct', 'ca');
+    $queryu->fields('ca');
+    $queryu->condition('ca.id',$x[1],'=');
+    $resultu = $queryu->execute();
+
+    ini_set('memory_limit', '128M');
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+
+
+            $productextns=explode('.',$recordu['product_file']);
+
+            if($productextns['1']=='mp4'){
+                $filePath = image_style_url('front-photo_600_600_', 'public://'.$productextns['0'].'.jpg');
+            }else{
+                $filePath = image_style_url('front-photo_600_600_', (@$recordu['product_file']));
+            }
+
+            $jungleproductlist[$i]= $temparray;
+            $i++;
+
+            /*            $jungleproductlist[$i]['cat_name'] = $recordu['cat_name'];
+                        $jungleproductlist[$i]['id'] = $recordu['id'];
+                        $jungleproductlist[$i]['parent_cat'] = $recordu['parent_cat'];
+                        $jungleproductlist[$i]['status'] = $recordu['status'];
+                        $i++;*/
+
+        }
+    }
+
+
+    //print_r($filePath);
+    //exit;
+
+
+
+
+
+
+
+    // Load the stamp and the photo to apply the watermark to
+    $stamp = imagecreatefrompng('http://testbed.jungledrones.com/images/photostamp_3.png');
+    if(strpos($filePath,'.png')>0)$im = imagecreatefrompng($filePath);
+    if(strpos($filePath,'.jpg')>0) $im = imagecreatefromjpeg($filePath);
+    if(strpos('.jpeg',$filePath)>0) $im = imagecreatefromjpeg($filePath);
+
+    //list($current_width, $current_height) = getimagesize($filePath);
+
+
+
+// Set the margins for the stamp and get the height/width of the stamp image
+    $marge_right = 0;
+    $marge_bottom = 0;
+    $sx = imagesx($stamp);
+    $sy = imagesy($stamp);
+    $imgx = imagesx($im);
+    $imgy = imagesy($im);
+    $centerX=round($imgx/2);
+    $centerY=round($imgy/2);
+
+// Copy the stamp image onto our photo using the margin offsets and the photo
+// width to calculate positioning of the stamp.
+    //imagecopy($im, $stamp, imagesx($im) - $sx - $marge_right, imagesy($im) - $sy - $marge_bottom, 0, 0, imagesx($stamp), imagesy($stamp));
+    //imagecopy($im, $stamp, $centerX, $centerY, 0, 0, imagesx($stamp), imagesy($stamp));
+    imagecopy($im, $stamp, 0, 0,0, 0, imagesx($stamp), imagesy($stamp));
+
+// Output and free memory
+    header('Content-type: image/png');
+    imagepng($im);
+    imagedestroy($im);
+
+
+}
+
+function imagestamp(){
+
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $x=arg();
+    //print_r($x[1]);
+
+    $queryu = db_select('jungleproduct', 'ca');
+    $queryu->fields('ca');
+    $queryu->condition('ca.id',$x[1],'=');
+    $resultu = $queryu->execute();
+
+    ini_set('memory_limit', '128M');
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+
+
+            $productextns=explode('.',$recordu['product_file']);
+
+            if($productextns['1']=='mp4'){
+                $filePath = image_style_url('popup', 'public://'.$productextns['0'].'.jpg');
+            }else{
+                $filePath = image_style_url('popup', (@$recordu['product_file']));
+            }
+
+            $jungleproductlist[$i]= $temparray;
+            $i++;
+
+            /*            $jungleproductlist[$i]['cat_name'] = $recordu['cat_name'];
+                        $jungleproductlist[$i]['id'] = $recordu['id'];
+                        $jungleproductlist[$i]['parent_cat'] = $recordu['parent_cat'];
+                        $jungleproductlist[$i]['status'] = $recordu['status'];
+                        $i++;*/
+
+        }
+    }
+
+
+    //print_r($filePath);
+    //exit;
+
+
+
+
+
+
+
+    // Load the stamp and the photo to apply the watermark to
+    $stamp = imagecreatefrompng('http://testbed.jungledrones.com/images/photostamp2.png');
+    if(strpos($filePath,'.png')>0)$im = imagecreatefrompng($filePath);
+    if(strpos($filePath,'.jpg')>0) $im = imagecreatefromjpeg($filePath);
+    if(strpos('.jpeg',$filePath)>0) $im = imagecreatefromjpeg($filePath);
+
+    //list($current_width, $current_height) = getimagesize($filePath);
+
+
+
+// Set the margins for the stamp and get the height/width of the stamp image
+    $marge_right = 0;
+    $marge_bottom = 0;
+    $sx = imagesx($stamp);
+    $sy = imagesy($stamp);
+    $imgx = imagesx($im);
+    $imgy = imagesy($im);
+    $centerX=round($imgx/2);
+    $centerY=round($imgy/2);
+
+// Copy the stamp image onto our photo using the margin offsets and the photo
+// width to calculate positioning of the stamp.
+    //imagecopy($im, $stamp, imagesx($im) - $sx - $marge_right, imagesy($im) - $sy - $marge_bottom, 0, 0, imagesx($stamp), imagesy($stamp));
+    //imagecopy($im, $stamp, $centerX, $centerY, 0, 0, imagesx($stamp), imagesy($stamp));
+    imagecopy($im, $stamp, 0, 0,0, 0, imagesx($stamp), imagesy($stamp));
+
+// Output and free memory
+    header('Content-type: image/png');
+    imagepng($im);
+    imagedestroy($im);
+
+
+}
+
+
+
+
+
+function uploadjungleproductimage(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $target_dir = realpath(dirname(__FILE__))."/uploads/";
+    $path_parts = pathinfo($_FILES['Filedata']['name']);
+    $filename1 = rand().'_'.time();
+    $filename = $filename1.'.'.$path_parts['extension'];
+    ini_set('memory_limit', '128M');
+
+    $profile_url = '';
+    $extarray=array('jpg','png','gif','mp4','flv','MP4','FLV');
+    if(in_array($path_parts['extension'],$extarray)) {
+        if (move_uploaded_file($_FILES["Filedata"]["tmp_name"], $target_dir . $filename)) {
+            //$account = user_load($_POST['userid']);
+
+            $filepath = ($target_dir . $filename);
+
+            $file = (object)array(
+                'uid' => 1,
+                'uri' => $filepath,
+                'filemime' => file_get_mimetype($filepath),
+                'status' => 1,
+            );
+            if ($file) {
+// Move the file, into the Drupal file system
+                if ($file = file_move($file, 'public://')) {
+                    $file->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file = file_save($file);
+                    //set the extra values needed to make node_save work
+                    $file->display = 1;
+                    $file->description = "";
+                }
+
+            }
+        }
+      // echo file_create_url(@$file->uri);
+//print_r($file);
+        if($path_parts['extension']=='mp4'||$path_parts['extension']=='MP4'){
+
+            $data['is_video']=1;
+
+            $data['video_url1222'] = $data1['video_url1'] = file_create_url(@$file->uri);
+
+
+            $fileToFlv = $data1['video_url1'];
+            $fileFlv = 'convertedvdo.mp4';
+
+            $tfileFlv = 'public://'.'temp/'.$filename1.'.mp4';
+            $Flvjpg = $target_dir.$filename1.'.jpg';
+
+
+            $command = "/usr/bin/ffmpeg" . ' -i ' . $fileToFlv . ' -vstats 2>&1';
+            $output = shell_exec ( $command );
+
+            $result = ereg ( '[0-9]?[0-9][0-9][0-9]x[0-9][0-9][0-9][0-9]?', $output, $regs );
+
+            $vals = (explode ( 'x', $regs [0] ));
+            $width = $vals [0] ? $vals [0] : null;
+            $height = $vals [1] ? $vals [1] : null;
+            $info = array ('width' => $width, 'height' => $height );
+
+            //print_r($info);
+
+//$s_vid_conv_cmd = "/usr/bin/ffmpeg -i ".$fileToFlv." -ar 22050 -f mp4 ".$fileFlv;
+            //$s_vid_conv_cmd = "/usr/bin/ffmpeg -i ".$fileToFlv." -b 1500k -vcodec libx264 -vpre slow -vpre baseline -g 30 -s 640x360 ".$fileFlv;
+
+            //$x=exec($s_vid_conv_cmd);
+
+            exec("/usr/bin/ffmpeg -i ".$fileToFlv." -vframes 1 -ss 00:00:03 -s 640x360 -f image2 ".$Flvjpg);
+
+
+
+            $file1 = (object)array(
+                'uid' => 1,
+                'uri' => $Flvjpg,
+                'filemime' => file_get_mimetype($Flvjpg),
+                'status' => 1,
+            );
+            if ($file1) {
+// Move the file, into the Drupal file system
+                if ($file1 = file_move($file1, 'public://')) {
+                    $file1->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file1 = file_save($file1);
+                    //set the extra values needed to make node_save work
+                    $file1->display = 1;
+                    $file1->description = "";
+                }
+
+            }
+
+            $data['video_name'] = $filename;
+            $data['image_url'] = image_style_url('large', (@$file1->uri));
+
+             $command = " /usr/bin/ffmpeg  -loop 1 -r 24 -i /home/jungledrones/public_html/images/logo.png  -i ".drupal_realpath($file->uri)." -strict experimental -filter_complex '[0:v]scale=180:-1[watermark];[1:v]scale=360:-1[background];[background][watermark]overlay=main_w-overlay_w-0:main_h-overlay_h-0:shortest=1[video]' -map [video] -map 0:a:0 -c:v libx264 -profile:v baseline -acodec aac    ". drupal_realpath($tfileFlv);
+
+            //exit;
+            //exit;
+            $output = shell_exec ( $command );
+
+            //print_r($output);
+            //exit;
+
+
+
+
+        }
+        else if($path_parts['extension']=='flv'||$path_parts['extension']=='FLV'){
+
+            $data['is_video']=1;
+
+            $data1['video_url1'] = file_create_url(@$file->uri);
+
+            $fileToFlv = $data1['video_url1'];
+            $fileFlv = $target_dir.$filename1.'.mp4';
+            $Flvjpg = $target_dir.$filename1.'.jpg';
+
+            $command = "/usr/bin/ffmpeg" . ' -i ' . $fileToFlv . ' -vstats 2>&1';
+            $output = shell_exec ( $command );
+
+            $result = ereg ( '[0-9]?[0-9][0-9][0-9]x[0-9][0-9][0-9][0-9]?', $output, $regs );
+
+            $vals = (explode ( 'x', $regs [0] ));
+            $width = $vals [0] ? $vals [0] : null;
+            $height = $vals [1] ? $vals [1] : null;
+            $info = array ('width' => $width, 'height' => $height );
+
+            $s_vid_conv_cmd = "/usr/bin/ffmpeg -i ".$fileToFlv." -b 1500k -vcodec libx264 -vpre slow -vpre baseline -g 30 -s 640x360 ".$fileFlv;
+
+            $x=exec($s_vid_conv_cmd);
+
+            exec("/usr/bin/ffmpeg -i ".$fileToFlv." -vframes 1 -ss 00:00:10 -s 640x360 -f image2 ".$Flvjpg);
+
+            $file1 = (object)array(
+                'uid' => 1,
+                'uri' => $Flvjpg,
+                'filemime' => file_get_mimetype($Flvjpg),
+                'status' => 1,
+            );
+            if ($file1) {
+// Move the file, into the Drupal file system
+                if ($file1 = file_move($file1, 'public://')) {
+                    $file1->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file1 = file_save($file1);
+                    //set the extra values needed to make node_save work
+                    $file1->display = 1;
+                    $file1->description = "";
+                }
+
+            }
+
+            $file2 = (object)array(
+                'uid' => 1,
+                'uri' => $fileFlv,
+                'filemime' => file_get_mimetype($fileFlv),
+                'status' => 1,
+            );
+            if ($file2) {
+// Move the file, into the Drupal file system
+                if ($file2 = file_move($file2, 'public://')) {
+                    $file2->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file2 = file_save($file2);
+                    //set the extra values needed to make node_save work
+                    $file2->display = 1;
+                    $file2->description = "";
+                }
+
+            }
+
+            $data['video_url1222'] = file_create_url(@$file2->uri);
+            $data['video_name'] = $filename1.'.mp4';
+            $data['image_url'] = image_style_url('large', (@$file1->uri));
+
+
+
+        }
+        else{
+            $data['is_video']=0;
+            $data['image_url'] = image_style_url('large', (@$file->uri));
+        }
+        //
+
+        $data['image_name'] = (@$file->uri);
+        // $data['status'] = 'success';
+    }
+    else{
+        $data['status']='error';
+    }
+    echo json_encode(@$data) ;
+}
+function uploadjungleproductimage1(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $target_dir = realpath(dirname(__FILE__))."/uploads/";
+    $path_parts = pathinfo($_FILES['Filedata']['name']);
+    $filename1 = rand().'_'.time();
+    $filename = $filename1.'.'.$path_parts['extension'];
+    ini_set('memory_limit', '128M');
+
+    $profile_url = '';
+    $extarray=array('jpg','png','gif','mp4','flv','MP4','FLV','pdf','docx','doc');
+    if(in_array($path_parts['extension'],$extarray)) {
+        if (move_uploaded_file($_FILES["Filedata"]["tmp_name"], $target_dir . $filename)) {
+            //$account = user_load($_POST['userid']);
+
+            $filepath = ($target_dir . $filename);
+
+            $file = (object)array(
+                'uid' => 1,
+                'uri' => $filepath,
+                'filemime' => file_get_mimetype($filepath),
+                'status' => 1,
+            );
+            if ($file) {
+// Move the file, into the Drupal file system
+                if ($file = file_move($file, 'public://')) {
+                    $file->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file = file_save($file);
+                    //set the extra values needed to make node_save work
+                    $file->display = 1;
+                    $file->description = "";
+                }
+
+            }
+        }
+        // echo file_create_url(@$file->uri);
+//print_r($file);
+        if($path_parts['extension']=='mp4'||$path_parts['extension']=='MP4'){
+
+            $data['is_video']=1;
+
+            $data['video_url1222'] = $data1['video_url1'] = file_create_url(@$file->uri);
+
+
+            $fileToFlv = $data1['video_url1'];
+            $fileFlv = 'convertedvdo.mp4';
+
+            $tfileFlv = 'public://'.'temp/'.$filename1.'.mp4';
+            $Flvjpg = $target_dir.$filename1.'.jpg';
+
+
+            $command = "/usr/bin/ffmpeg" . ' -i ' . $fileToFlv . ' -vstats 2>&1';
+            $output = shell_exec ( $command );
+
+            $result = ereg ( '[0-9]?[0-9][0-9][0-9]x[0-9][0-9][0-9][0-9]?', $output, $regs );
+
+            $vals = (explode ( 'x', $regs [0] ));
+            $width = $vals [0] ? $vals [0] : null;
+            $height = $vals [1] ? $vals [1] : null;
+            $info = array ('width' => $width, 'height' => $height );
+
+            //print_r($info);
+
+//$s_vid_conv_cmd = "/usr/bin/ffmpeg -i ".$fileToFlv." -ar 22050 -f mp4 ".$fileFlv;
+            //$s_vid_conv_cmd = "/usr/bin/ffmpeg -i ".$fileToFlv." -b 1500k -vcodec libx264 -vpre slow -vpre baseline -g 30 -s 640x360 ".$fileFlv;
+
+            //$x=exec($s_vid_conv_cmd);
+
+            exec("/usr/bin/ffmpeg -i ".$fileToFlv." -vframes 1 -ss 00:00:03 -s 640x360 -f image2 ".$Flvjpg);
+
+
+
+            $file1 = (object)array(
+                'uid' => 1,
+                'uri' => $Flvjpg,
+                'filemime' => file_get_mimetype($Flvjpg),
+                'status' => 1,
+            );
+            if ($file1) {
+// Move the file, into the Drupal file system
+                if ($file1 = file_move($file1, 'public://')) {
+                    $file1->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file1 = file_save($file1);
+                    //set the extra values needed to make node_save work
+                    $file1->display = 1;
+                    $file1->description = "";
+                }
+
+            }
+
+            $data['video_name1'] = $filename;
+            $data['image_url'] = image_style_url('large', (@$file1->uri));
+
+            $command = " /usr/bin/ffmpeg  -loop 1 -r 24 -i /home/jungledrones/public_html/images/logo.png  -i ".drupal_realpath($file->uri)." -strict experimental -filter_complex '[0:v]scale=180:-1[watermark];[1:v]scale=360:-1[background];[background][watermark]overlay=main_w-overlay_w-0:main_h-overlay_h-0:shortest=1[video]' -map [video] -map 0:a:0 -c:v libx264 -profile:v baseline -acodec aac    ". drupal_realpath($tfileFlv);
+
+            //exit;
+            //exit;
+            $output = shell_exec ( $command );
+
+            //print_r($output);
+            //exit;
+
+
+
+
+        }
+        else if($path_parts['extension']=='flv'||$path_parts['extension']=='FLV'){
+
+            $data['is_video']=1;
+
+            $data1['video_url1'] = file_create_url(@$file->uri);
+
+            $fileToFlv = $data1['video_url1'];
+            $fileFlv = $target_dir.$filename1.'.mp4';
+            $Flvjpg = $target_dir.$filename1.'.jpg';
+
+            $command = "/usr/bin/ffmpeg" . ' -i ' . $fileToFlv . ' -vstats 2>&1';
+            $output = shell_exec ( $command );
+
+            $result = ereg ( '[0-9]?[0-9][0-9][0-9]x[0-9][0-9][0-9][0-9]?', $output, $regs );
+
+            $vals = (explode ( 'x', $regs [0] ));
+            $width = $vals [0] ? $vals [0] : null;
+            $height = $vals [1] ? $vals [1] : null;
+            $info = array ('width' => $width, 'height' => $height );
+
+            $s_vid_conv_cmd = "/usr/bin/ffmpeg -i ".$fileToFlv." -b 1500k -vcodec libx264 -vpre slow -vpre baseline -g 30 -s 640x360 ".$fileFlv;
+
+            $x=exec($s_vid_conv_cmd);
+
+            exec("/usr/bin/ffmpeg -i ".$fileToFlv." -vframes 1 -ss 00:00:10 -s 640x360 -f image2 ".$Flvjpg);
+
+            $file1 = (object)array(
+                'uid' => 1,
+                'uri' => $Flvjpg,
+                'filemime' => file_get_mimetype($Flvjpg),
+                'status' => 1,
+            );
+            if ($file1) {
+// Move the file, into the Drupal file system
+                if ($file1 = file_move($file1, 'public://')) {
+                    $file1->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file1 = file_save($file1);
+                    //set the extra values needed to make node_save work
+                    $file1->display = 1;
+                    $file1->description = "";
+                }
+
+            }
+
+            $file2 = (object)array(
+                'uid' => 1,
+                'uri' => $fileFlv,
+                'filemime' => file_get_mimetype($fileFlv),
+                'status' => 1,
+            );
+            if ($file2) {
+// Move the file, into the Drupal file system
+                if ($file2 = file_move($file2, 'public://')) {
+                    $file2->status = FILE_STATUS_PERMANENT;
+                    // $file->file_display = 1;
+                    $file2 = file_save($file2);
+                    //set the extra values needed to make node_save work
+                    $file2->display = 1;
+                    $file2->description = "";
+                }
+
+            }
+
+            $data['video_urll1222'] = file_create_url(@$file2->uri);
+            $data['video_name'] = $filename1.'.mp4';
+            $data['image_url'] = image_style_url('large', (@$file1->uri));
+
+
+
+        }
+        else{
+            $data['is_video']=0;
+            $data['image_url'] = image_style_url('large', (@$file->uri));
+            if($path_parts['extension']=='pdf'){
+              $data['productdownloadfiletype'] ='pdf';
+            }
+            else if($path_parts['extension']=='doc' || $path_parts['extension']=='docs'){
+                $data['productdownloadfiletype'] ='doc';
+            }
+            else{
+                $data['productdownloadfiletype'] ='image';
+            }
+            $data['image_name'] =  image_style_url('large', (@$file->uri));
+        }
+        //
+
+
+        // $data['status'] = 'success';
+    }
+    else{
+        $data['status']='error';
+    }
+    echo json_encode(@$data) ;
+}
+function jungleproductdetails(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $queryu = db_select('jungleproduct', 'jd');
+    ini_set('memory_limit', '128M');
+    //$queryu->innerJoin('junglecategory', 'jc','jc.id=jd.category_id');
+    $queryu->fields('jd');
+    //$queryu->fields('jc',array('type'))
+    $queryu->condition('jd.id', $_POST['id'], '=');
+    $resultu = $queryu->execute();
+
+    while($recordu = $resultu->fetchAssoc()) {
+        $temparray=$recordu;
+
+        if($recordu['product_file']!=''){
+            $productextns=explode('.',$recordu['product_file']);
+
+            if($productextns['1']=='mp4'){
+                $temparray['is_video'] = 1;
+                $temparray['cover_img_url'] = image_style_url('large', 'public://'.$productextns['0'].'.jpg');;
+                $temparray['video_url'] = file_create_url('public://'.@$recordu['product_file']);
+                $temparray['productfiletype'] = 'video';
+            }
+            else{
+                $temparray['is_video'] = 0;
+                $temparray['image_url'] = image_style_url('frondetails_216x302_', (@$recordu['product_file']));
+                $temparray['productfiletype'] = 'image';
+
+             /*   $stamp = imagecreatefrompng('http://testbed.jungledrones.com/images/icon5copy.png');
+                $im = imagecreatefrompng($temparray['image_url']);
+
+// Set the margins for the stamp and get the height/width of the stamp image
+                $marge_right = 0;
+                $marge_bottom = 0;
+                $sx = imagesx($stamp);
+                $sy = imagesy($stamp);
+                $imgx = imagesx($im);
+                $imgy = imagesy($im);
+                $centerX=round($imgx/2);
+                $centerY=round($imgy/2);
+
+// Copy the stamp image onto our photo using the margin offsets and the photo
+// width to calculate positioning of the stamp.
+                //imagecopy($im, $stamp, imagesx($im) - $sx - $marge_right, imagesy($im) - $sy - $marge_bottom, 0, 0, imagesx($stamp), imagesy($stamp));
+                //imagecopy($im, $stamp, $centerX, $centerY, 0, 0, imagesx($stamp), imagesy($stamp));
+                imagecopy($im, $stamp, 0, -250,85, 0, imagesx($stamp), imagesy($stamp));
+
+// Output and free memory
+                header('Content-type: image/png');
+                imagepng($im);
+                imagedestroy($im);*/
+
+            }
+
+        }
+        if($recordu['productdownload_file']!=''){
+            $productextns1=explode('.',$recordu['productdownload_file']);
+           // echo $productextns1[1];
+            if($productextns1[1]=='mp4'){
+                $temparray['is_video1'] = 1;
+                $temparray['cover_img_url1'] = image_style_url('large', 'public://'.$productextns1['0'].'.jpg');;
+                $temparray['video_url1'] = file_create_url('public://'.@$recordu['productdownload_file']);
+                $temparray['productdownloadfiletype'] = 'video';
+
+            }
+            else{
+
+                $temparray['is_video1'] = 0;
+                $temparray['image_url1'] = image_style_url('large', (@$recordu['productdownload_file']));
+                if($productextns1[1]=='pdf'){
+                    $temparray['productdownloadfiletype'] ='pdf';
+                }
+                else if($productextns1[1]=='doc' || $productextns1[1]=='docs'){
+                    $temparray['productdownloadfiletype'] ='doc';
+                }
+                else {
+                    $temparray['productdownloadfiletype'] ='image';
+                }
+
+
+
+                /*   $stamp = imagecreatefrompng('http://testbed.jungledrones.com/images/icon5copy.png');
+                   $im = imagecreatefrompng($temparray['image_url']);
+
+   // Set the margins for the stamp and get the height/width of the stamp image
+                   $marge_right = 0;
+                   $marge_bottom = 0;
+                   $sx = imagesx($stamp);
+                   $sy = imagesy($stamp);
+                   $imgx = imagesx($im);
+                   $imgy = imagesy($im);
+                   $centerX=round($imgx/2);
+                   $centerY=round($imgy/2);
+
+   // Copy the stamp image onto our photo using the margin offsets and the photo
+   // width to calculate positioning of the stamp.
+                   //imagecopy($im, $stamp, imagesx($im) - $sx - $marge_right, imagesy($im) - $sy - $marge_bottom, 0, 0, imagesx($stamp), imagesy($stamp));
+                   //imagecopy($im, $stamp, $centerX, $centerY, 0, 0, imagesx($stamp), imagesy($stamp));
+                   imagecopy($im, $stamp, 0, -250,85, 0, imagesx($stamp), imagesy($stamp));
+
+   // Output and free memory
+                   header('Content-type: image/png');
+                   imagepng($im);
+                   imagedestroy($im);*/
+
+            }
+
+        }
+        $jungleproductlist=$temparray;
+
+    }
+    echo json_encode(@$jungleproductlist);
+
+}
+
+
+function jungleproductlist()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+    $junglecatlist = array();
+
+    $querycu = db_select('junglecategory', 'jp');
+    //$queryu->innerJoin('junglecategory', 'jc','jc.id=jp.category_id');
+    $querycu->fields('jp');
+    //$queryu->fields('jc',array('cat_name','type'));
+    /*if(isset($_POST['type']) && $_POST['type']!=''){
+        $queryu->condition('jc.type',$_POST['type'],'=')  ;
+    }*/
+
+    //if(@$_REQUEST['id']>0)$querycu->condition('jp.id',$_REQUEST['id'],'=')  ;
+
+    $resultcu = $querycu->execute();
+
+
+    if ($resultcu->rowCount() > 0) {
+        $i = 0;
+        while ($recordcu = $resultcu->fetchAssoc()) {
+
+            $junglecatlist[$recordcu['id']]=$recordcu;
+
+        }
+    }
+
+    //print_r($junglecatlist);
+
+
+
+    $jungleproductlist = array();
+
+    $queryu = db_select('jungleproduct', 'jp');
+    //$queryu->innerJoin('junglecategory', 'jc','jc.id=jp.category_id');
+    $queryu->fields('jp');
+    //$queryu->fields('jc',array('cat_name','type'));
+    /*if(isset($_POST['type']) && $_POST['type']!=''){
+        $queryu->condition('jc.type',$_POST['type'],'=')  ;
+    }*/
+
+    if(@$_REQUEST['id']>0)$queryu->condition('jp.id',$_REQUEST['id'],'=')  ;
+    if(@$_REQUEST['userid']>0)$queryu->condition('jp.user_id',$_REQUEST['userid'],'=')  ;
+    if(isset($_POST['type']) && $_POST['type']=='front' ){
+        $queryu->condition('jp.status',1,'=')  ;
+    }
+    if(@$_POST['productid']>0 && @$_POST['producttype']=='feature'){
+        $queryu->condition('jp.id',$_POST['productid'],'<>')  ;
+        $queryu->condition('jp.status',1,'=')  ;
+    }
+    //print_r($_POST['productidss']);
+     if(@$_POST['productidss']!='' && @$_POST['carttype']=='cart'){
+         $productss=array();
+        // $productss=$_POST['productidss'];
+         $productss=explode(',',$_POST['productidss']);
+        $queryu->condition('jp.id',$productss,'NOT IN')  ;
+        $queryu->condition('jp.status',1,'=')  ;
+    }
+
+
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+
+
+            if((intval($recordu['category_id'])<1)) {
+
+                $category = json_decode($recordu['category_id']);
+
+                $cf=0;
+
+                foreach ($category as $cat) {
+
+                    if ($cf==1) {
+                        $recordu['cat_name'] .= ' , ' . $junglecatlist[$cat->id]['cat_name'];
+                        $recordu['catids'] .= "|".$junglecatlist[$cat->id]['id'];
+                    }
+                    else {
+
+                        $recordu['cat_name'] = (string)$junglecatlist[$cat->id]['cat_name'];
+                        $recordu['type'] = $junglecatlist[$cat->id]['type'];
+                        $recordu['catids'] = $junglecatlist[$cat->id]['id'];
+                        $cf=1;
+                    }
+
+                }
+            }
+            else {
+                $recordu['cat_name'] = (string)($junglecatlist[$recordu['category_id']]['cat_name']);
+                $recordu['type'] = $junglecatlist[$recordu['category_id']]['type'];
+                $recordu['catids'] = $junglecatlist[$recordu['category_id']]['id'];
+            }
+
+
+            $temparray=$recordu;
+            $temparray['textdesc']=strip_tags($recordu['product_desc']);
+            $temparray['payout']=floatval($recordu['payout']);
+            $temparray['credits']=floatval($recordu['credits']);
+
+            $temparray['productlisturl'] = image_style_url('productlist', (@$recordu['product_file']));
+            $temparray['productdetailmain'] = image_style_url('productdetailmain', (@$recordu['product_file']));
+            $temparray['bestsellerp'] = image_style_url('bestseller', (@$recordu['product_file']));
+
+
+
+
+
+            if($recordu['product_file']!='') {
+                $productextns = explode('.', $recordu['product_file']);
+
+                if ($productextns['1'] == 'mp4') {
+                    $temparray['is_video'] = 1;
+                    $temparray['image_url'] = image_style_url('frontimage', ('public://'.$productextns['0'].'.jpg'));
+                    $temparray['video_url'] = file_create_url('public://'.$recordu['product_file']);
+                } else {
+                    $temparray['is_video'] = 0;
+                    $temparray['image_url'] = image_style_url('frontimage', (@$recordu['product_file']));
+                    $temparray['feature_image_url'] = image_style_url('featureimage_222x174_', (@$recordu['product_file']));
+                    $temparray['cartfeature_image_url'] = image_style_url('cartfeature_157x238_', (@$recordu['product_file']));
+
+                }
+            }
+
+            if(@$_REQUEST['filter']>0)$jungleproductlist[@$recordu['id']]= $temparray;
+                    else $jungleproductlist[$i]= $temparray;
+
+            //echo $recordu['id'];
+            $i++;
+        }
+    }
+    echo json_encode(@$jungleproductlist,JSON_NUMERIC_CHECK);
+
+}
+function parentproductlist()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $jungleproductlist = array();
+
+    $queryu = db_select('jungleproduct', 'ca');
+    $queryu->fields('ca');
+    $queryu->condition('ca.parent_cat',0,'=');
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+
+
+            $jungleproductlist[$i]= $temparray;
+            $i++;
+
+/*            $jungleproductlist[$i]['cat_name'] = $recordu['cat_name'];
+            $jungleproductlist[$i]['id'] = $recordu['id'];
+            $jungleproductlist[$i]['parent_cat'] = $recordu['parent_cat'];
+            $jungleproductlist[$i]['status'] = $recordu['status'];
+            $i++;*/
+
+        }
+    }
+    // $records['user']=$userlist;
+
+
+
+
+    echo json_encode(@$jungleproductlist);
+
+
+
+}
+
+
+
+
+function addjungleproduct(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $product_file='';
+    $productdownload_file='';
+    $user_id=0;
+    $is_download=0;
+    if(isset($_POST['product_file']) && ($_POST['product_file']!='')){
+        $product_file =$_POST['product_file'];
+    }
+    if(isset($_POST['productdownload_file']) && ($_POST['productdownload_file']!='')){
+        $productdownload_file =$_POST['productdownload_file'];
+        $is_download =1;
+
+    }
+
+    if(isset($_POST['userid']) && ($_POST['userid']!='')){
+        $user_id =$_POST['userid'];
+    }
+    $status=1;
+    if(isset($_REQUEST['fonttype']) && $_REQUEST['fonttype']=='font'){
+        $status=0;
+    }
+
+    $query = db_insert('jungleproduct')->fields(array('product_name','product_desc','category_id','product_file','status','priority','price','payout','credits','user_id','productdownload_file','is_download'));
+        //foreach ($values as $record) {
+        $query->values(array(@$_POST['product_name'],@$_POST['product_desc'],@$_POST['category_id'],$product_file,$status,@$_POST['priority'],floatval(@$_POST['price']),floatval(@$_POST['payout']),floatval(@$_POST['credits']),intval($user_id),$productdownload_file,$is_download));
+        //}
+        $query->execute();
+
+
+    $data['status'] = 'success';
+     echo json_encode($data);
+    return;
+}
+function jungleproductupdates(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $product_file='';
+    $productdownload_file='';
+    $is_download=0;
+    if(isset($_POST['product_file']) && ($_POST['product_file']!='')){
+        $product_file =$_POST['product_file'];
+    }
+
+    if(isset($_POST['productdownload_file']) && ($_POST['productdownload_file']!='')){
+        $productdownload_file =$_POST['productdownload_file'];
+        $is_download =1;
+    }
+    db_update('jungleproduct')
+        ->fields(array('product_name'=>@$_POST['product_name'],'product_desc'=>@$_POST['product_desc'],'category_id'=>@$_POST['category_id'],'product_file'=>@$_POST['product_file'],'priority'=>@$_POST['priority'],'price'=>floatval(@$_POST['price']),'payout'=>floatval(@$_POST['payout']),'credits'=>floatval(@$_POST['credits']),'productdownload_file'=>@$_POST['productdownload_file'],'is_download'=>@$_POST['is_download']))
+        ->condition('id', intval($_POST['id']))
+         ->execute();
+}
+
+
+
+function deletejungleproduct(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $num_deleted = db_delete('jungleproduct')
+        ->condition('id', @$_POST['id'])
+        ->execute();
+
+}
+
+function jungleproductupdatestatus(){
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    $status=1-intval($_POST['status']);
+    $query=db_update('jungleproduct')
+        ->fields(array('status'=>@$status))
+        ->condition('id', intval($_POST['id']))
+        ->execute();
+
+    echo "true";
+}
+
+
+
+function filedownload(){
+    ini_set('memory_limit', '128M');
+
+    header('Content-type: text/html');
+    //header('Content-Disposition: attachment');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+     $filePath = ('http://admin.jungledrones.com/sites/default/files/styles/front-photo_600_600_/public/1458148736_1460724758.png');
+
+     $x=arg();
+     //print_r($x); exit;	
+
+     $queryu = db_select('jungleproduct', 'ca');
+    $queryu->fields('ca');
+    $queryu->condition('ca.id',$x[2],'=');
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+            //$filePath = image_style_url('front-photo_600_600_', (@$recordu['product_file']));
+            $filePath = @$recordu['product_file'];
+            $filePath2 = @$recordu['product_file'];
+
+
+            $jungleproductlist[$i]= $temparray;
+            $i++;
+
+/*            $jungleproductlist[$i]['cat_name'] = $recordu['cat_name'];
+            $jungleproductlist[$i]['id'] = $recordu['id'];
+            $jungleproductlist[$i]['parent_cat'] = $recordu['parent_cat'];
+            $jungleproductlist[$i]['status'] = $recordu['status'];
+            $i++;*/
+
+        }
+    }
+
+
+    $filetype=explode('/',file_get_mimetype($filePath2));
+
+    //print_r($filetype); exit;
+
+    $queryu = db_select('image_styles', 'u');
+    //$queryu->join('admin', 'f', 'f.user_id = u.uid');
+    //$queryu->leftjoin('users_roles', 'ur', 'ur.uid = u.uid');
+    //$queryu->fields('ur', array('rid'));
+    $queryu->fields('u', array( 'name', 'isid'));
+    //$queryu->fields('f', array('fname', 'lname', 'phone_no', 'mobile_no', 'address'))
+    // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
+    $queryu->condition('u.isid', $x[3], '=');
+    //$queryu->orderBy('u.ieid','DESC');
+    //->condition('u.uid', 74, '=');
+    $queryu->range(0, 1);
+    $resultu = $queryu->execute();
+    $recordu = $resultu->fetchAssoc();
+
+    //print_r(($recordu['name']));
+    //exit;
+    $filePath = image_style_url($recordu['name'], (@$filePath));
+
+    //echo strpos($filePath,'itok');
+   // echo substr($filePath,0,strpos($filePath,'itok')-1);
+   // exit;
+    //exit;
+
+     //file_transfer($filePath, array('Content-disposition', 'attachment; filename='.$filePath));
+drupal_add_http_header('Content-disposition', 'attachment; filename=' .substr($filePath,0,strpos($filePath,'itok')-1));
+    readfile($filePath);
+  
+
+
+    //file_download($filePath);
+    /*print_r($filePath);
+
+    if(file_exists($filePath)) {
+        $fileName = basename($filePath);
+        $fileSize = filesize($filePath);
+
+        // Output headers.
+        header("Cache-Control: private");
+        header("Content-Type: application/stream");
+        header("Content-Length: ".$fileSize);
+        header("Content-Disposition: attachment; filename=".$fileName);
+
+        // Output file.
+        readfile ($filePath);
+        exit();
+    }
+    else {
+        die('The provided file path is not valid.');
+    }*/
+}
+function filedownloadvideo(){
+    ini_set('memory_limit', '128M');
+
+    header('Content-type: text/html');
+    //header('Content-Disposition: attachment');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+     $filePath = ('http://admin.jungledrones.com/sites/default/files/styles/front-photo_600_600_/public/1458148736_1460724758.png');
+
+     $x=arg();
+     //print_r($x); exit;
+
+     $queryu = db_select('jungleproduct', 'ca');
+    $queryu->fields('ca');
+    $queryu->condition('ca.id',$x[2],'=');
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        $i = 0;
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+            //$filePath = image_style_url('front-photo_600_600_', (@$recordu['product_file']));
+            $filePath = @$recordu['product_file'];
+            $filePath2 = @$recordu['product_file'];
+
+
+            $jungleproductlist[$i]= $temparray;
+            $i++;
+
+/*            $jungleproductlist[$i]['cat_name'] = $recordu['cat_name'];
+            $jungleproductlist[$i]['id'] = $recordu['id'];
+            $jungleproductlist[$i]['parent_cat'] = $recordu['parent_cat'];
+            $jungleproductlist[$i]['status'] = $recordu['status'];
+            $i++;*/
+
+        }
+    }
+
+
+    $filetype=explode('/',file_get_mimetype($filePath2));
+
+    //print_r($filetype); exit;
+
+    $queryu = db_select('image_styles', 'u');
+    //$queryu->join('admin', 'f', 'f.user_id = u.uid');
+    //$queryu->leftjoin('users_roles', 'ur', 'ur.uid = u.uid');
+    //$queryu->fields('ur', array('rid'));
+    $queryu->fields('u', array( 'name', 'isid'));
+    //$queryu->fields('f', array('fname', 'lname', 'phone_no', 'mobile_no', 'address'))
+    // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
+    $queryu->condition('u.isid', $x[3], '=');
+    //$queryu->orderBy('u.ieid','DESC');
+    //->condition('u.uid', 74, '=');
+    $queryu->range(0, 1);
+    $resultu = $queryu->execute();
+    $recordu = $resultu->fetchAssoc();
+
+
+    $filePath = drupal_realpath('public://'.$filePath);
+
+    $data1['video_url1'] = (@$filePath);
+
+    $fileToFlv = $filePath;
+    $fileFlv = 'public://temp/'.time().$filePath2;
+    //$fileFlv = $filePath;
+    //$Flvjpg = $target_dir.$filename1.'.jpg';
+
+
+
+    $queryu = db_select('imagesizemanager', 'u');
+    //$queryu->join('admin', 'f', 'f.user_id = u.uid');
+    //$queryu->leftjoin('users_roles', 'ur', 'ur.uid = u.uid');
+    //$queryu->fields('ur', array('rid'));
+    $queryu->fields('u');
+    //$queryu->fields('f', array('fname', 'lname', 'phone_no', 'mobile_no', 'address'))
+    // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
+    $queryu->condition('u.style_id', $x[3], '=');
+    //$queryu->orderBy('u.ieid','DESC');
+    //->condition('u.uid', 74, '=');
+    $queryu->range(0, 1);
+    $resultu = $queryu->execute();
+    $recordu = $resultu->fetchAssoc();
+
+
+    //print_r($recordu);
+    //exit;
+
+
+    //echo $command = "/usr/bin/ffmpeg" . '  -s '.$recordu['width'].'X'.$recordu['height'] ." -i ". $fileToFlv . ' -vstats 2>&1';
+    // $command = " /usr/bin/ffmpeg -i ".$fileToFlv." -s  ".$recordu['width'].'x'.$recordu['height'] ." ". drupal_realpath($fileFlv);
+     $command = " /usr/bin/ffmpeg -i ".$fileToFlv."   -sameq -s ".$recordu['width']."X".$recordu['height']." ". drupal_realpath($fileFlv);
+  //  $command = " /usr/bin/ffmpeg -i ".$fileToFlv." -i /home/jungledrones/public_html/images/logo.png -filter_complex \"overlay=5:5,format=yuv420p\"   ". drupal_realpath($fileFlv);
+    //exit;
+   // exit;
+    $output = shell_exec ( $command );
+   // exit;
+
+
+
+
+drupal_add_http_header('Content-disposition', 'attachment; filename=' .($filePath2));
+    readfile(drupal_realpath($fileFlv));
+
+
+
+
+}
+
+
+
+
+

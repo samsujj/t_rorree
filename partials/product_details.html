@@ -1,0 +1,178 @@
+<div class="container-fluid productdetailheading">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h2>PRODUCT DETAILS</h2>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="container productdetailbody1">
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+            <div class="about_icon2" style="margin-top: -80px;">
+                <img src="images/chakeout_headingicon2.png" alt="#" >
+            </div>
+
+
+
+            <div class="product_block_wrapper">
+
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 productmainimg">
+                  <img src="{{product_img_src}}" alt="#" >
+                   <!--<img src="images/cdproduct2.png" alt="#" >-->
+                </div>
+
+                <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 productmaintext">
+                 <!--<h2>Meditation 101 CD</h2>-->
+                 <h2>{{productdetails.product_name}}</h2>
+                    <!--<h3>Price : $12.97</h3>-->
+                    <h3>Price : ${{productdetails.price}}</h3>
+
+                    <div class="product-description_text">
+
+
+                   <p ng-bind-html="trustAsHtml(productdetails.product_desc)">
+
+<!--
+                   The Meditation 101 CD series has two discs. You will learn the benefits of meditation and the basic tools used to clear out the chatter and the monkey mind so that you can hear the messages that are for you.  The tools will help you to release stress and tension, decrease anxiety, energize your life, improve your ability to focus, and refresh you body and your mind.
+-->
+                   </p>
+
+                        <a href="javascript:void(0)" class="instock">In Stock</a>
+
+                    </div>
+
+
+                    <div class="Quantity_block">
+
+                        <label>Quantity</label>
+
+                        <div class="Quantity_box">
+                        <a href="javascript:void(0)" ng-click="removequantity()"  class="Quantitybtn">-</a>
+                        <input type="text" value="1" id="quantity" class="productqui">
+
+                        <a href="javascript:void(0)" ng-click="addquantity()" class="Quantitybtn">+</a>
+
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+
+
+                    <a href="javascript:void(0)" class="cartbtn" ng-click="addtocartfromdet(id)">ADD TO CART</a>
+
+                    <a href="javascript:void(0)" class="cartbtn_download">[ Click Here For Digital Download Version ]</a>
+
+                    <div class="clearfix"></div>
+
+                </div>
+
+
+                <div class="clearfix"></div>
+
+
+  <div class="featured_product_body">
+
+      <h4>FEATURED PRODUCTS</h4>
+
+      <div class="featured_product_block">
+
+          <div class="featured_product_con" ng-repeat="item in productlist  | limitTo : 4">
+
+              <div class="featured_imgbox">
+
+             <!-- <img src="images/cdproduct.png" alt="#" >-->
+              <img src="{{item.feature_image_url}}" alt="#" >
+
+                  </div>
+
+             <!-- <h2>Healing Your Life MeditationCD</h2>-->
+              <h2>{{item.product_name}}</h2>
+
+
+              <div class="productprice">${{item.price}}</div>
+
+              <div class="productview">   <a ui-sref="product-details({id:item.id})" href="javascript:void(0)">View Now</a></div>
+
+              <div class="clearfix"></div>
+
+          </div>
+<!--
+          <div class="featured_product_con">
+
+              <div class="featured_imgbox">
+
+                  <img src="images/cdproduct.png" alt="#" >
+
+              </div>
+
+              <h2>Healing Your Life MeditationCD</h2>
+
+
+              <div class="productprice">$12.97</div>
+
+              <div class="productview">   <a href="javascript:void(0)">View Now</a></div>
+
+              <div class="clearfix"></div>
+
+          </div>
+          <div class="featured_product_con">
+
+              <div class="featured_imgbox">
+
+                  <img src="images/cdproduct.png" alt="#" >
+
+              </div>
+
+              <h2>Healing Your Life MeditationCD</h2>
+
+
+              <div class="productprice">$12.97</div>
+
+              <div class="productview">   <a href="javascript:void(0)">View Now</a></div>
+
+              <div class="clearfix"></div>
+
+          </div>
+          <div class="featured_product_con">
+
+              <div class="featured_imgbox">
+
+                  <img src="images/cdproduct.png" alt="#" >
+
+              </div>
+
+              <h2>Healing Your Life MeditationCD</h2>
+
+
+              <div class="productprice">$12.97</div>
+
+              <div class="productview">   <a href="javascript:void(0)">View Now</a></div>
+
+              <div class="clearfix"></div>
+
+          </div>
+-->
+
+
+
+          <div class="clearfix"></div>
+
+      </div>
+
+
+  </div>
+
+
+
+
+                </div>
+
+
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
-<aside class="main-sidebar">
+
+<aside class="main-sidebar hide_left">
 
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
@@ -27,37 +28,29 @@
           <!-- /.search form -->
 
           <!-- Sidebar Menu -->
+
           <ul class="sidebar-menu">
            <!-- <li class="header">HEADER</li>-->
             <!-- Optionally, you can add icons to the links -->
            <!-- <li class="active"><a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Link</span></a></li>-->
  <li><a ui-sref="dashboard"><i class="fa fa-link"></i> <span>Dashboard</span></a></li>
-            <li class="treeview">
+            <li class="treeview" ng-if="userrole==4">
               <a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Admin Manager</span> <i class="fa fa-angle-left pull-right"></i></a>
-              <ul class="treeview-menu left_treemenu">
+              <ul class="treeview-menu">
                 <li><a  ui-sref="add-admin">Add Admin</a></li>
                 <li><a  ui-sref="admin-list">Admin List</a></li>
               </ul>
             </li>
 
-
-
-                      <li ng-if="userrole==4"><a ui-sref="signupuser-list"><i class="fa fa-link"></i> <span>Member Signup Leads</span></a></li>
-                      <li ng-if="userrole==4"><a ui-sref="employement-list"><i class="fa fa-link"></i> <span>Employment Leads</span></a></li>
-                      <li ng-if="userrole==4"><a ui-sref="pilot-list"><i class="fa fa-link"></i> <span>Pilot List</span></a></li>
-
-                      
-                   
-                      
-                      
- <!--                 </ul>
+              <li class="treeview" ng-if="userrole==4">
+                  <a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Affiliate Manager</span> <i class="fa fa-angle-left pull-right"></i></a>
+                  <ul class="treeview-menu left_treemenu">
+                      <li><a  ui-sref="add-affiliate">Add Affiliate</a></li>
+                      <li><a  ui-sref="affiliate-list">Affiliate List</a></li>
+                  </ul>
               </li>
-            <li class="treeview">
-                  <a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Contact Manager</span> <i class="fa fa-angle-left pull-right"></i></a>
-                  <ul class="treeview-menu">-->
 
-              <li ng-if="userrole==4"><a ui-sref="contact-list"><i class="fa fa-link"></i> <span>Contact Leads</span></a></li>
-              <li ng-if="userrole==4"><a ui-sref="flight-list"><i class="fa fa-link"></i> <span>Flight List</span></a></li>
+                      <li ng-if="userrole==4"><a ui-sref="generaluser-list"><i class="fa fa-link"></i> <span>General User List</span></a></li>
                   <!--</ul>
               </li>-->
               <li class="treeview" ng-if="userrole==4">
@@ -67,11 +60,11 @@
                       <li><a ui-sref="event-list">Event List</a></li>
                   </ul>
               </li>
-              <li class="treeview" ng-if="userrole==6">
-                  <a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Flight Manager</span> <i class="fa fa-angle-left pull-right"></i></a>
+              <li class="treeview" ng-if="userrole==4">
+                  <a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Blog Manager</span> <i class="fa fa-angle-left pull-right"></i></a>
                   <ul class="treeview-menu left_treemenu">
-                      <li><a ui-sref="add-flight">Add Flight</a></li>
-                      <li><a ui-sref="flight-list">Flight List</a></li>
+                      <li><a ui-sref="add-blog">Add Blog</a></li>
+                      <li><a ui-sref="blog-list">Blog List</a></li>
                   </ul>
               </li>
 
@@ -90,16 +83,15 @@
                   </ul>
               </li>
               <li class="treeview" ng-if="userrole==4">
-                  <a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Image Size Manager</span> <i class="fa fa-angle-left pull-right"></i></a>
+                  <a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Content Manager</span> <i class="fa fa-angle-left pull-right"></i></a>
                   <ul class="treeview-menu left_treemenu">
-                      <li><a ui-sref="imagesizeadd">Add Image Size</a></li>
-                      <li><a ui-sref="imagesize-list">Image Size List</a></li>
+                      <li><a ui-sref="add-content">Add Content</a></li>
+                      <li><a ui-sref="contentlistt">Content List</a></li>
                   </ul>
               </li>
 
-                 <li ng-if="userrole==4" ><a ui-sref="eventrsvplist"><i class="fa fa-link"></i> <span>Event RSVP</span></a></li>
-                 <li ng-if="userrole==4" ><a ui-sref="addcontent"><i class="fa fa-link"></i> <span>Add Content</span></a></li>
-                 <li ng-if="userrole==4" ><a ui-sref="contentlist"><i class="fa fa-link"></i> <span>Content List</span></a></li>
+
+                 <li ng-if="userrole==4" ui-sref="order-list" ><a href="javascript:void(0)"><i class="fa fa-link"></i> <span>Order List</span></a></li>
 
                   <li><a style="cursor: pointer" ng-click="logout()"><i class="fa fa-link"></i> <span>Logout</span></a></li>
 

@@ -1,0 +1,160 @@
+<div class="container-fluid cartdetailheading">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h2>Cart</h2>
+        </div>
+    </div>
+</div>
+
+
+<div class="container cartdetailbody1">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="about_icon2" style="margin-top: -80px;">
+                <img src="images/chakeout_headingicon2.png" alt="#" >
+            </div>
+
+            <div class="cart_block_wrapper">
+
+                <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12 cartleftdiv">
+
+                    <div class="cart_row_table" ng-repeat="item in cartarray2">
+
+                    <div class="cart_img">
+                        <!--<img src="images/cdproduct.png" alt="#" >-->
+                        <img src="{{item.cartimage}}" alt="#" >
+                    </div>
+
+                        <div class="cart_proinfo">
+                            <!--<h2>Healing Your Life Meditation CD</h2>-->
+                            <h2>{{item.product_name}}</h2>
+
+                            <h3>Price: ${{item.price}}</h3>
+
+                            <p ng-bind-html="trustAsHtml(item.product_desc)">
+<!--                                You will be guided through a meditation where you learn tools
+                                to use in your everyday life to heal your body of physical,
+                                emotional, and spiritual ailments.--></p>
+
+                            <a href="javascript:void(0)" class="cartbtn_download2">[ Click Here For Digital Download Version ]</a>
+                            <a href="javascript:void(0)" ng-click="delcart(item)" class="cartbtn_del"><img src="images/cart_delete_icon.png" alt="#" ></a>
+                            <div class="clearfix"></div>
+                            <div class="Quantity_block2"><label>Quantity</label> <input type="text" value="{{item.qty}}" class="Quantity_value" > <div class="clearfix"></div></div>
+
+
+                        </div>
+
+                        <div class="clearfix"></div>
+                    </div>
+
+
+
+
+                </div>
+                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 cartrightdiv">
+                    <h2>SHOPPING SUMMARY</h2>
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="left" valign="middle">TOTAL QUANTITY</td>
+                            <td align="right" valign="middle">{{cartarray.quantity}}</td>
+                        </tr>
+                        <tr>
+                            <td align="left" valign="middle"><span>PRODUCT  TOTAL</span></td>
+                            <td align="right" valign="middle">${{cartarray.subtotal}}</td>
+                        </tr>
+                        <tr>
+                            <td align="left" valign="middle">SHIPPING</td>
+                            <td align="right" valign="middle">TBD</td>
+                        </tr>
+                        <tr>
+                            <td align="left" valign="middle">SALES TAX</td>
+                            <td align="right" valign="middle">TED</td>
+                        </tr>
+                        <tr>
+                            <td align="left" valign="middle"><span>SUBTOTAL</span></td>
+                            <td align="right" valign="middle">${{cartarray.subtotal}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <a href="javascript:void(0)" ng-click="chklogin()" class="cartbtnnew1">CHECKOUT</a>
+                                <a href="javascript:void(0)" ui-sref="books" class="cartbtnnew1">CONTINUE SHOPPING</a>
+
+                            </td>
+
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="clearfix"></div>
+
+
+                <div class="cart_page_bottomgallery">
+
+                    <h2>We Think you'll Love These</h2>
+
+                    <div class="cart_gallerydiv" ng-repeat="itemproduct in productlist |limitTo :4">
+                        <a ui-sref="product-details({id:itemproduct.id})"><div class="cartgdiv">
+                            <!--<img src="images/cart2.png" alt="#" >-->
+                            <img src="{{itemproduct.cartfeature_image_url}}" alt="#" >
+                        </div></a>
+                        <div class="carttextdiv">
+                            <a ui-sref="product-details({id:itemproduct.id})"><h3>{{itemproduct.product_name}}</h3></a>
+                            <h4>Price: ${{itemproduct.price}}</h4>
+
+                        </div>
+
+                    </div>
+     <!--               <div class="cart_gallerydiv">
+                        <div class="cartgdiv"><img src="images/cart3.png" alt="#" ></div>
+                        <div class="carttextdiv">
+                            <h3>The Prosperity</h3>
+                            <h4>Price: $ 6</h4>
+
+                        </div>
+
+                    </div>
+                    <div class="cart_gallerydiv">
+                        <div class="cartgdiv"><img src="images/cart4.png" alt="#" ></div>
+                        <div class="carttextdiv">
+                            <h3>The Prosperity</h3>
+                            <h4>Price: $ 6</h4>
+
+                        </div>
+
+                    </div>
+                    <div class="cart_gallerydiv">
+                        <div class="cartgdiv"><img src="images/cart1.png" alt="#" ></div>
+                        <div class="carttextdiv">
+                            <h3>The Prosperity</h3>
+                            <h4>Price: $ 6</h4>
+
+                        </div>
+
+                    </div>
+   -->                 <div class="clearfix"></div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/ng-template" id="chkloginpopup">
+    <div class="newlogin-box">
+        <a href="javascript:void(0);" ng-click="cancel()" >
+            <img src=images/newloginclose.png alt=#  class="closebtn"/>
+        </a>
+        <div class="newloginwrapper">
+            <div class="newaccountbtnwrapper">
+                <h2>Please Log In.</h2>
+                <a ui-sref="login" class="cartbtnnew1">Continue</a>
+                <a href="javascript:void(0);" ng-click="cancel()" class="cartbtnnew1">Cancel</a>
+            </div>
+        </div>
+    </div>
+</script>

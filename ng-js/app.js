@@ -7,7 +7,7 @@
 
 /* App Module */
 
-var tr = angular.module('tr', ['ui.router','ui.bootstrap','ngCookies','angularValidator','ngFileUpload','ui.tinymce']);
+var tr = angular.module('tr', ['ui.router','ui.bootstrap','ngCookies','angularValidator','ngFileUpload','ui.tinymce','ngclipboard','youtube-embed']);
 
 
 
@@ -92,7 +92,7 @@ tr.filter('htmlToPlaintext', function () {
     }
 });
 
-tr.run(['$rootScope', '$state','contentservice','$cookieStore','carttotal',function($rootScope, $state,contentservice,$cookieStore,carttotal){
+tr.run(['$rootScope','$state','contentservice','$cookieStore','carttotal',function($rootScope, $state,contentservice,$cookieStore,carttotal){
 
 
 
@@ -101,15 +101,9 @@ tr.run(['$rootScope', '$state','contentservice','$cookieStore','carttotal',funct
 
         $rootScope.userid=$cookieStore.get('userid');
 
-       // console.log($rootScope.userid+'state change user id');
+        $rootScope.carttotal = 0;
 
-        if($rootScope.userid == 0)  $rootScope.cartuser=$cookieStore.get('randomid');
-        else {
-            $rootScope.cartuser = $rootScope.userid;
-        }
 
-        //$rootScope.contentdata=(contentservice.getcontent('http://admintr.influxiq.com/contentlist'));
-        $rootScope.carttotal=parseInt(carttotal.getcontent('http://admin.trs.com/carttotal?user='+$rootScope.cartuser));
         $rootScope.stateIsLoading = true;
         var random=Math.random() * Math.random();
         //$cookieStore.remove('randomid');
@@ -121,9 +115,18 @@ tr.run(['$rootScope', '$state','contentservice','$cookieStore','carttotal',funct
         if(typeof($cookieStore.get('randomid'))=='undefined'){
 
             $cookieStore.put('randomid', random);
-
-            console.log($cookieStore.get('randomid')+'random');
         }
+
+
+        if($rootScope.userid == 0)  $rootScope.cartuser=$cookieStore.get('randomid');
+        else {
+            $rootScope.cartuser = $rootScope.userid;
+        }
+
+        $rootScope.carttotal=parseInt(carttotal.getcontent($rootScope.adminUrl+'cart/carttotal?user='+$rootScope.cartuser));
+
+
+
     });
 
 
@@ -139,7 +142,7 @@ tr.run(['$rootScope', '$state','contentservice','$cookieStore','carttotal',funct
                 $rootScope.cartuser = $rootScope.userid;
             }
 
-            $rootScope.carttotal=parseInt(carttotal.getcontent('http://admin.jungledrones.com/carttotal?user='+$rootScope.cartuser));
+            $rootScope.carttotal=parseInt(carttotal.getcontent($rootScope.adminUrl+'cart/carttotal?user='+$rootScope.cartuser));
 
             //$rootScope.contentdata=(contentservice.getcontent('http://admin.jungledrones.com/contentlist'));
 
@@ -222,12 +225,12 @@ tr.filter("sanitize123", ['$sce', function($sce) {
 }]);
 
 
-tr.directive('content',['$compile','$sce','$state', function($compile,$sce,$state) {
+tr.directive('content',['$compile','$sce','$state','$rootScope', function($compile,$sce,$state,$rootScope) {
     var directive = {};
     directive.restrict = 'E';
     //directive.transclude= true;
     //console.log('t--='+student.ctype);
-    directive.template = '<div class=cc ng-bind-html="student.content | sanitize123" editid="student.id| sanitize123"  ></div><button  class = editableicon editid="student.id| sanitize123" ng-click=editcontent("student.name")>Edit</button><div class=clearfix></div>';
+    directive.template = '<div class=newcc ng-bind-html="student.content | sanitize123" editid="student.id| sanitize123"  ></div><button  class = editableicon editid="student.id| sanitize123" ng-click=editcontent("student.name")>Edit</button><div class=clearfix></div>';
 
     directive.scope = {
         student : "=name"
@@ -235,7 +238,7 @@ tr.directive('content',['$compile','$sce','$state', function($compile,$sce,$stat
 
 
     directive.compile = function(element, attributes) {
-        element.css("display", "inline");
+        element.css("display", "block");
 
 
 
@@ -244,11 +247,52 @@ tr.directive('content',['$compile','$sce','$state', function($compile,$sce,$stat
             //console.log('ctype'+student.ctype);
             $compile($(element).find('.cc'))($scope);
             $compile($(element).find('.editableicon'))($scope);
+
+
+            console.log('dfg : '+$rootScope.userrole);
+
+            if($rootScope.userrole != 4){
+                $(element).find('.editableicon').remove();
+            }
+
+            $(element).bind("DOMSubtreeModified",function(){
+                setTimeout(function(){
+                   // $(element).find('.editableicon').css('position','absolute').css('top',parseFloat($(element).offset().top+$(element).height()-30)).css('left',parseFloat($(element).offset().left+$(element).width()-40));
+                    $(element).find('.editableicon').css('position','absolute').css('top',0).css('right',0);
+                    //console.log($(element).height());
+                    //$compile($(element).next())($scope);
+
+                    $(element).find('.newcc').hover(function(){
+                        var cur_n = $(this).next('.editableicon');
+                        if($rootScope.userrole != 4){
+                            cur_n.hide();
+                        }else{
+                            cur_n.show();
+                        }
+                    },function(){
+                        $(this).next('.editableicon').hide();
+                    })
+
+                    $(element).find('.editableicon').hover(function(){
+                        var cur_n = $(this);
+                        if($rootScope.userrole != 4){
+                            cur_n.hide();
+                        }else{
+                            cur_n.show();
+                        }
+                    },function(){
+                        $(this).hide();
+                    })
+
+
+                },1000);
+            });
+
+
             //$(element).find('.cc').css('display','inline-block');
             //$(element).find('.editableicon').text(99);
 
             $(element).find('.editableicon').on( "click", function() {
-                console.log( $( this ).parent().attr('id') );
                 //if($rootScope.userid<1) $( this).hide();
                 //$(this).parent().css('display','inline-block');
 
@@ -264,7 +308,31 @@ tr.directive('content',['$compile','$sce','$state', function($compile,$sce,$stat
     return directive;
 }]);
 
+tr.directive('autoActive', ['$location', function ($location) {
+    return {
+        restrict: 'A',
+        scope: false,
+        link: function (scope, element) {
+            function setActive() {
+                var path = $location.path();
+                if (path) {
+                    angular.forEach(element.find('li'), function (li) {
+                        var anchor = li.querySelector('a');
+                        if (anchor.href.match('#' + path + '(?=\\?|$)')) {
+                            angular.element(li).addClass('active');
+                        } else {
+                            angular.element(li).removeClass('active');
+                        }
+                    });
+                }
+            }
 
+            setActive();
+
+            scope.$on('$locationChangeSuccess', setActive);
+        }
+    }
+}]);
 
 
 
@@ -397,6 +465,435 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
                 }
             }
         )
+
+        .state('add-affiliate',{
+                url:"/add-affiliate",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+                    'content': {
+                        templateUrl: 'partials/add_affiliate.html' ,
+                        controller: 'addaffiliate'
+                    },
+
+                }
+            }
+        )
+
+        .state('edit-affiliate',{
+                url:"/edit-affiliate/:userId",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+                    'content': {
+                        templateUrl: 'partials/edit_affiliate.html' ,
+                        controller: 'editaffiliate'
+                    },
+
+                }
+            }
+        )
+
+        .state('affiliate-list',{
+                url:"/affiliate-list",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+                    'content': {
+                        templateUrl: 'partials/affiliate_list.html' ,
+                        controller: 'affiliatelist'
+                    },
+
+                }
+            }
+        )
+
+        .state('affiliatetrack', {
+            url: "/affiliatetrack",
+            views:{
+                'admin_header': {
+                    templateUrl: 'partials/admin_top_menu.html',
+                    controller:'admin_header'
+                },
+                'admin_left':{
+                    templateUrl:'partials/admin_left.html',
+                    //controller:'admin_header'
+                },
+                'admin_footer':{
+                    templateUrl:'partials/admin_footer.html',
+                },
+
+                'content':{
+                    templateUrl:'partials/affiliatetrack.html',
+                    controller:'affiliatetrack'
+                },
+
+            }
+
+        } )
+
+        .state('affiliatetrackdetails', {
+            url: "/affiliatetrackdetails/:affiliate_id",
+            views:{
+                'admin_header': {
+                    templateUrl: 'partials/admin_top_menu.html',
+                    controller:'admin_header'
+                },
+                'admin_left':{
+                    templateUrl:'partials/admin_left.html',
+                    //controller:'admin_header'
+                },
+                'admin_footer':{
+                    templateUrl:'partials/admin_footer.html',
+                },
+
+                'content':{
+                    templateUrl:'partials/affiliatetrackdetails.html',
+                    controller:'affiliatetrackdetails'
+                },
+
+            }
+
+        } )
+
+        .state('category-list',{
+                url:"/category-list",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/junglecategorylist.html',
+                        controller:'junglecategorylist'
+                    },
+
+                }
+            }
+        )
+
+        .state('add-category',{
+                url:"/add-category",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/add_category_jungle.html',
+                        controller:'addcategoryjungle'
+                    },
+
+                }
+            }
+        )
+
+
+        .state('edit-category',{
+                url:"/edit-category/:id",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/edit_category_jungle.html',
+                        controller:'editcategoryjungle'
+                    },
+
+                }
+            }
+
+
+        )
+
+        .state('event-list',{
+                url:"/event-list",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/event_list.html',
+                        controller:'eventlist'
+                    },
+
+                }
+            }
+        )
+
+        .state('add-event',{
+                url:"/add-event",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/add_event.html',
+                        controller:'addevent'
+                    },
+
+                }
+            }
+        )
+
+        .state('edit-event',{
+                url:"/edit-event/:eventId",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/edit_event.html',
+                        controller:'editevent'
+                    },
+
+                }
+            }
+        )
+
+
+        .state('blog-list',{
+                url:"/blog-list",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/blog_list.html',
+                        controller:'bloglist'
+                    },
+
+                }
+            }
+        )
+
+        .state('add-blog',{
+                url:"/add-blog",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/add_blog.html',
+                        controller:'addblog'
+                    },
+
+                }
+            }
+        )
+
+
+
+
+        .state('edit-blog',{
+                url:"/edit-blog/:blogid",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/edit_blog.html',
+                        controller:'editblog'
+                    },
+
+                }
+            }
+        )
+
+
+        .state('product-list',{
+                url:"/product-list",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/jungleproductlist.html',
+                        controller:'jungleproductlist'
+                    },
+
+                }
+            }
+        )
+
+        .state('add-product',{
+                url:"/add-product",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/add_product_jungle.html',
+                        controller:'addproductjungle'
+                    },
+
+                }
+            }
+        )
+
+
+        .state('edit-product',{
+                url:"/edit-product/:id",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+
+                    'content':{
+                        templateUrl:'partials/edit_product_jungle.html',
+                        controller:'editproductjungle'
+                    },
+
+                }
+            }
+        )
+
         .state('generaluser-list',{
                 url:"/generaluser-list",
                 views: {
@@ -415,6 +912,29 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
                     'content': {
                         templateUrl: 'partials/generaluser_list.html' ,
                         controller: 'generaluserlist'
+                    },
+
+                }
+            }
+        )
+        .state('order-list',{
+                url:"/order-list",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+                    'content': {
+                        templateUrl: 'partials/order_list.html' ,
+                        controller: 'orderlist'
                     },
 
                 }
@@ -507,6 +1027,233 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
                 }
             }
         )
+        .state('blog',{
+                url:"/blog",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/front_footer.html' ,
+                        controller:'footer'
+                    },
+                    'content': {
+                        templateUrl: 'partials/blog.html' ,
+                        controller: 'blog'
+                    },
+
+                }
+            }
+        )
+        .state('event',{
+            url:"/event",
+            views: {
+
+                'admin_header': {
+                    templateUrl: 'partials/header.html' ,
+                    controller: 'header'
+                },
+                'admin_footer': {
+                    templateUrl: 'partials/front_footer.html' ,
+                    controller:'footer'
+                },
+                'content': {
+                    templateUrl: 'partials/event.html' ,
+                    controller: 'event'
+                },
+
+            }
+        }
+    )
+        .state('event-details',{
+            url:"/event-details/:eventId",
+            views: {
+
+                'admin_header': {
+                    templateUrl: 'partials/header.html' ,
+                    controller: 'header'
+                },
+                'admin_footer': {
+                    templateUrl: 'partials/front_footer.html' ,
+                    controller:'footer'
+                },
+                'content': {
+                    templateUrl: 'partials/eventdeatils.html' ,
+                    controller: 'eventdetails'
+                },
+
+            }
+        }
+    )
+
+        .state('product-details',{
+                url:"/product-details/:id",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/front_footer.html' ,
+                        controller:'footer'
+                    },
+                    'content': {
+                        templateUrl: 'partials/product_details.html' ,
+                        controller: 'productdetails'
+                    },
+
+                }
+            }
+        )
+        .state('checkout',{
+                url:"/checkout",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/front_footer.html' ,
+                        controller:'footer'
+                    },
+                    'content': {
+                        templateUrl: 'partials/checkout.html' ,
+                        controller: 'checkout'
+                    },
+
+                }
+            }
+        )
+
+
+
+        .state('testimonial',{
+                url:"/testimonial",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/front_footer.html' ,
+                        controller:'footer'
+                    },
+                    'content': {
+                        templateUrl: 'partials/testimonial.html' ,
+                        controller: 'testimonial'
+                    },
+
+                }
+            }
+        )
+        .state('contactme',{
+            url:"/contactme",
+            views: {
+
+                'admin_header': {
+                    templateUrl: 'partials/header.html' ,
+                    controller: 'header'
+                },
+                'admin_footer': {
+                    templateUrl: 'partials/front_footer.html' ,
+                    controller:'footer'
+                },
+                'content': {
+                    templateUrl: 'partials/contactme.html' ,
+                    controller: 'contactme'
+                },
+
+            }
+        }
+    )
+
+
+        .state('books',{
+                url:"/products",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/front_footer.html' ,
+                        controller:'footer'
+                    },
+                    'content': {
+                        templateUrl: 'partials/books.html' ,
+                        controller: 'books'
+                    },
+
+                }
+            }
+        )
+        .state('productcategory',{
+                url:"/productcategory",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/front_footer.html' ,
+                        controller:'footer'
+                    },
+                    'content': {
+                        templateUrl: 'partials/productcategory.html' ,
+                        controller: 'productcategory'
+                    },
+
+                }
+            }
+        )
+        .state('cart',{
+                url:"/cart",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/front_footer.html' ,
+                        controller:'footer'
+                    },
+                    'content': {
+                        templateUrl: 'partials/cart.html' ,
+                        controller: 'cart'
+                    },
+
+                }
+            }
+        )
+        .state('orderconfirmation',{
+                url:"/orderconfirmation",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/front_footer.html' ,
+                        controller:'footer'
+                    },
+                    'content': {
+                        templateUrl: 'partials/order_confirmation.html' ,
+                        //controller: 'orderconfirmation'
+                    },
+
+                }
+            }
+        )
+
 
         .state('signup',{
                 url:"/signup",
@@ -529,6 +1276,159 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
             }
         )
 
+        .state('profile',{
+                url:"/profile",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/myaccount-header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/myaccount-footer.html' ,
+                        controller:'footer'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/myaccount-left.html' ,
+                      //  controller:'footer'
+                    },
+
+                    'content': {
+                        templateUrl: 'partials/myprofile.html' ,
+                        controller: 'profile'
+                    },
+
+                }
+            }
+        )
+        .state('edit-profile',{
+                url:"/edit-profile",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/myaccount-header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/myaccount-footer.html' ,
+                        controller:'footer'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/myaccount-left.html' ,
+                        //  controller:'footer'
+                    },
+
+                    'content': {
+                        templateUrl: 'partials/edit_profile.html' ,
+                        controller: 'editprofile'
+                    },
+
+                }
+            }
+        )
+        .state('user-change-password',{
+                url:"/user-change-password",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/myaccount-header.html' ,
+                         controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/myaccount-footer.html' ,
+                        controller:'footer'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/myaccount-left.html' ,
+                        //  controller:'footer'
+                    },
+
+                    'content': {
+                        templateUrl: 'partials/user_change_password.html' ,
+                        controller: 'userchangepassword'
+                    },
+
+                }
+            }
+        )
+
+
+        .state('myaccount-affiliate',{
+                url:"/myaccount-affiliate",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/myaccount-header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/myaccount-footer.html' ,
+                        controller:'footer'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/myaccount-left.html' ,
+                        //  controller:'footer'
+                    },
+
+                    'content': {
+                        templateUrl: 'partials/myaccount_affiliate.html' ,
+                        controller: 'myaccountaffiliate'
+                    },
+
+                }
+            }
+        )
+        .state('myaccount-order',{
+                url:"/myaccount-order",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/myaccount-header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/myaccount-footer.html' ,
+                        controller:'footer'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/myaccount-left.html' ,
+                        //  controller:'footer'
+                    },
+
+                    'content': {
+                        templateUrl: 'partials/myaccount_order.html' ,
+                        controller: 'myaccountorder'
+                    },
+
+                }
+            }
+        )
+
+
+
+
+
+        .state('url',{
+            url:"/url/:link",
+            views: {
+
+                'header': {
+                    templateUrl: 'partials/header.html' ,
+                    controller: 'header'
+                },
+                'footer': {
+                    templateUrl: 'partials/front_footer.html' ,
+                     controller: 'footer'
+                },
+                'content': {
+                    templateUrl: 'partials/signup.html' ,
+                    controller: 'url'
+                },
+
+
+
+            }
+        })
 
         .state('login',{
                 url:"/login",
@@ -636,6 +1536,27 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
             }
         }
     )
+        .state('affiliates', {
+            url: "/affiliates/:code",
+            views:{
+                'admin_header': {
+                    // templateUrl: 'partials/admin_top_menu.html',
+                    controller:'header'
+                },
+                 'admin_footer':{
+                    // templateUrl:'partials/admin_footer.html',
+                     controller:'footer'
+                },
+
+                'content':{
+                    //   templateUrl:'partials/affiliate_list.html',
+                    controller:'affiliates'
+                },
+
+            }
+
+        } )
+
 
         .state('edit-content',{
             url:"/edit-content/:userId",
@@ -796,6 +1717,38 @@ tr.controller('ModalInstanceCtrl', function($scope,$state,$cookieStore,$http,$ui
             $scope.productlist[idx].status = !$scope.productlist[idx].status;
         });
     }
+    $scope.confirmeventdelete = function() {
+        $uibModalInstance.dismiss('cancel');
+        var idx = $scope.currentindex;
+        $http({
+            method: 'POST',
+            async: false,
+            url: $scope.adminUrl + 'deleteevent',
+            data: $.param({id: $scope.eventlist[idx].id}),  // pass in data as strings
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function (data) {
+            $rootScope.stateIsLoading = false;
+            $scope.eventlist.splice(idx, 1);
+            //   $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+        });
+    }
+    $scope.confirmblogdelete = function() {
+        $uibModalInstance.dismiss('cancel');
+        var idx = $scope.currentindex;
+        $http({
+            method: 'POST',
+            async: false,
+            url: $scope.adminUrl + 'deleteblog',
+            data: $.param({id: $scope.bloglist[idx].id}),  // pass in data as strings
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function (data) {
+            $rootScope.stateIsLoading = false;
+            $scope.bloglist.splice(idx, 1);
+            //   $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+        });
+    }
 
 
     $scope.confirmdeladmin = function(){
@@ -816,6 +1769,19 @@ tr.controller('ModalInstanceCtrl', function($scope,$state,$cookieStore,$http,$ui
 
         });
     }
+
+/*
+    $scope.addYtVideo1= function(item){
+        console.log(1);
+        console.log(item);
+
+        $scope.form.blog_file=item.id.videoId;
+
+        $scope.ytdialog.close();
+    }
+*/
+
+
 
 
 });
@@ -897,7 +1863,7 @@ tr.controller('index', function($compile,$scope,contentservice,$state,$http,$coo
 
 });
 tr.controller('aboutme', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
-
+    angular.element( document.querySelector( 'content[id="187"]' ) ).css('position','unset');
     $scope.interval=600;
     $scope.contentupdated=false;
     var myVar =setInterval(function(){
@@ -1041,38 +2007,1589 @@ tr.controller('retreat', function($compile,$scope,contentservice,$state,$http,$c
     },$scope.interval);
 
 });
-tr.controller('signup', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$uibModal) {
+tr.controller('blog', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$uibModal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+        }
+
+    },$scope.interval);
+
+
+    $scope.trustAsHtml=$sce.trustAsHtml;
+
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.predicate = predicate;
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        //$scope.friends = orderBy($scope.friends, predicate, $scope.reverse);
+    };
+
+    $scope.currentPage=1;
+    $scope.perPage=8;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
 
     $http({
         method  : 'POST',
         async:   false,
-        url     :     $scope.adminUrl+'countryList',
-       // data    : $.param({'uid':$scope.userid}),  // pass in data as strings
+        url     : $scope.adminUrl+'bloglist',
+         data    : $.param({type:'front'}),  // pass in data as strings
         headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
     }) .success(function(data) {
+        $rootScope.stateIsLoading = false;
+        $scope.bloglist=data;
+
+
+        // $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.blogdetails=function(item){
+
+      $scope.blogdescription=item.blog_description;
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'blogdetails.html',
+            controller: 'ModalInstanceCtrl',
+            //windowClass: 'thankuPopcls',
+            size: 'lg',
+            scope:$scope
+        });
+    }
+
+
+
+});
+tr.controller('event', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$filter) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+    $scope.trustAsHtml=$sce.trustAsHtml;
+
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+
+    var orderBy = $filter('orderBy');
+
+    $scope.order = function(predicate) {
+
+        // console.log('pre'+predicate);
+        $scope.predicate = predicate;
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        $scope.eventlist = orderBy($scope.eventlist, predicate, $scope.reverse);
+    };
+
+
+    $rootScope.integerId= function(val) {
+        return parseInt(val, 10);
+    };
+
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'eventlist',
+         data    : $.param({type:'front'}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $rootScope.stateIsLoading = false;
         console.log(data);
-       // $scope.form.country={};
-      //  $scope.form.country.s_name='Belize';
-      //  $('#country').val(20);
-        $scope.countrylist=data;
+        $scope.eventlist=data;
+        // $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.event_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)|| (item.event_desc.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.event_location.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.event_daterange.indexOf($scope.searchkey) != -1)  ){
+            return true;
+        }
+        return false;
+    };
+
+
+
+
+
+
+});
+tr.controller('eventdetails', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,$sce,carttotal,$stateParams) {
+
+    $scope.eventId = $stateParams.eventId;
+    $scope.form = {};
+    $scope.event_status = false;
+    $scope.event_img = false;
+
+    $http({
+        method: 'POST',
+        async: false,
+        url: $scope.adminUrl + 'eventdetails',
+        data: $.param({'id': $scope.eventId}),  // pass in data as strings
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function (data) {
+        //console.log(data);
+        $scope.eventdetails = data;
+        if (data.event_timerange == 'all day') {
+            $scope.allday = true;
+        }
+        else {
+
+            var result = data.event_timerange.split('to');
+
+
+            var sttime = result[0].split(':');
+            var sthour = parseInt(sttime[0]);
+            var stmin = parseInt(sttime[1]);
+
+            var ettime = result[1].split(':');
+            var ethour = parseInt(ettime[0]);
+            var etmin = parseInt(ettime[1]);
+            var st = new Date();
+            //console.log(st.getHours());
+            st.setHours(sthour);
+            st.setMinutes(stmin);
+            var et = new Date();
+            //console.log(st.getHours());
+            et.setHours(ethour);
+            et.setMinutes(etmin);
+            $scope.endtime = et;
+            $scope.starttime = st;
+        }
+    })
+})
+
+tr.controller('productdetails', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$stateParams) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+             //console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+               // console.log(z);
+                //console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+    $scope.trustAsHtml=$sce.trustAsHtml;
+    $scope.product_video_src='';
+    $scope.product_img_src='';
+
+
+
+    $scope.id=$stateParams.id;
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'jungleproductdetails',
+        data    : $.param({'id':$scope.id}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+
+        $scope.productdetails=data;
+        $scope.is_video=data.is_video;
+        $scope.is_video1=data.is_video1;
+        $scope.productfiletype = data.productfiletype;
+        $scope.productdownloadfiletype = data.productdownloadfiletype;
+        if(data.image_url!='') {
+            $scope.product_img_src = data.image_url;
+            // $scope.productfiletype = 'image';
+        }
+        if(data.image_url1!='') {
+            $scope.product_download_src = data.image_url1;
+//
+        }
+
+
+
+        if($scope.is_video == 1){
+            $scope.product_img_src = data.cover_img_url;
+            $scope.video_url1222 = data.video_url;
+            //  $scope.productfiletype = 'video';
+        }
+        if($scope.is_video1 == 1){
+            //$scope.product_img_src = data.cover_img_url;
+            $scope.video_ur_downloadl1222 = data.video_url;
+        }
+
+    });
+    $scope.addquantity=function(){
+       var quan= $('#quantity').val();
+        $('#quantity').val(parseInt(quan)+1);
+    }
+    $scope.removequantity=function(){
+        var quan= $('#quantity').val();
+        if(quan>1){
+            $('#quantity').val(parseInt(quan)-1);
+        }
+
+    }
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'jungleproductlist',
+        data    : $.param({'productid':$scope.id,'producttype':'feature'}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.productlist=data;
+
+    });
+
+
+    $scope.addtocartfromdet = function(pid){
+
+
+        if($rootScope.userid == 0)  $scope.cartuser=$cookieStore.get('randomid');
+        else{
+            $scope.cartuser=$rootScope.userid;
+
+            $http({
+                method:'POST',
+                async:false,
+                url:$scope.adminUrl+'cart/updatecartuser',
+                data    : $.param({'newuserid':$rootScope.userid,'olduserid':$cookieStore.get('randomid')}),
+                headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+            }).success(function(data){
+
+            });
+        }
+
+
+        $http({
+            method:'POST',
+            async:false,
+            url:$scope.adminUrl+'cart/addtocart',
+            data    : $.param({'pid':pid,'qty':$('#quantity').val(),'userid':$scope.cartuser}),
+            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+        }).success(function(data){
+            $rootScope.carttotal=parseInt($rootScope.carttotal+parseInt($('#quantity').val()));
+        });
+
+
+    }
+
+
+
+});
+tr.controller('checkout', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            //console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+              //  console.log(z);
+               // console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+    $scope.aff_id = '';
+
+    if(typeof($cookieStore.get('affiliatecode')) != 'undefined'){
+        $scope.aff_id = $cookieStore.get('affiliatecode');
+    }
+
+    if($rootScope.userid == 0)
+        $scope.cartuser=$cookieStore.get('randomid');
+    else
+        $scope.cartuser=$rootScope.userid;
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'cart/cartdetail',
+        data    : $.param({'user':$scope.cartuser}),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).success(function(data){
+        $scope.cartarray=data;
+        $scope.cartarray2=data.cartarr;
+    });
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'cart/getPrevAddr',
+        data    : $.param({'user':$scope.cartuser}),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).success(function(data){
+        $scope.addressList=data;
+    });
+
+    $scope.changeAddress = function(item){
+        $scope.stateList = [];
+
+        if(typeof(item) != 'undefined'){
+            $scope.billform = {
+                'billshipchk':true,
+                'userid':$rootScope.userid,
+                'prevaddress1':item.id,
+                'prevaddress':{
+                    'id':item.id
+                },
+                'address_title':item.address_title,
+                'bname':item.name,
+                'company':item.company,
+                'address':item.address,
+                'address2':item.address2,
+                'city':item.city,
+                'country':{
+                    id: item.country
+                },
+                'zip':item.zip,
+                'phone':item.phone,
+                'email':item.email
+            }
+
+
+            if(typeof(item.country) != 'undefined'){
+                $http({
+                    method:'POST',
+                    async:false,
+                    url:$scope.adminUrl+'cart/getState',
+                    data    : $.param({'country_id':item.country}),
+                    headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+                }).success(function(data){
+                    $scope.stateList=data;
+
+                    var pstate = {
+                        'state':{
+                            id: item.state
+                        }
+                    }
+                    angular.extend($scope.billform, pstate);
+                });
+            }
+
+
+        }else{
+            $scope.billform = {
+                'billshipchk':true,
+                'userid':$rootScope.userid,
+                'company':'',
+                'address2':'',
+                'prevaddress1':''
+            }
+        }
+    }
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'cart/getCountry',
+    }).success(function(data){
+        $scope.countryList=data;
+    });
+
+    $scope.stateList = [];
+
+    $scope.cardyear=[2016,2017,2018,2019,2020,2021,2022,2023,2024,20125,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040];
+
+    $scope.shipstateList = [];
+
+    $scope.changeCountry = function(country){
+        $scope.stateList = [];
+        if(typeof(country.id) != 'undefined'){
+            $http({
+                method:'POST',
+                async:false,
+                url:$scope.adminUrl+'cart/getState',
+                data    : $.param({'country_id':country.id}),
+                headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).success(function(data){
+                $scope.stateList=data;
+            });
+        }
+    }
+
+    $scope.changeCountry1 = function(country){
+        $scope.shipstateList = [];
+        if(typeof(country.id) != 'undefined'){
+            $http({
+                method:'POST',
+                async:false,
+                url:$scope.adminUrl+'cart/getState',
+                data    : $.param({'country_id':country.id}),
+                headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).success(function(data){
+                $scope.shipstateList=data;
+            });
+        }
+    }
+
+    $scope.billform = {
+        'userid':$rootScope.userid,
+        'company':'',
+        'address2':'',
+        'prevaddress1':'',
+        'billshipchk':true,
+    }
+
+    $scope.shipform = {
+        'userid':$rootScope.userid,
+        'company':'',
+        'address2':'',
+    }
+    $scope.shipform = {
+        'userid':$rootScope.userid,
+        'company':'',
+        'address2':'',
+    }
+
+    $scope.errormsg='';
+    $scope.checkoutsubmit = function(){
+
+        $scope.form = {
+            billform : $scope.billform,
+            shipform : $scope.shipform,
+            product_det : $scope.cartarray2,
+            subtotal : $scope.cartarray.subtotal,
+            total : $scope.cartarray.subtotal,
+            affiliate_id : $scope.aff_id,
+            cartform : $scope.cartform,
+        }
+
+         $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'cart/checkout',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            if(data.status=='success') {
+                $state.go('orderconfirmation');
+                return;
+            }
+             else{
+                $scope.errormsg = 'Transaction process failed!';
+                console.log($scope.errormsg);
+            }
+
+        });
+    }
+
+});
+
+tr.controller('testimonial', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+});
+tr.controller('contactme', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$uibModal,$window) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+           // console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+    $scope.contactformsubmit = function(){
+
+        $scope.errormsg='';
+
+
+
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'addcontact',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            //$rootScope.stateIsLoading = false;
+            if(data.status == 'error'){
+                $scope.errormsg='This email already exists';
+            }else{
+                $scope.contactform.reset();
+
+
+                var modalInstance =         $uibModal.open({
+                    animation: true,
+                    templateUrl: 'contactsuccess',
+                    controller: 'ModalInstanceCtrl',
+                    //windowClass: 'thankuPopcls',
+                    size: 'lg',
+                    scope:$scope
+                });
+
+
+                setTimeout(function(){
+                    modalInstance.dismiss('cancel');
+                   // $('.logpopup').hide();
+
+                    $window.location.href = $scope.baseUrl+'home';
+                },6000)
+            }
+
+
+
+        });
+
+
+    }
+
+
+
+});
+
+
+
+tr.controller('books', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'jungleproductlist',
+         data    : $.param({'type':'front'}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.productlist=data;
         console.log($scope.countrylist);
     });
+
+    $rootScope.addtocart=function(pid){
+        if($rootScope.userid == 0)  $scope.cartuser=$cookieStore.get('randomid');
+        else{
+            $scope.cartuser=$rootScope.userid;
+
+            $http({
+                method:'POST',
+                async:false,
+                url:$scope.adminUrl+'cart/updatecartuser',
+                data    : $.param({'newuserid':$rootScope.userid,'olduserid':$cookieStore.get('randomid')}),
+                headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+            }).success(function(data){
+
+            });
+        }
+
+
+        $http({
+            method:'POST',
+            async:false,
+            url:$scope.adminUrl+'cart/addtocart',
+            data    : $.param({'pid':pid,'qty':1,'userid':$scope.cartuser}),
+            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+        }).success(function(data){
+            $rootScope.carttotal=parseInt($rootScope.carttotal)+1;
+        });
+    }
+
+});
+tr.controller('productcategory', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+});
+tr.controller('cart', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$uibModal) {
+    $scope.trustAsHtml=$sce.trustAsHtml;
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+
+
+
+
+    if($rootScope.userid == 0)  $scope.cartuser=$cookieStore.get('randomid');
+    else
+        $scope.cartuser=$rootScope.userid;
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'cart/cartdetail',
+        data    : $.param({'user':$scope.cartuser}),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.productidss=[];
+
+
+        $scope.cartarray=data;
+
+
+        $scope.cartarray2=data.cartarr;
+
+
+        angular.forEach(data.cartarr,function(value, key){
+            if(value.product_id){
+                if($scope.productidss.length==0)
+                    $scope.productidss=[value.product_id];
+                else
+                    $scope.productidss.push(value.product_id)  ;
+
+
+            }
+            console.log($scope.productidss);
+        })
+        console.log($scope.productidss);
+        $scope.productidss=$scope.productidss.toString();
+        console.log($scope.productidss);
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     :     $scope.adminUrl+'jungleproductlist',
+            data    : $.param({'carttype':'cart',productidss:$scope.productidss}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $scope.productlist=data;
+
+        });
+
+
+
+
+
+    });
+    $scope.delcart=function(val){
+        console.log(val);
+
+        var idx = $scope.cartarray2.indexOf(val);
+
+        $http({
+            method:'POST',
+            async:false,
+            url:$scope.adminUrl+'cart/deletecartbyid',
+            data    : $.param({'pid':val.pid,'userid':$scope.cartuser}),
+            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+        }).success(function(data){
+
+            $rootScope.carttotal=parseInt($rootScope.carttotal-parseInt(val.qty));
+            $scope.cartarray.quantity=$scope.cartarray.quantity-parseInt(val.qty);
+            $scope.cartarray.subtotal=($scope.cartarray.subtotal-parseFloat(val.subtotal)).toFixed(2);
+            console.log($rootScope.carttotal);
+            console.log($scope.cartarray.subtotal);
+            $scope.cartarray2.splice(idx,1);
+
+
+
+        });
+
+
+
+    }
+
+
+    $scope.chklogin = function(){
+        if($rootScope.userid == 0){
+
+            $rootScope.goafterlogin = 'checkout';
+
+            $uibModal.open({
+                animation: true,
+                templateUrl: 'chkloginpopup',
+                controller: 'ModalInstanceCtrl',
+                size: 'lg',
+                scope:$scope
+            });
+        }else{
+            $state.go('checkout');
+            return
+        }
+    }
+
+
+});
+
+tr.controller('profile', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval = 600;
+    $scope.contentupdated = false;
+    var myVar = setInterval(function () {
+
+        $rootScope.contentdata = contentservice.getcontent($scope.adminUrl + 'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if (typeof ($rootScope.contentdata) != 'undefined' && $scope.contentupdated) {
+
+            $scope.interval = 999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated = true;
+        for (x in $rootScope.contentdata) {
+            var contentw = '';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if ($rootScope.contentdata[x].ctype != 'image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content = (contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            // console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname + $rootScope.contentdata[x].id] = $rootScope.contentdata[x];
+            if ($rootScope.contentdata[x].parentid != 0) {
+
+                var z = parseInt($rootScope.contentdata[x].parentid);
+               // console.log(z);
+               // console.log($rootScope.contentdata[x].cname + $rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname + $rootScope.contentdata[x].parentid] = $rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    }, $scope.interval);
+
+    if (typeof ($cookieStore.get('userid')) != 'undefined') {
+
+        $scope.userid = $cookieStore.get('userid');
+
+        if (typeof ($cookieStore.get('userrole')) != 'undefined') {
+            $scope.userrole=$cookieStore.get('userrole');
+            //console.log($scope.userrole);
+        }
+
+
+    $http({
+        method: 'POST',
+        async: false,
+        url: $scope.adminUrl + 'admindetails',
+        data: $.param({'uid': $scope.userid}),  // pass in data as strings
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function (data) {
+        $scope.userdetails = data;
+
+    });
+}
+ /*   $scope.update = function () {
+
+        $rootScope.stateIsLoading = true;
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'adminupdates',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            $state.go('admin-list');
+            return
+        });
+    }
+*/
+});
+tr.controller('myaccountaffiliate', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+});
+
+tr.controller('myaccountorder', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+});
+
+
+tr.controller('editprofile', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'countryList',
+        // data    : $.param({'uid':$scope.userid}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.countrylist=data;
+    });
+
     $scope.format = 'MM/dd/yyyy';
     $scope.open1 = function() {
         $scope.opened = true;
     };
 
     $scope.form={'dob':new Date()};
-    $rootScope.usertype='generaluser';
 
+
+    if (typeof ($cookieStore.get('userid')) != 'undefined') {
+
+        $scope.userid = $cookieStore.get('userid');
+
+        if (typeof ($cookieStore.get('userrole')) != 'undefined') {
+            $scope.userrole=$cookieStore.get('userrole');
+            //console.log($scope.userrole);
+        }
+
+
+        $http({
+            method: 'POST',
+            async: false,
+            url: $scope.adminUrl + 'admindetails',
+            data: $.param({'uid': $scope.userid}),  // pass in data as strings
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function (data) {
+            $scope.userdetails = data;
+            $scope.form = {
+                uid: data.uid,
+                fname: data.fname,
+                lname: data.lname,
+                bname: data.bname,
+                email: data.email,
+                address: data.address,
+                phone_no: data.phone_no,
+                mobile_no: data.mobile_no,
+                country: data.country,
+                state: data.state,
+                gender: data.gender,
+                dob: data.dobedit,
+
+            }
+
+
+        });
+    }
     $scope.clientgenderValidator=function(){
-
-
-        //console.log('in drone validator');
-        //console.log($scope.signupForm.$submitted);
-        //console.log($("input[name='drone']:checked").val());
-
-        if($scope.signup.$submitted){
+        if($scope.editprofileform.$submitted){
 
             if(typeof ($("input[name='gender']:checked").val()) != 'undefined' )
             {
@@ -1090,8 +3607,68 @@ tr.controller('signup', function($compile,$scope,contentservice,$state,$http,$co
         }
 
     }
+
+    $scope.editprofileformsubmit = function () {
+
+     $rootScope.stateIsLoading = true;
+     $http({
+     method  : 'POST',
+     async:   false,
+     url     : $scope.adminUrl+'adminupdates',
+     data    : $.param($scope.form),  // pass in data as strings
+     headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+     }) .success(function(data) {
+     $rootScope.stateIsLoading = false;
+     $state.go('profile');
+     return
+     });
+     }
+
+
+
+
+});
+
+
+
+tr.controller('signup', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$uibModal,$window) {
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'countryList',
+       // data    : $.param({'uid':$scope.userid}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.countrylist=data;
+    });
+    $scope.format = 'MM/dd/yyyy';
+    $scope.open1 = function() {
+        $scope.opened = true;
+    };
+
+    $scope.form={'dob':new Date()};
+    $rootScope.usertype='generaluser';
+
+    $scope.clientgenderValidator=function(){
+        if($scope.signup.$submitted){
+
+            if(typeof ($("input[name='gender']:checked").val()) != 'undefined' )
+            {
+                $scope.clientgenderValidatorerror=false;
+                return true ;
+            }
+            else {
+                $scope.clientgenderValidatorerror=true;
+                return '';
+
+            }
+
+        }
+
+    }
     $scope.submitsignupForm = function(){
 
+        $scope.errormsg='';
 
 
 
@@ -1104,11 +3681,10 @@ tr.controller('signup', function($compile,$scope,contentservice,$state,$http,$co
         }) .success(function(data) {
             //$rootScope.stateIsLoading = false;
             if(data.status == 'error'){
-                console.log(data);
-                $('.email_div').append('<label class="control-label has-error validationMessage">This email already exists.</label>');
+                $scope.errormsg='This email already exists';
             }else{
                 $scope.signup.reset();
-                $uibModal.open({
+                var modalInstance = $uibModal.open({
                     animation: true,
                     templateUrl: 'signupsuccess.html',
                     controller: 'ModalInstanceCtrl',
@@ -1116,8 +3692,12 @@ tr.controller('signup', function($compile,$scope,contentservice,$state,$http,$co
                     scope:$scope
                 });
 
-                //$state.go('ge-list');
-                //return;
+                setTimeout(function(){
+                    modalInstance.dismiss('cancel');
+                     $('.logpopup').hide();
+
+                    $window.location.href = $scope.baseUrl+'home';
+                },4000)
             }
 
 
@@ -1128,6 +3708,51 @@ tr.controller('signup', function($compile,$scope,contentservice,$state,$http,$co
     }
 
 });
+
+tr.controller('url', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams,contentservice,$uibModal,$timeout) {
+    $scope.link=$stateParams.link;
+if(typeof($scope.link)!='undefined' && $scope.link!='') {
+    $http({
+        method: 'POST',
+        async: false,
+        url: $scope.adminUrl + 'updatestatus',
+        data: $.param({uid: $scope.link, linktype: 'front'}),  // pass in data as strings
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function (data) {
+        if(data.status=='success'){
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'acountsuccess.html',
+                controller: 'ModalInstanceCtrl',
+                size: 'lg',
+                scope: $rootScope
+            });
+
+            setTimeout(function () {
+                modalInstance.dismiss('cancel');
+                $state.go('login');
+            }, 4000)
+
+            // $rootScope.stateIsLoading = false;
+            // $scope.userlist[idx].status = !$scope.userlist[idx].status;
+        }
+        else{
+            $state.go('index');
+        }
+    });
+
+
+
+}
+
+$scope.cancel1=function(){
+    modalInstance.dismiss('cancel');
+}
+
+
+
+});
+
 tr.controller('login', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
     $scope.adminloginsubmit = function(){
         $rootScope.stateIsLoading = true;
@@ -1147,17 +3772,39 @@ tr.controller('login', function($compile,$scope,contentservice,$state,$http,$coo
 
                 if(typeof (data.userdetails.roles[4]) != 'undefined')
                     $cookieStore.put('userrole',4);
-                //if(typeof (data.userdetails.roles[5]) != 'undefined')
-                //    $cookieStore.put('userrole',5);
-                //if(typeof (data.userdetails.roles[6]) != 'undefined')
-                //    $cookieStore.put('userrole',6);
+
+                if(typeof (data.userdetails.roles[5]) != 'undefined')
+                    $cookieStore.put('userrole',5);
+                if(typeof (data.userdetails.roles[6]) != 'undefined')
+                    $cookieStore.put('userrole',6);
                 //if(typeof (data.userdetails.roles[7]) != 'undefined')
                 //    $cookieStore.put('userrole',7);
-                console.log($cookieStore.get('userid'));
-                console.log($cookieStore.get('useremail'));
-                console.log($cookieStore.get('userfullname'));
+                console.log(data.userdetails.roles[5]);
+                console.log(data.userdetails.roles[4]);
 
-                $state.go('dashboard');
+
+                if(typeof($rootScope.goafterlogin) != 'undefined'){
+                    if($rootScope.goafterlogin != ''){
+                        $state.go($rootScope.goafterlogin);
+                        return
+                    }
+
+                }
+
+
+
+                if(data.userdetails.roles[5] == 'generaluser'){
+                    $state.go('profile');
+                }
+                if(data.userdetails.roles[6] == 'affiliate'){
+                    $state.go('profile');
+                }
+
+                if(data.userdetails.roles[4] == 'siteadmin'){
+                    $state.go('dashboard');
+                }
+
+
             }
             else{
                 $scope.errormsg = data.msg;
@@ -1247,6 +3894,34 @@ tr.controller('change_password', function($scope,$state,$http,$cookieStore,$root
         });
     }
 });
+tr.controller('userchangepassword', function($scope,$state,$http,$cookieStore,$rootScope) {
+    if (typeof ($cookieStore.get('userid')) != 'undefined') {
+
+        $scope.userid = $cookieStore.get('userid');
+    }
+    $scope.errormsg='';
+        $scope.form={user_id:$scope.userid}
+    $scope.changepasswordsubmit = function(){
+        $rootScope.stateIsLoading = true;
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'userchangepassword',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            if(data.status == 'success'){
+                $state.go('profile');
+
+
+            }else{
+                $scope.errormsg = 'Old password does not exists';
+            }
+
+        });
+    }
+});
 
 
 tr.controller('affiliate', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
@@ -1257,9 +3932,6 @@ tr.controller('affiliate', function($compile,$scope,contentservice,$state,$http,
 
         $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
 
-
-        //console.log('in setInterval'+$scope.interval);
-        //console.log( $rootScope.contentdata);
         var x;
         var y;
         if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
@@ -1272,10 +3944,6 @@ tr.controller('affiliate', function($compile,$scope,contentservice,$state,$http,
         $scope.contentupdated=true;
         for (x in $rootScope.contentdata ){
             var contentw='';
-            //console.log($rootScope.contentdata[x]);
-            //console.log(($rootScope.contentdata[x].content)+'c----n');
-            //console.log(($rootScope.contentdata[x].parentid));
-
 
             if($rootScope.contentdata[x].ctype!='image') {
 
@@ -1289,16 +3957,7 @@ tr.controller('affiliate', function($compile,$scope,contentservice,$state,$http,
                 }
                 $rootScope.contentdata[x].content=(contentw);
             }
-            /* else{
-
-             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
-
-             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
-             }*/
-
-
-            console.log(($rootScope.contentdata[x].content));
-            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+             $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
             if($rootScope.contentdata[x].parentid!=0){
 
                 var z=parseInt($rootScope.contentdata[x].parentid);
@@ -1309,13 +3968,7 @@ tr.controller('affiliate', function($compile,$scope,contentservice,$state,$http,
 
             }
 
-            //var model=$parse($rootScope.contentdata[x].id);
-            //model.assign($scope, $rootScope.contentdata[x]);
-            //.id=$rootScope.contentdata[x];
         }
-
-        //console.log('----'+$scope);
-
 
     },$scope.interval);
 
@@ -1324,6 +3977,81 @@ tr.controller('affiliate', function($compile,$scope,contentservice,$state,$http,
 
 
 });
+tr.controller('affiliates', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$stateParams,$window) {
+
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+             $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+        }
+
+
+    },$scope.interval);
+
+
+    $scope.code=$stateParams.code;
+    $cookieStore.put('affiliatecode',$scope.code);
+   // $window.location.href = $scope.baseUrl+'home';
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'addaffiliatehit',
+        data    : $.param({'code':$scope.code}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        console.log(data.affiliate_hit_id);
+        if(data.affiliate_hit_id>0){
+            $window.location.href = $scope.baseUrl+'home';
+        }
+
+
+    });
+
+
+
+});
+
+
+
 
 
 
@@ -1339,9 +4067,6 @@ tr.controller('header', function($compile,$scope,contentservice,$state,$http,$co
 
         $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
 
-
-        //console.log('in setInterval'+$scope.interval);
-        //console.log( $rootScope.contentdata);
         var x;
         var y;
         if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
@@ -1354,10 +4079,6 @@ tr.controller('header', function($compile,$scope,contentservice,$state,$http,$co
         $scope.contentupdated=true;
         for (x in $rootScope.contentdata ){
             var contentw='';
-            //console.log($rootScope.contentdata[x]);
-            //console.log(($rootScope.contentdata[x].content)+'c----n');
-            //console.log(($rootScope.contentdata[x].parentid));
-
 
             if($rootScope.contentdata[x].ctype!='image') {
 
@@ -1371,32 +4092,17 @@ tr.controller('header', function($compile,$scope,contentservice,$state,$http,$co
                 }
                 $rootScope.contentdata[x].content=(contentw);
             }
-            /* else{
-
-             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
-
-             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
-             }*/
-
-
-           // console.log(($rootScope.contentdata[x].content));
             $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
             if($rootScope.contentdata[x].parentid!=0){
 
                 var z=parseInt($rootScope.contentdata[x].parentid);
-               // console.log(z);
-               // console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
 
                 $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
 
             }
 
-            //var model=$parse($rootScope.contentdata[x].id);
-            //model.assign($scope, $rootScope.contentdata[x]);
-            //.id=$rootScope.contentdata[x];
         }
 
-        //console.log('----'+$scope);
 
 
     },$scope.interval);
@@ -1409,9 +4115,7 @@ tr.controller('header', function($compile,$scope,contentservice,$state,$http,$co
             $rootScope.cartuser = $rootScope.userid;
         }
 
-        $rootScope.carttotal=parseInt(carttotal.getcontent('http://admin.jungledrones.com/carttotal?user='+$rootScope.cartuser));
-
-      //  console.log($rootScope.userid+'state change user id header ');
+        $rootScope.carttotal=parseInt(carttotal.getcontent($scope.adminUrl+'cart/carttotal?user='+$rootScope.cartuser));
 
     },2000);
 
@@ -1439,6 +4143,7 @@ tr.controller('header', function($compile,$scope,contentservice,$state,$http,$co
         $cookieStore.remove('username');
         $cookieStore.remove('useremail');
         $cookieStore.remove('userfullname');
+        $cookieStore.remove('userrole');
 
         $rootScope.userrole=0;
         $rootScope.userfullname=0;
@@ -1504,7 +4209,7 @@ tr.controller('addcontent', function($compile,$scope,contentservice,$state,$http
 
     $rootScope.editcontent= function (evalue) {
 
-        console.log(evalue);
+        //console.log(evalue);
     }
 
 
@@ -1556,13 +4261,10 @@ tr.controller('addcontent', function($compile,$scope,contentservice,$state,$http
                  }*/
 
 
-                console.log(($rootScope.contentdata[x].content));
                 $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
                 if($rootScope.contentdata[x].parentid!=0){
 
                     var z=parseInt($rootScope.contentdata[x].parentid);
-                    console.log(z);
-                    console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
 
                     $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
 
@@ -1588,7 +4290,7 @@ tr.controller('addcontent', function($compile,$scope,contentservice,$state,$http
 
             $rootScope.carttotal=parseInt(carttotal.getcontent('http://admin.jungledrones.com/carttotal?user='+$rootScope.cartuser));
 
-            console.log($rootScope.userid+'state change user id header ');
+        //    console.log($rootScope.userid+'state change user id header ');
 
         },2000);
 
@@ -1627,7 +4329,7 @@ tr.controller('addcontent', function($compile,$scope,contentservice,$state,$http
         ],
         // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
         toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
-        valid_elements : "a[href|target| href=javascript:void(0)],strong,b,img,div[align|class],br,span,label,i[class],ul[class],ol[class],li[class],iframe[width|height|src|frameborder|allowfullscreen]",
+        valid_elements : "a[href|target|ui-sref|active-link],strong,b,img,div[align|class],br,span,label,i[class],ul[class],ol[class],li[class],iframe[width|height|src|frameborder|allowfullscreen]",
         force_p_newlines : false,
         forced_root_block:'',
         extended_valid_elements : "label,span,i[class]"
@@ -1652,7 +4354,7 @@ tr.controller('addcontent', function($compile,$scope,contentservice,$state,$http
 
     $scope.delcopy=function(ev){
 
-        console.log('test ...');
+      //  console.log('test ...');
 
         var target = ev.target || ev.srcElement || ev.originalTarget;
 
@@ -1665,7 +4367,7 @@ tr.controller('addcontent', function($compile,$scope,contentservice,$state,$http
         }
 
         if($scope.ctext==true || $scope.chtml==true){
-            console.log($(target).prev().prev().attr('indexval'));
+         //   console.log($(target).prev().prev().attr('indexval'));
            // $scope.form.ctext.splice($(target).prev().attr('indexval'),1);
            // /delete $scope.form.ctext.$(target).prev().attr('indexval');
             var key = $(target).prev().prev().attr('indexval');
@@ -1771,7 +4473,7 @@ tr.controller('addcontent', function($compile,$scope,contentservice,$state,$http
         }
         else {
             $('input.uploadbtn').click();
-            console.log($('button.uploadbtn').text());
+            //console.log($('button.uploadbtn').text());
         }
 
 
@@ -2270,8 +4972,8 @@ tr.controller('editcontent', function($compile,$scope,contentservice,$state,$htt
         ],
         toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
         toolbar2: "print preview media | forecolor backcolor emoticons",
-        valid_elements : "a[href|target],strong,b,img[src|alt],div[align|class],br,span,label,h3,h4,h2,h1,strong,i[class],ul[class],ol[class],li[class],iframe[width|height|src|frameborder|allowfullscreen]",
-        extended_valid_elements : "label,span,i[class]",
+        valid_elements : "a[href|target|ui-sref|active-link],strong,b,img[src|alt],div[align|class],p,br,span,label,h3,h4,h2,h1,strong,i[class],ul[class],ol[class],li[class],iframe[width|height|src|frameborder|allowfullscreen]",
+        extended_valid_elements : "label,p,span,i[class]",
         'force_p_newlines'  : false,
         'forced_root_block' : '',
     };
@@ -3128,6 +5830,2620 @@ tr.controller('adminlist', function($scope,$state,$http,$cookieStore,$rootScope,
 
     //console.log('in add admin form ');
 });
+tr.controller('addaffiliate', function($scope,$state,$http,$cookieStore,$rootScope,$uibModal) {
+
+    $scope.submitadminForm = function(){
+        $rootScope.usertype='affiliate';
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'addadmin?type='+$rootScope.usertype,
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            //$rootScope.stateIsLoading = false;
+            if(data.status == 'error'){
+                console.log(data);
+                $('.email_div').append('<label class="control-label has-error validationMessage">This email already exists.</label>');
+            }else{
+                $state.go('affiliate-list');
+                return;
+            }
+
+
+
+        });
+
+
+    }
+
+
+})
+tr.controller('affiliatelist', function($scope,$state,$http,$cookieStore,$rootScope,$uibModal) {
+    $rootScope.type='affiliate';
+    $scope.predicate = 'uid';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        $scope.predicate = predicate;
+    };
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+
+
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'adminlist?type='+$rootScope.type,
+        // data    : $.param($scope.form),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $rootScope.stateIsLoading = false;
+        console.log(data);
+        $scope.userlist=data;
+        $scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.fname.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.lname.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ||(item.mail.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)||(item.mobile_no.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)||(item.phone_no.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ||(item.address.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)||(item.commission_type.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)||(item.commission.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.deladmin = function(item,size){
+
+        $scope.currentindex=$scope.userlist.indexOf(item);
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'delconfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            scope:$scope
+        });
+    }
+
+
+    $scope.changeStatus = function(item){
+        $rootScope.stateIsLoading = true;
+        var idx = $scope.userlist.indexOf(item);
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'updatestatus',
+            data    : $.param({uid: $scope.userlist[idx].uid}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            if($scope.userlist[idx].status == 0){
+                $scope.userlist[idx].status = 1;
+            }else{
+                $scope.userlist[idx].status = 0;
+            }
+            // $scope.userlist[idx].status = !$scope.userlist[idx].status;
+        });
+    }
+    $scope.productaffiliatecode = function(item,size){
+    $scope.productcode=$scope.baseUrl+'affiliates/'+item.product_affiliate_code;
+    //$('.url_text').val('http://influx.spectrumiq.com/products/'+item.product_affiliate_code);
+//console.log('http://influx.spectrumiq.com/products/'+item.product_affiliate_code);
+    $uibModal.open({
+        animation: true,
+        templateUrl: 'productaffiliate.html',
+        controller: 'ModalInstanceCtrl',
+        size: size,
+        scope:$scope
+    });
+}
+
+
+    //console.log('in add admin form ');
+});
+tr.controller('editaffiliate', function($scope,$state,$http,$cookieStore,$rootScope,$uibModal,$stateParams) {
+    $scope.userid=$stateParams.userId;
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'admindetails',
+        data    : $.param({'uid':$scope.userid}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        console.log(data);
+        $scope.form = {
+            uid: data.uid,
+            refferal_code: data.refferal_code,
+            fname: data.fname,
+            lname: data.lname,
+            bname: data.bname,
+            email: data.email,
+            address: data.address,
+            phone_no: data.phone_no,
+            mobile_no: data.mobile_no,
+            contact_time: data.contact_time,
+            commission_type: data.commission_type,
+            commission: data.commission,
+        }
+    });
+    $scope.update = function () {
+
+        $rootScope.stateIsLoading = true;
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'adminupdates',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            $state.go('affiliate-list');
+            return
+        });
+    }
+
+
+
+
+    //console.log('in add admin form ');
+});
+tr.controller('affiliatetrack',function($scope,$state,$http,$cookieStore,$rootScope,$uibModal){
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        $scope.predicate = predicate;
+    };
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'affiliatetracklist',
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.affiliatelist=data;
+        $scope.getArray =data;
+        $scope.filename='affiliatetrackinglist';
+
+
+    })
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.affiliate_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.user_id.indexOf($scope.searchkey) != -1) ||(item.total_hit.indexOf($scope.searchkey) != -1)){
+            return true;
+        }
+        return false;
+    };
+
+})
+tr.controller('affiliatetrackdetails',function($scope,$stateParams,$state,$http,$cookieStore,$rootScope,$uibModal){
+    $scope.predicate = 'affiliate_hit_id';
+    $scope.reverse = true;
+    $scope.affiliate_id=$stateParams.affiliate_id;
+    $scope.order = function(predicate) {
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        $scope.predicate = predicate;
+    };
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+    $scope.id=$stateParams.id;
+
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'affiliatetrackdetailslist1',
+        data    : $.param({'affiliate_id':$scope.affiliate_id}),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.affiliatelist=data;
+        $scope.getArray =data;
+        $scope.filename='affiliatetrackingdetailslist';
+
+
+    })
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.affiliate_hit_id.indexOf($scope.searchkey) != -1) || (item.affiliate_hit_ip.indexOf($scope.searchkey) != -1) ||(item.hit_time.indexOf($scope.searchkey) != -1)){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.affiliatehitdel=function(item,size){
+
+        $scope.currentindex=$scope.affiliatelist.indexOf(item);
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'affiliatetrackdetailsdelconfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            scope:$scope
+        });
+
+    }
+
+})
+
+tr.controller('addcategoryjungle',function($scope,$state,$http,$cookieStore,$rootScope,Upload){
+
+    $http({
+        method  :   'POST',
+        async   :   false,
+
+        url :       $scope.adminUrl+'parentcategorylist',
+        // data    : $.param($scope.form),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.categorylist=data;
+
+    })
+
+    $scope.tinymceOptions = {
+        trusted: true,
+        theme: 'modern',
+        plugins: [
+            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
+            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
+            'save table contextmenu directionality  template paste textcolor'
+        ],
+        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
+        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
+    };
+
+    $scope.form= {cat_image:''};
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    $scope.$watch('cat_upload', function (files) {
+        $('.errormsg').html('');
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadjunglecategoryimage' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            // console.log(response.data.status);
+            if(response.data.status=='error'){
+                $('.errormsg').html('Invalid file type.');
+            }
+            else {
+                $('.progress').removeClass('ng-hide');
+                file.result = response.data;
+
+                if(response.data.image_url!='') {
+                    $scope.cat_img_src = response.data.image_url;
+                }
+
+                $scope.form.cat_image = response.data.image_name;
+
+
+
+            }
+
+
+        }, function (response) {
+            console.log(response.status);
+            if(response.data.status>0) {
+
+                //  $scope.errorMsg = response.status + ': ' + response.data;
+            }
+
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+
+
+    $scope.addcategorysubmit=function() {
+
+
+        $http({
+            method  :   'POST',
+            async   :   false,
+
+            url :       $scope.adminUrl+'addjunglecategory',
+            data    : $.param($scope.form),
+            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+        }).success(function(){
+            $state.go('category-list');
+
+        })
+
+    }
+
+
+
+
+})
+
+
+
+
+tr.controller('junglecategorylist',function($scope,$state,$http,$cookieStore,$rootScope,$uibModal,$sce,$filter){
+    $scope.trustAsHtml=$sce.trustAsHtml;
+
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+
+    var orderBy = $filter('orderBy');
+
+    $scope.order = function(predicate) {
+
+        console.log('pre'+predicate);
+        $scope.predicate = predicate;
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        $scope.categorylist = orderBy($scope.categorylist, predicate, $scope.reverse);
+    };
+
+
+    $rootScope.integerId= function(val) {
+        return parseInt(val, 10);
+    };
+
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'junglecategorylist',
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.categorylist=data;
+
+
+    })
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.cat_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.cat_desc.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ||  (item.priority.toString().indexOf($scope.searchkey.toString()) != -1) ||  (item.status.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.parent_cat_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.jungledelcategory = function(item,size){
+
+        $scope.currentindex=$scope.categorylist.indexOf(item);
+
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'junglecategorydelconfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            scope:$scope
+        });
+    }
+
+    $scope.changestatus = function(item,size){
+
+       // $uibModalInstance.dismiss('cancel');
+        $scope.currentindex=$scope.categorylist.indexOf(item);
+        $rootScope.stateIsLoading = true;
+        var idx = $scope.currentindex;
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'jungleupdatestatus',
+            data    : $.param({id: $scope.categorylist[idx].id,status:$scope.categorylist[idx].status}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+
+            if($scope.categorylist[idx].status == 0){
+                $scope.userlist[idx].status = 1;
+            }else{
+                $scope.categorylist[idx].status = 0;
+            }
+
+        });
+
+ /*       $uibModal.open({
+            animation: true,
+            templateUrl: 'junglecategorystatusfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            scope:$scope
+        });
+*/    }
+
+
+
+})
+
+
+tr.controller('editcategoryjungle', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams,Upload){
+
+    $http({
+        method  :   'POST',
+        async   :   false,
+
+        url :       $scope.adminUrl+'parentcategorylist',
+        // data    : $.param($scope.form),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.categorylist=data;
+
+    })
+
+    $scope.form= {cat_image:''};
+
+    $scope.id=$stateParams.id;
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'junglecategorydetails',
+        data    : $.param({'id':$scope.id}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+
+        $scope.form = {
+            id: data.id,
+
+            cat_name: data.cat_name,
+            cat_desc: data.cat_desc,
+            parent_cat: {
+                id:data.parent_cat
+            },
+            type: data.type,
+            priority: data.priority,
+            cat_image: data.cat_image,
+
+
+        }
+
+        $scope.cat_img_src=data.image_url;
+    });
+    $scope.tinymceOptions = {
+        trusted: true,
+        theme: 'modern',
+        plugins: [
+            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
+            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
+            'save table contextmenu directionality  template paste textcolor'
+        ],
+        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
+        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
+    };
+
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    $scope.$watch('cat_upload', function (files) {
+        $('.errormsg').html('');
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadjunglecategoryimage' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            // console.log(response.data.status);
+            if(response.data.status=='error'){
+                $('.errormsg').html('Invalid file type.');
+            }
+            else {
+                $('.progress').removeClass('ng-hide');
+                file.result = response.data;
+
+
+                $scope.cat_img_src = response.data.image_url;
+
+
+                $scope.form.cat_image = response.data.image_name;
+
+
+
+            }
+
+
+        }, function (response) {
+            console.log(response.status);
+            if(response.data.status>0) {
+
+                //  $scope.errorMsg = response.status + ': ' + response.data;
+            }
+
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+    $scope.editcategorysubmit = function () {
+        console.log(1);
+        $rootScope.stateIsLoading = true;
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'junglecategoryupdates',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            $state.go('category-list');
+            return;
+        });
+    }
+
+
+})
+
+tr.controller('eventlist',function($scope,$state,$http,$cookieStore,$rootScope,$sce,$filter,$uibModal){
+    $scope.trustAsHtml=$sce.trustAsHtml;
+
+
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.predicate = predicate;
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        //$scope.friends = orderBy($scope.friends, predicate, $scope.reverse);
+    };
+
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'eventlist',
+        // data    : $.param($scope.form),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $rootScope.stateIsLoading = false;
+        $scope.eventlist=data;
+       // $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.event_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)|| (item.event_description.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.event_location.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.event_daterange.toString().indexOf($scope.searchkey.toString()) != -1)  ){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.delevent = function(item){
+
+        $scope.currentindex=$scope.eventlist.indexOf(item);
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'eventconfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+        });
+
+    }
+
+
+    $scope.changeStatus = function(item){
+        $rootScope.stateIsLoading = true;
+        var idx = $scope.eventlist.indexOf(item);
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'updateeventstatus',
+            data    : $.param({id: $scope.eventlist[idx].id,event_status: $scope.eventlist[idx].event_status}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            if($scope.eventlist[idx].event_status == 0){
+                $scope.eventlist[idx].event_status = 1;
+            }else{
+                $scope.eventlist[idx].event_status = 0;
+            }
+        });
+    }
+
+
+
+
+
+
+});
+
+tr.controller('addevent',function($scope,$state,$http,$cookieStore,$rootScope,$log,Upload){
+
+    $scope.form={};
+    $scope.event_status=false;
+    $scope.event_img=false;
+
+
+    if (typeof($cookieStore.get('userid')) != 'undefined' && $cookieStore.get('userid') > 0) {
+        $scope.form.user_id = $cookieStore.get('userid');
+    }
+
+
+    /*file upload part start */
+
+
+
+    $scope.$watch('event_imgupload', function (files) {
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadeventbanner' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            $('.progress').removeClass('ng-hide');
+            file.result = response.data;
+
+            $scope.event_img = response.data.image_url;
+            $scope.form.event_image = response.data.image_name;
+
+            $('#loaderDiv').addClass('ng-hide');
+
+
+        }, function (response) {
+            if (response.status > 0)
+                $scope.errorMsg = response.status + ': ' + response.data;
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+
+    /*file upload end */
+
+
+
+
+
+
+
+
+    setTimeout(function(){
+        jQuery('input[name="event_daterange"]').daterangepicker({
+            /* timePicker: true,
+             timePickerIncrement: 30,*/
+            locale: {
+                format: 'MM/DD/YYYY h:mm A'
+            }
+        });
+
+        /*
+         $('#timepicker1').timepicker({
+         minuteStep: 1,
+         template: 'modal',
+         appendWidgetTo: 'body',
+         showSeconds: true,
+         showMeridian: false,
+         defaultTime: false
+         });
+         */
+
+    },4000);
+
+
+    $scope.addeventsForm=function(){
+
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'addevent',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            //$rootScope.stateIsLoading = false;
+            $state.go('event-list');
+            console.log(data);
+            /* if(data.status == 'error'){
+             console.log(data);
+             $('.email_div').append('<label class="control-label has-error validationMessage">This email already exists.</label>');
+             }else{
+             //console.log(data);
+             //$cookieStore.put('user_insert_id',data);
+
+             $state.go('finder-list');
+             return;
+             //console.log(data);
+             }*/
+
+        });
+
+
+
+    }
+
+
+    $scope.toggletimerange=function(){
+        //console.log($scope.allday);
+    }
+    $scope.custom=function(){
+        //console.log($scope.form);
+        $scope.timeerror=false;
+        $scope.form.event_status=$scope.event_status;
+        //console.log($scope.timediff()+"test custom");
+        if($scope.allday) {
+
+            angular.element('#timeval').val('all day');
+            $scope.form.timer='all day';
+
+            return true;
+        }
+        if($scope.timediff()>0){
+            $scope.form.timer=angular.element('input[ng-model="hours"]').eq(0).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()) +" to "+angular.element('input[ng-model="hours"]').eq(1).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(1).val());
+
+            angular.element('#timeval').val(angular.element('input[ng-model="hours"]').eq(0).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()) +" to "+angular.element('input[ng-model="hours"]').eq(1).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(1).val()));
+            return true ;
+        }
+
+        else {
+            $scope.timeerror=true;
+            return "Please set a correct time range for your event !!" ;
+        }
+
+        return true;
+    }
+
+    $scope.timediff= function () {
+
+        /*console.log('td-'+parseInt($scope.endtime.getHours()-$scope.starttime.getHours()));
+         console.log('md-'+parseInt($scope.endtime.getMinutes()-$scope.starttime.getMinutes()));*/
+
+
+        ////console.log('td1-'+angular.element('input[ng-model="hours"]').eq(0).val());
+        // console.log('td1-'+angular.element('input[ng-model="hours"]').eq(1).val());
+        //console.log('md2-'+parseInt($scope.minutes));
+
+        var totalst=parseInt(parseInt(angular.element('input[ng-model="hours"]').eq(0).val()*60)+parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()));
+        var totalet=parseInt(parseInt(angular.element('input[ng-model="hours"]').eq(1).val()*60)+parseInt(angular.element('input[ng-model="minutes"]').eq(1).val()));
+
+
+        console.log('timediff'+parseInt(totalet-totalst));
+
+        return parseInt(totalet-totalst);
+
+        //
+        /* console.log('td1-'+angular.element('input[ng-model="minutes"]').eq(0).val());
+         console.log('td1-'+angular.element('input[ng-model="minutes"]').eq(1).val());*/
+        //console.log('md2-'+parseInt($scope.minutes));
+    }
+
+
+    $scope.showtime=false;
+
+    $scope.toggletimepicker=function(){
+
+        console.log("before"+$scope.showtime);
+        $scope.showtime=! $scope.showtime ;
+        console.log("after"+$scope.showtime);
+    }
+
+
+    var st=new Date();
+    //console.log(st.getHours());
+    st.setHours(st.getHours());
+    var et=new Date();
+    //console.log(st.getHours());
+    et.setHours(et.getHours()+1);
+    $scope.endtime = et;
+    $scope.starttime = st;
+
+    $scope.hstep = 1;
+    $scope.mstep = 15;
+
+    $scope.options = {
+        hstep: [1, 2, 3],
+        mstep: [1, 5, 10, 15, 25, 30]
+    };
+
+    $scope.ismeridian = false;
+    $scope.toggleMode = function() {
+        $scope.ismeridian = ! $scope.ismeridian;
+    };
+
+    $scope.update = function() {
+        var d = new Date();
+        d.setHours( 14 );
+        d.setMinutes( 0 );
+        $scope.starttime = d;
+        d.setHours( 15 );
+        d.setMinutes( 0 );
+        $scope.endtime = d;
+    };
+
+    $scope.changed = function () {
+        $log.log('Time changed to: ' + $scope.starttime);
+    };
+
+    $scope.clear = function() {
+        $scope.starttime = null;
+    };
+
+
+
+
+});
+tr.controller('editevent', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams,Upload,$log) {
+
+    $scope.eventId = $stateParams.eventId;
+    $scope.form={};
+    $scope.event_status=false;
+    $scope.event_img=false;
+
+    $http({
+        method: 'POST',
+        async: false,
+        url: $scope.adminUrl + 'eventdetails',
+        data: $.param({'id': $scope.eventId}),  // pass in data as strings
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function (data) {
+        console.log(data);
+        if(data.event_timerange=='all day') {
+            $scope.allday=true;
+        }
+        else{
+
+            var result = data.event_timerange.split('to');
+
+
+            var sttime=result[0].split(':');
+            var sthour=parseInt(sttime[0]);
+            var stmin=parseInt(sttime[1]);
+
+            var ettime=result[1].split(':');
+            var ethour=parseInt(ettime[0]);
+            var etmin=parseInt(ettime[1]);
+            var st=new Date();
+            //console.log(st.getHours());
+            st.setHours(sthour);
+            st.setMinutes(stmin);
+            var et=new Date();
+            //console.log(st.getHours());
+            et.setHours(ethour);
+            et.setMinutes(etmin);
+            $scope.endtime = et;
+            $scope.starttime = st;
+        }
+
+        $scope.form = {
+            id: data.id,
+            event_name: data.event_name,
+            event_description: data.event_description,
+            event_location: data.event_location,
+            event_image: data.event_image,
+            //event_status: data.event_status,
+            event_daterange: data.event_daterange,
+            event_timerange: data.event_timerange,
+            phone_no: data.phone_no,
+            mobile_no: data.mobile_no,
+            contact_time: data.contact_time,
+        }
+
+        $scope.event_img=data.image_url;
+
+        if(data.event_status == 1 ) {
+            $scope.form.event_status=true;
+            $scope.event_status=true;
+        }
+        else{
+            $scope.form.event_status=false;
+            $scope.event_status=false;
+
+
+        }
+    });
+
+console.log($scope.form);
+    $scope.$watch('event_imgupload', function (files) {
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadeventbanner' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            $('.progress').removeClass('ng-hide');
+            file.result = response.data;
+
+            $scope.event_img = response.data.image_url;
+            $scope.form.event_image = response.data.image_name;
+
+            $('#loaderDiv').addClass('ng-hide');
+
+
+        }, function (response) {
+            if (response.status > 0)
+                $scope.errorMsg = response.status + ': ' + response.data;
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+    /*file upload end */
+
+
+
+
+
+
+
+
+    setTimeout(function(){
+        jQuery('input[name="event_daterange"]').daterangepicker({
+            /* timePicker: true,
+             timePickerIncrement: 30,*/
+            locale: {
+                format: 'MM/DD/YYYY h:mm A'
+            }
+        });
+
+        /*
+         $('#timepicker1').timepicker({
+         minuteStep: 1,
+         template: 'modal',
+         appendWidgetTo: 'body',
+         showSeconds: true,
+         showMeridian: false,
+         defaultTime: false
+         });
+         */
+
+    },4000);
+
+
+    $scope.addeventsForm=function(){
+
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'eventupdates',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            //$rootScope.stateIsLoading = false;
+            $state.go('event-list');
+            console.log(data);
+            /* if(data.status == 'error'){
+             console.log(data);
+             $('.email_div').append('<label class="control-label has-error validationMessage">This email already exists.</label>');
+             }else{
+             //console.log(data);
+             //$cookieStore.put('user_insert_id',data);
+
+             $state.go('finder-list');
+             return;
+             //console.log(data);
+             }*/
+
+        });
+
+
+
+    }
+
+
+    $scope.toggletimerange=function(){
+        //console.log($scope.allday);
+    }
+    $scope.custom=function(){
+        //console.log($scope.form);
+        $scope.timeerror=false;
+        $scope.form.event_status=$scope.event_status;
+        //console.log($scope.timediff()+"test custom");
+        if($scope.allday) {
+
+            angular.element('#timeval').val('all day');
+            $scope.form.timer='all day';
+
+            return true;
+        }
+        if($scope.timediff()>0){
+
+            console.log($scope.form.timer);
+            $scope.form.timer=angular.element('input[ng-model="hours"]').eq(0).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()) +" to "+angular.element('input[ng-model="hours"]').eq(1).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(1).val());
+
+            angular.element('#timeval').val(angular.element('input[ng-model="hours"]').eq(0).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()) +" to "+angular.element('input[ng-model="hours"]').eq(1).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(1).val()));
+            return true ;
+        }
+
+        else {
+            $scope.timeerror=true;
+            return "Please set a correct time range for your event !!" ;
+        }
+
+        return true;
+    }
+
+    $scope.timediff= function () {
+
+        /*console.log('td-'+parseInt($scope.endtime.getHours()-$scope.starttime.getHours()));
+         console.log('md-'+parseInt($scope.endtime.getMinutes()-$scope.starttime.getMinutes()));*/
+
+
+        ////console.log('td1-'+angular.element('input[ng-model="hours"]').eq(0).val());
+        // console.log('td1-'+angular.element('input[ng-model="hours"]').eq(1).val());
+        //console.log('md2-'+parseInt($scope.minutes));
+
+        var totalst=parseInt(parseInt(angular.element('input[ng-model="hours"]').eq(0).val()*60)+parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()));
+        var totalet=parseInt(parseInt(angular.element('input[ng-model="hours"]').eq(1).val()*60)+parseInt(angular.element('input[ng-model="minutes"]').eq(1).val()));
+
+
+        console.log('timediff'+parseInt(totalet-totalst));
+
+        return parseInt(totalet-totalst);
+
+        //
+        /* console.log('td1-'+angular.element('input[ng-model="minutes"]').eq(0).val());
+         console.log('td1-'+angular.element('input[ng-model="minutes"]').eq(1).val());*/
+        //console.log('md2-'+parseInt($scope.minutes));
+    }
+
+
+    $scope.showtime=false;
+
+    $scope.toggletimepicker=function(){
+
+        console.log("before"+$scope.showtime);
+        $scope.showtime=! $scope.showtime ;
+        console.log("after"+$scope.showtime);
+    }
+
+
+    var st=new Date();
+    //console.log(st.getHours());
+    st.setHours(st.getHours());
+    var et=new Date();
+    //console.log(st.getHours());
+    et.setHours(et.getHours()+1);
+    $scope.endtime = et;
+    $scope.starttime = st;
+
+    $scope.hstep = 1;
+    $scope.mstep = 15;
+
+    $scope.options = {
+        hstep: [1, 2, 3],
+        mstep: [1, 5, 10, 15, 25, 30]
+    };
+
+    $scope.ismeridian = false;
+    $scope.toggleMode = function() {
+        $scope.ismeridian = ! $scope.ismeridian;
+    };
+
+    $scope.update = function() {
+        var d = new Date();
+        d.setHours( 14 );
+        d.setMinutes( 0 );
+        $scope.starttime = d;
+        d.setHours( 15 );
+        d.setMinutes( 0 );
+        $scope.endtime = d;
+
+        console.log('st'+$scope.starttime);
+        console.log('et'+$scope.endtime);
+    };
+
+    $scope.changed = function () {
+        $log.log('Time changed to: ' + $scope.starttime);
+    };
+
+    $scope.clear = function() {
+        $scope.starttime = null;
+    };
+
+
+
+
+})
+
+
+tr.controller('bloglist',function($scope,$state,$http,$cookieStore,$rootScope,$sce,$filter,$uibModal){
+    $scope.trustAsHtml=$sce.trustAsHtml;
+
+
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.predicate = predicate;
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        //$scope.friends = orderBy($scope.friends, predicate, $scope.reverse);
+    };
+
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'bloglist',
+        // data    : $.param($scope.form),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $rootScope.stateIsLoading = false;
+        $scope.bloglist=data;
+        // $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.blog_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)|| (item.blog_description.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.blog_asset.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)  ){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.delblog = function(item){
+
+        $scope.currentindex=$scope.bloglist.indexOf(item);
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'blogconfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+        });
+
+    }
+
+
+    $scope.changeStatus = function(item){
+        $rootScope.stateIsLoading = true;
+        var idx = $scope.bloglist.indexOf(item);
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'updateblogstatus',
+            data    : $.param({id: $scope.bloglist[idx].id,blog_status: $scope.bloglist[idx].blog_status}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            if($scope.bloglist[idx].blog_status == 0){
+                $scope.bloglist[idx].blog_status = 1;
+            }else{
+                $scope.bloglist[idx].blog_status = 0;
+            }
+        });
+    }
+
+
+
+
+
+
+});
+
+tr.controller('addblog',function($scope,$state,$http,$cookieStore,$rootScope,$log,Upload,$uibModal,$timeout){
+     $scope.youtubesearch = function(){
+        $scope.youtubeTxt= $scope.form.search_youtube;
+         console.log($scope.youtubeTxt);
+        if(typeof($scope.youtubeTxt) == 'undefined'){
+
+            $scope.Commentmsg = $uibModal.open({
+                template: '<div style="text-align: center;margin: 0 auto;display: block;font-family: arial, helvetica, sans-serif;font-weight: normal;font-size: 18px; padding: 15px 0;">Please enter search key.</div>',
+                plain:true,
+                showClose:false,
+                closeByDocument: true,
+                closeByEscape: true
+            });
+
+            $timeout(function(){
+                $scope.Commentmsg.close();
+            },3000);
+
+        }else{
+            var dataurl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q='+$scope.youtubeTxt+'&maxResults=10&key=AIzaSyANefU-R8cD3udZvBqbDPqst7jMKvB_Hvo';
+            $scope.youtubeTxt = '';
+
+            $http.get(dataurl).success(function(data){
+                $scope.vids = [];
+
+                angular.forEach(data.items, function(value, key){
+                    if(typeof (value.id.videoId) != 'undefined'){
+                        $scope.vids.push(value);
+                    }
+                });
+
+                $scope.ytdialog = $uibModal.open({
+                    templateUrl: 'youtubeVideo111',
+                    showClose:false,
+                    closeByDocument: true,
+                    closeByEscape: true,
+                    className : 'youtubePopup',
+                    scope: $scope
+                });
+            });
+
+        }
+    }
+
+
+    $scope.form={'blog_file':''};
+    $scope.blog_status=false;
+    $scope.blog_img=false;
+    $scope.blog_video_url=false;
+
+
+    if (typeof($cookieStore.get('userid')) != 'undefined' && $cookieStore.get('userid') > 0) {
+        $scope.form.user_id = $cookieStore.get('userid');
+    }
+
+
+    /*file upload part start */
+
+
+
+    $scope.$watch('blog_imgupload', function (files) {
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadblogbanner' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            $('.progress').removeClass('ng-hide');
+            file.result = response.data;
+
+            $scope.blog_img = response.data.image_url;
+            $scope.form.blog_file = response.data.image_name;
+
+            $('#loaderDiv').addClass('ng-hide');
+
+
+        }, function (response) {
+            if (response.status > 0)
+                $scope.errorMsg = response.status + ': ' + response.data;
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+
+    /*file upload end */
+
+    $scope.addYtVideo1= function(item){
+
+        console.log(item);
+
+        $scope.blog_video_url=$scope.form.blog_file=item.id.videoId;
+
+        $scope.ytdialog.close();
+    }
+
+
+
+
+
+
+
+    $scope.addblogformsubmit=function(){
+
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'addblog',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            //$rootScope.stateIsLoading = false;
+            $state.go('blog-list');
+
+        });
+
+
+
+    }
+
+
+
+
+
+
+
+});
+tr.controller('editblog', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams,Upload,$log) {
+
+    $scope.blogid = $stateParams.blogid;
+    $scope.form={};
+
+    $scope.blog_img=false;
+    $scope.blog_video_url=false;
+
+    $http({
+        method: 'POST',
+        async: false,
+        url: $scope.adminUrl + 'blogdetails',
+        data: $.param({'id': $scope.blogid}),  // pass in data as strings
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function (data) {
+
+        $scope.form = {
+            id: data.id,
+            user_id: data.user_id,
+            blog_name: data.blog_name,
+            blog_description: data.blog_description,
+            blog_asset: data.blog_asset,
+            blog_file: data.blog_file,
+            blog_status: data.blog_status,
+        }
+
+        $scope.blog_img=data.image_url;
+        $scope.blog_video_url=data.blog_file;
+
+    });
+
+    $scope.youtubesearch = function(){
+        $scope.youtubeTxt= $scope.form.search_youtube;
+        console.log($scope.youtubeTxt);
+        if(typeof($scope.youtubeTxt) == 'undefined'){
+
+            $scope.Commentmsg = $uibModal.open({
+                template: '<div style="text-align: center;margin: 0 auto;display: block;font-family: arial, helvetica, sans-serif;font-weight: normal;font-size: 18px; padding: 15px 0;">Please enter search key.</div>',
+                plain:true,
+                showClose:false,
+                closeByDocument: true,
+                closeByEscape: true
+            });
+
+            $timeout(function(){
+                $scope.Commentmsg.close();
+            },3000);
+
+        }else{
+            var dataurl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q='+$scope.youtubeTxt+'&maxResults=10&key=AIzaSyANefU-R8cD3udZvBqbDPqst7jMKvB_Hvo';
+            $scope.youtubeTxt = '';
+
+            $http.get(dataurl).success(function(data){
+                $scope.vids = [];
+
+                angular.forEach(data.items, function(value, key){
+                    if(typeof (value.id.videoId) != 'undefined'){
+                        $scope.vids.push(value);
+                    }
+                });
+
+                $scope.ytdialog = $uibModal.open({
+                    templateUrl: 'youtubeVideo111',
+                    showClose:false,
+                    closeByDocument: true,
+                    closeByEscape: true,
+                    className : 'youtubePopup',
+                    scope: $scope
+                });
+            });
+
+        }
+    }
+
+
+
+
+    if (typeof($cookieStore.get('userid')) != 'undefined' && $cookieStore.get('userid') > 0) {
+        $scope.form.user_id = $cookieStore.get('userid');
+    }
+
+
+    /*file upload part start */
+
+
+
+    $scope.$watch('blog_imgupload', function (files) {
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadblogbanner' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            $('.progress').removeClass('ng-hide');
+            file.result = response.data;
+
+            $scope.blog_img = response.data.image_url;
+            $scope.form.blog_file = response.data.image_name;
+
+            $('#loaderDiv').addClass('ng-hide');
+
+
+        }, function (response) {
+            if (response.status > 0)
+                $scope.errorMsg = response.status + ': ' + response.data;
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+
+    /*file upload end */
+
+    $scope.addYtVideo1= function(item){
+
+        console.log(item);
+
+        $scope.blog_video_url=$scope.form.blog_file=item.id.videoId;
+
+        $scope.ytdialog.close();
+    }
+
+
+
+
+
+
+
+    $scope.editblogformsubmit=function(){
+
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'blogupdates',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            //$rootScope.stateIsLoading = false;
+            $state.go('blog-list');
+
+        });
+
+
+
+    }
+
+
+
+})
+
+
+tr.controller('addproductjungle',function($scope,$state,$http,$cookieStore,$rootScope,Upload,$sce,$uibModal){
+    $scope.trustAsHtml=$sce.trustAsHtml;
+    $http({
+        method  :   'POST',
+        async   :   false,
+
+        url :       $scope.adminUrl+'junglecategorylist',
+        // data    : $.param($scope.form),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.categorylist=data;
+
+    })
+
+    $scope.tinymceOptions = {
+        trusted: true,
+        theme: 'modern',
+        plugins: [
+            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
+            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
+            'save table contextmenu directionality  template paste textcolor'
+        ],
+        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
+        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
+    };
+
+
+    $scope.product_video_src='';
+    $scope.product_img_src='';
+    $scope.productfiletype='';
+    $scope.form= {product_file:''};
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    $scope.$watch('product_upload', function (files) {
+        $('.errormsg').html('');
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadjungleproductimage' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            // console.log(response.data.status);
+            if(response.data.status=='error'){
+                $('.errormsg').html('Invalid file type.');
+            }
+            else {
+                $('.progress').removeClass('ng-hide');
+                file.result = response.data;
+
+                /*if(response.data.video_url!='') {
+                 $sce.trustAsResourceUrl(response.data.video_url);
+                 $scope.product_video_src = response.data.video_url;
+                 }*/
+
+                $scope.is_video=response.data.is_video;
+                if(response.data.image_url!='') {
+                    $scope.product_img_src = response.data.image_url;
+                    $scope.productfiletype = 'image';
+                }
+
+                if($scope.is_video == 1){
+                    $scope.form.product_file = response.data.video_name;
+                    $scope.video_url1222 = response.data.video_url1222;
+                    $scope.productfiletype = 'video';
+                }else{
+                    $scope.form.product_file = response.data.image_name;
+                }
+
+
+
+
+
+
+                if(typeof($scope.product_video_src)!='undefined') {
+                    setTimeout(function () {
+
+                        angular.element(document.querySelector('#maintvDiv')).html('<video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + $scope.product_video_src + '" type="video/mp4">\
+            </video>');
+                    }, 2000);
+
+                }
+
+
+
+            }
+
+
+        }, function (response) {
+            console.log(response.status);
+            if(response.data.status>0) {
+
+                //  $scope.errorMsg = response.status + ': ' + response.data;
+            }
+
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+    $scope.showvideo = function(video_url1222){
+        $uibModal.open({
+            animation: true,
+            template: '<div style="position: relative;"><a href="javascript:void(0);" style="position: absolute; top: 0; right: 0; color:#fff; background-color: #000; width:40px; font-size: 40px; text-align:center;" ng-click="cancel()">&times;</a><video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + video_url1222 + '" type="video/mp4">\
+            </video></div>',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+
+        });
+    }
+            /*-----------File Upload end----------------*/
+
+
+/*------------------------Downloadable file upload Start-----------------------*/
+    $scope.productdownloadfiletype='';
+    $scope.product_download_src='';
+    $scope.form= {productdownload_file:''};
+
+    $scope.$watch('product_download', function (files) {
+        $('.errormsg').html('');
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload1(file);
+                })(files[i]);
+            }
+        }
+    });
+
+
+    function upload1(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload1(file);
+    }
+
+    function uploadUsingUpload1(file) {
+
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadjungleproductimage1' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            // console.log(response.data.status);
+            if(response.data.status=='error'){
+                $('.errormsg').html('Invalid file type.');
+            }
+            else {
+                $('.progress').removeClass('ng-hide');
+                file.result = response.data;
+
+                /*if(response.data.video_url!='') {
+                 $sce.trustAsResourceUrl(response.data.video_url);
+                 $scope.product_video_src = response.data.video_url;
+                 }*/
+
+                $scope.is_video1=response.data.is_video;
+                if(response.data.image_url!='') {
+                    $scope.product_download_src = response.data.image_url;
+                    $scope.productdownloadfiletype = response.data.productdownloadfiletype;
+                }
+
+                if($scope.is_video == 1){
+                    $scope.form.productdownload_file = response.data.video_name;
+                    $scope.video_ur_downloadl1222 = response.data.video_url1222;
+                    $scope.productdownloadfiletype = 'video';
+                }else{
+                    $scope.form.productdownload_file = response.data.image_name;
+                }
+
+
+
+
+
+
+                if(typeof($scope.product_video_src)!='undefined') {
+                    setTimeout(function () {
+
+                        angular.element(document.querySelector('#maintvDiv')).html('<video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + $scope.product_video_src + '" type="video/mp4">\
+            </video>');
+                    }, 2000);
+
+                }
+
+
+
+            }
+
+
+        }, function (response) {
+            console.log(response.status);
+            if(response.data.status>0) {
+
+                //  $scope.errorMsg = response.status + ': ' + response.data;
+            }
+
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+    $scope.showvideo1 = function(video_ur_downloadl1222){
+        $uibModal.open({
+            animation: true,
+            template: '<div style="position: relative;"><a href="javascript:void(0);" style="position: absolute; top: 0; right: 0; color:#fff; background-color: #000; width:40px; font-size: 40px; text-align:center;" ng-click="cancel()">&times;</a><video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + video_ur_downloadl1222 + '" type="video/mp4">\
+            </video></div>',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+
+        });
+    }
+    /*------------------End Downloadable file upload-------------------*/
+
+
+
+    $scope.addproductsubmit=function() {
+
+
+        console.log($scope.form);
+
+
+        $scope.form.category_id=JSON.stringify($scope.form.category_id);
+        if (typeof($cookieStore.get('userid')) != 'undefined' && $cookieStore.get('userid') > 0) {
+            $scope.form.userid = $cookieStore.get('userid');
+        }
+
+        $http({
+            method  :   'POST',
+            async   :   false,
+
+            url :       $scope.adminUrl+'addjungleproduct',
+            data    : $.param($scope.form),
+            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+        }).success(function(){
+            $state.go('product-list');
+
+        })
+
+    }
+
+
+
+
+})
+
+
+tr.controller('jungleproductlist',function($scope,$state,$http,$cookieStore,$rootScope,$uibModal,$sce){
+    $scope.trustAsHtml=$sce.trustAsHtml;
+
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.predicate = predicate;
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        //$scope.friends = orderBy($scope.friends, predicate, $scope.reverse);
+    };
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'jungleproductlist',
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.productlist=data;
+    })
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+
+        console.log(item)
+
+        if ( (item.product_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ||  (item.status.toString().indexOf($scope.searchkey) != -1) || (item.cat_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.product_desc.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.payout.toString().indexOf($scope.searchkey) != -1) || (item.credits.toString().indexOf($scope.searchkey) != -1) ){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.jungledelproduct = function(item,size){
+
+        $scope.currentindex=$scope.productlist.indexOf(item);
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'jungleproductdelconfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            scope:$scope
+        });
+    }
+
+    $scope.changeproductstatus = function(item,size){
+
+        $scope.currentindex=$scope.productlist.indexOf(item);
+        var idx = $scope.currentindex;
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'jungleproductupdatestatus',
+            data    : $.param({id: $scope.productlist[idx].id,status:$scope.productlist[idx].status}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+
+            $scope.productlist[idx].status = !$scope.productlist[idx].status;
+        });
+
+
+ /*       $uibModal.open({
+            animation: true,
+            templateUrl: 'jungleproductstatusfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            scope:$scope
+        });
+*/    }
+
+
+
+})
+
+tr.controller('editproductjungle', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams,$sce,Upload,$uibModal){
+    $scope.trustAsHtml=$sce.trustAsHtml;
+    $scope.product_video_src='';
+    $scope.product_img_src='';
+
+    $http({
+        method  :   'POST',
+        async   :   false,
+
+        url :       $scope.adminUrl+'junglecategorylist',
+        // data    : $.param($scope.form),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.categorylist=data;
+
+    })
+
+    $scope.id=$stateParams.id;
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'jungleproductdetails',
+        data    : $.param({'id':$scope.id}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+
+
+        $scope.is_video=data.is_video;
+        $scope.is_video1=data.is_video1;
+        $scope.productfiletype = data.productfiletype;
+        $scope.productdownloadfiletype = data.productdownloadfiletype;
+        if(data.image_url!='') {
+            $scope.product_img_src = data.image_url;
+           // $scope.productfiletype = 'image';
+        }
+        if(data.image_url1!='') {
+            $scope.product_download_src = data.image_url1;
+//
+        }
+
+
+
+        if($scope.is_video == 1){
+            $scope.product_img_src = data.cover_img_url;
+            $scope.video_url1222 = data.video_url;
+          //  $scope.productfiletype = 'video';
+        }
+        if($scope.is_video1 == 1){
+            //$scope.product_img_src = data.cover_img_url;
+            $scope.video_ur_downloadl1222 = data.video_url;
+        }
+
+        $scope.form = {
+            id: data.id,
+
+            product_name: data.product_name,
+            product_desc: data.product_desc,
+            /*category_id: {
+             id:data.category_id,
+             type:data.type,
+             },*/
+            category_id:JSON.parse(data.category_id),
+            product_file: data.product_file,
+            productdownload_file: data.productdownload_file,
+            is_download: data.is_download,
+            priority: data.priority,
+            price: data.price,
+            payout: data.payout,
+            credits: data.credits,
+
+        }
+    });
+
+
+    $scope.tinymceOptions = {
+        trusted: true,
+        theme: 'modern',
+        plugins: [
+            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
+            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
+            'save table contextmenu directionality  template paste textcolor'
+        ],
+        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
+        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
+    };
+
+
+/*
+    $scope.product_video_src='';
+    $scope.product_img_src='';
+
+    $scope.form= {product_file:''};
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    $scope.$watch('product_upload', function (files) {
+        $('.errormsg').html('');
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadjungleproductimage' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            // console.log(response.data.status);
+            if(response.data.status=='error'){
+                $('.errormsg').html('Invalid file type.');
+            }
+            else {
+                $('.progress').removeClass('ng-hide');
+                file.result = response.data;
+                if(response.data.video_url!='') {
+                    $sce.trustAsResourceUrl(response.data.video_url);
+                    $scope.product_video_src = response.data.video_url;
+                }
+                if(response.data.image_url!='') {
+                    $scope.product_img_src = response.data.image_url;
+                }
+
+                $scope.form.product_file = response.data.image_name;
+                console.log($scope.product_video_src);
+
+                if(typeof($scope.product_video_src)!='undefined') {
+
+                    console.log(11);
+                    setTimeout(function () {
+
+                        angular.element(document.querySelector('#maintvDiv')).html('<video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + $scope.product_video_src + '" type="video/mp4">\
+            </video>');
+                    }, 2000);
+
+                }
+
+
+
+            }
+
+
+        }, function (response) {
+            console.log(response.status);
+            if(response.data.status>0) {
+
+                //  $scope.errorMsg = response.status + ': ' + response.data;
+            }
+
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+*/
+
+
+
+    $scope.product_video_src='';
+    $scope.product_img_src='';
+    $scope.form= {product_file:''};
+    $scope.getReqParams = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    $scope.$watch('product_upload', function (files) {
+        $('.errormsg').html('');
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+
+    function upload(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload(file);
+    }
+
+    function uploadUsingUpload(file) {
+
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadjungleproductimage' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            // console.log(response.data.status);
+            if(response.data.status=='error'){
+                $('.errormsg').html('Invalid file type.');
+            }
+            else {
+                $('.progress').removeClass('ng-hide');
+                file.result = response.data;
+
+                /*if(response.data.video_url!='') {
+                 $sce.trustAsResourceUrl(response.data.video_url);
+                 $scope.product_video_src = response.data.video_url;
+                 }*/
+
+                $scope.is_video=response.data.is_video;
+                if(response.data.image_url!='') {
+                    $scope.product_img_src = response.data.image_url;
+                    $scope.productfiletype = 'image';
+                }
+
+                if($scope.is_video == 1){
+                    $scope.form.product_file = response.data.video_name;
+                    $scope.video_url1222 = response.data.video_url1222;
+                    $scope.productfiletype = 'video';
+                }else{
+                    $scope.form.product_file = response.data.image_name;
+                }
+
+
+
+
+
+
+                if(typeof($scope.product_video_src)!='undefined') {
+                    setTimeout(function () {
+
+                        angular.element(document.querySelector('#maintvDiv')).html('<video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + $scope.product_video_src + '" type="video/mp4">\
+            </video>');
+                    }, 2000);
+
+                }
+
+
+
+            }
+
+
+        }, function (response) {
+            console.log(response.status);
+            if(response.data.status>0) {
+
+                //  $scope.errorMsg = response.status + ': ' + response.data;
+            }
+
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+    $scope.showvideo = function(video_url1222){
+        $uibModal.open({
+            animation: true,
+            template: '<div style="position: relative;"><a href="javascript:void(0);" style="position: absolute; top: 0; right: 0; color:#fff; background-color: #000; width:40px; font-size: 40px; text-align:center;" ng-click="cancel()">&times;</a><video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + video_url1222 + '" type="video/mp4">\
+            </video></div>',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+
+        });
+    }
+    /*-----------File Upload end----------------*/
+
+
+    /*------------------------Downloadable file upload Start-----------------------*/
+    //$scope.productdownloadfiletype='';
+   // $scope.product_download_src='';
+    //$scope.form= {productdownload_file:''};
+
+    $scope.$watch('product_download', function (files) {
+        $('.errormsg').html('');
+        $scope.formUpload = false;
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    upload1(file);
+                })(files[i]);
+            }
+        }
+    });
+
+
+    function upload1(file) {
+        $scope.errorMsg = null;
+        uploadUsingUpload1(file);
+    }
+
+    function uploadUsingUpload1(file) {
+
+        $('#loaderDiv').addClass('ng-hide');
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'uploadjungleproductimage1' + $scope.getReqParams(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {'id':$rootScope.createIdeaId},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+            // console.log(response.data.status);
+            if(response.data.status=='error'){
+                $('.errormsg').html('Invalid file type.');
+            }
+            else {
+                $('.progress').removeClass('ng-hide');
+                file.result = response.data;
+
+                /*if(response.data.video_url!='') {
+                 $sce.trustAsResourceUrl(response.data.video_url);
+                 $scope.product_video_src = response.data.video_url;
+                 }*/
+
+                $scope.is_video=response.data.is_video;
+                if(response.data.image_url!='') {
+                    $scope.product_download_src = response.data.image_url;
+                    $scope.productdownloadfiletype = response.data.productdownloadfiletype;
+                }
+
+                if($scope.is_video == 1){
+                    $scope.form.productdownload_file = response.data.video_name;
+                    $scope.video_ur_downloadl1222 = response.data.video_urll1222;
+                    $scope.productdownloadfiletype = 'video';
+                }else{
+                    $scope.form.productdownload_file = response.data.image_name;
+                }
+
+
+
+
+
+
+                if(typeof($scope.product_video_src)!='undefined') {
+                    setTimeout(function () {
+
+                        angular.element(document.querySelector('#maintvDiv')).html('<video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + $scope.product_video_src + '" type="video/mp4">\
+            </video>');
+                    }, 2000);
+
+                }
+
+
+
+            }
+
+
+        }, function (response) {
+            console.log(response.status);
+            if(response.data.status>0) {
+
+                //  $scope.errorMsg = response.status + ': ' + response.data;
+            }
+
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+
+    $scope.showvideo1 = function(video_ur_downloadl1222){
+        $uibModal.open({
+            animation: true,
+            template: '<div style="position: relative;"><a href="javascript:void(0);" style="position: absolute; top: 0; right: 0; color:#fff; background-color: #000; width:40px; font-size: 40px; text-align:center;" ng-click="cancel()">&times;</a><video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + video_ur_downloadl1222 + '" type="video/mp4">\
+            </video></div>',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+
+        });
+    }
+    /*------------------End Downloadable file upload-------------------*/
+
+
+    $scope.editproductsubmit=function() {
+
+        $scope.form.category_id=JSON.stringify($scope.form.category_id);
+
+        $http({
+            method  :   'POST',
+            async   :   false,
+
+            url :       $scope.adminUrl+'jungleproductupdates',
+            data    : $.param($scope.form),
+            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+        }).success(function(){
+            $state.go('product-list');
+
+        })
+
+    }
+
+    $scope.showvideo = function(video_url1222){
+        $uibModal.open({
+            animation: true,
+            template: '<div style="position: relative;"><a href="javascript:void(0);" style="position: absolute; top: 0; right: 0; color:#fff; background-color: #000; width:40px; font-size: 40px; text-align:center;" ng-click="cancel()">&times;</a><video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
+            <source src="' + video_url1222 + '" type="video/mp4">\
+            </video></div>',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+
+        });
+    }
+
+
+
+})
 tr.controller('generaluserlist', function($scope,$state,$http,$cookieStore,$rootScope,$uibModal) {
     $rootScope.type='generaluser';
     $scope.predicate = 'uid';
@@ -3177,24 +8493,6 @@ tr.controller('generaluserlist', function($scope,$state,$http,$cookieStore,$root
             scope:$scope
         });
     }
-    /*
-     $scope.deladmin = function(item){
-     $rootScope.stateIsLoading = true;
-     var idx = $scope.userlist.indexOf(item);
-     $http({
-     method  : 'POST',
-     async:   false,
-     url     : $scope.adminUrl+'deleteadmin',
-     data    : $.param({uid: $scope.userlist[idx].uid}),  // pass in data as strings
-     headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-     }) .success(function(data) {
-     $rootScope.stateIsLoading = false;
-     $scope.userlist.splice(idx,1);
-     $scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
-
-     });
-     }
-     */
 
     $scope.changeStatus = function(item){
         $rootScope.stateIsLoading = true;
@@ -3221,6 +8519,85 @@ tr.controller('generaluserlist', function($scope,$state,$http,$cookieStore,$root
 
     //console.log('in add admin form ');
 });
+tr.controller('orderlist', function($scope,$state,$http,$cookieStore,$rootScope,$uibModal) {
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        $scope.predicate = predicate;
+    };
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'orderlist',
+        // data    : $.param($scope.form),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $rootScope.stateIsLoading = false;
+        console.log(data);
+        $scope.orderlist=data;
+       // $scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.fname.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.lname.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ||(item.mail.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)||(item.mobile_no.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)||(item.phone_no.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ||(item.address.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)){
+            return true;
+        }
+        return false;
+    };
+
+/*
+     $scope.deladmin = function(item,size){
+
+     $scope.currentindex=$scope.orderlist.indexOf(item);
+
+     $uibModal.open({
+     animation: true,
+     templateUrl: 'delconfirm.html',
+     controller: 'ModalInstanceCtrl',
+     size: size,
+     scope:$scope
+     });
+     }
+     */
+
+    $scope.changeStatus = function(item){
+        $rootScope.stateIsLoading = true;
+        var idx = $scope.orderlist.indexOf(item);
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'updatestatus',
+            data    : $.param({id: $scope.orderlist[idx].id}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            if($scope.orderlist[idx].status == 0){
+                $scope.orderlist[idx].status = 1;
+            }else{
+                $scope.orderlist[idx].status = 0;
+            }
+            // $scope.userlist[idx].status = !$scope.userlist[idx].status;
+        });
+    }
+
+
+
+
+    //console.log('in add admin form ');
+});
+
+
+
 tr.controller('contentlist', function($scope,$state,$http,$cookieStore,$rootScope) {
 
 
@@ -3810,260 +9187,7 @@ setTimeout(function(){
 });
 
 
-tr.controller('addevent',function($scope,$state,$http,$cookieStore,$rootScope,$log,Upload){
 
-
-    $scope.form={};
-    $scope.event_status=false;
-    $scope.event_img=false;
-
-
-
-
-    /*file upload part start */
-
-
-
-    $scope.$watch('event_imgupload', function (files) {
-        $scope.formUpload = false;
-        if (files != null) {
-            for (var i = 0; i < files.length; i++) {
-                $scope.errorMsg = null;
-                (function (file) {
-                    upload(file);
-                })(files[i]);
-            }
-        }
-    });
-
-    $scope.getReqParams = function () {
-        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
-        '&errorMessage=' + $scope.serverErrorMsg : '';
-    };
-
-    function upload(file) {
-        $scope.errorMsg = null;
-        uploadUsingUpload(file);
-    }
-
-    function uploadUsingUpload(file) {
-        $('#loaderDiv').addClass('ng-hide');
-        file.upload = Upload.upload({
-            url: $scope.adminUrl+'uploadeventbanner' + $scope.getReqParams(),
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            },
-            fields: {'id':$rootScope.createIdeaId},
-            file: file,
-            fileFormDataName: 'Filedata'
-        });
-
-        file.upload.then(function (response) {
-            $('.progress').removeClass('ng-hide');
-            file.result = response.data;
-
-            $scope.event_img = response.data.image_url;
-            $scope.form.event_image = response.data.image_name;
-
-            $('#loaderDiv').addClass('ng-hide');
-
-
-        }, function (response) {
-            if (response.status > 0)
-                $scope.errorMsg = response.status + ': ' + response.data;
-        });
-
-        file.upload.progress(function (evt) {
-            // Math.min is to fix IE which reports 200% sometimes
-            $('#loaderDiv').removeClass('ng-hide');
-
-            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-
-        });
-
-        file.upload.xhr(function (xhr) {
-            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
-        });
-    }
-
-
-
-    /*file upload end */
-
-
-
-
-
-
-
-
-    setTimeout(function(){
-        jQuery('input[name="event_daterange"]').daterangepicker({
-            /* timePicker: true,
-             timePickerIncrement: 30,*/
-            locale: {
-                format: 'MM/DD/YYYY h:mm A'
-            }
-        });
-
-/*
-        $('#timepicker1').timepicker({
-            minuteStep: 1,
-            template: 'modal',
-            appendWidgetTo: 'body',
-            showSeconds: true,
-            showMeridian: false,
-            defaultTime: false
-        });
-*/
-
-    },4000);
-
-
-    $scope.addeventsForm=function(){
-
-        $http({
-            method  : 'POST',
-            async:   false,
-            url     : $scope.adminUrl+'addevent',
-            data    : $.param($scope.form),  // pass in data as strings
-            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }) .success(function(data) {
-            //$rootScope.stateIsLoading = false;
-            $state.go('event-list');
-            console.log(data);
-            /* if(data.status == 'error'){
-             console.log(data);
-             $('.email_div').append('<label class="control-label has-error validationMessage">This email already exists.</label>');
-             }else{
-             //console.log(data);
-             //$cookieStore.put('user_insert_id',data);
-
-             $state.go('finder-list');
-             return;
-             //console.log(data);
-             }*/
-
-        });
-
-
-
-    }
-
-
-    $scope.toggletimerange=function(){
-        //console.log($scope.allday);
-    }
-    $scope.custom=function(){
-        //console.log($scope.form);
-        $scope.timeerror=false;
-        $scope.form.event_status=$scope.event_status;
-        //console.log($scope.timediff()+"test custom");
-        if($scope.allday) {
-
-            angular.element('#timeval').val('all day');
-            $scope.form.timer='all day';
-
-            return true;
-        }
-        if($scope.timediff()>0){
-            $scope.form.timer=angular.element('input[ng-model="hours"]').eq(0).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()) +" to "+angular.element('input[ng-model="hours"]').eq(1).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(1).val());
-
-            angular.element('#timeval').val(angular.element('input[ng-model="hours"]').eq(0).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()) +" to "+angular.element('input[ng-model="hours"]').eq(1).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(1).val()));
-            return true ;
-        }
-
-        else {
-            $scope.timeerror=true;
-            return "Please set a correct time range for your event !!" ;
-        }
-
-        return true;
-    }
-
-    $scope.timediff= function () {
-
-        /*console.log('td-'+parseInt($scope.endtime.getHours()-$scope.starttime.getHours()));
-         console.log('md-'+parseInt($scope.endtime.getMinutes()-$scope.starttime.getMinutes()));*/
-
-
-        ////console.log('td1-'+angular.element('input[ng-model="hours"]').eq(0).val());
-        // console.log('td1-'+angular.element('input[ng-model="hours"]').eq(1).val());
-        //console.log('md2-'+parseInt($scope.minutes));
-
-        var totalst=parseInt(parseInt(angular.element('input[ng-model="hours"]').eq(0).val()*60)+parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()));
-        var totalet=parseInt(parseInt(angular.element('input[ng-model="hours"]').eq(1).val()*60)+parseInt(angular.element('input[ng-model="minutes"]').eq(1).val()));
-
-
-        console.log('timediff'+parseInt(totalet-totalst));
-
-        return parseInt(totalet-totalst);
-
-        //
-        /* console.log('td1-'+angular.element('input[ng-model="minutes"]').eq(0).val());
-         console.log('td1-'+angular.element('input[ng-model="minutes"]').eq(1).val());*/
-        //console.log('md2-'+parseInt($scope.minutes));
-    }
-
-
-    $scope.showtime=false;
-
-    $scope.toggletimepicker=function(){
-
-        console.log("before"+$scope.showtime);
-        $scope.showtime=! $scope.showtime ;
-        console.log("after"+$scope.showtime);
-    }
-
-
-    var st=new Date();
-    //console.log(st.getHours());
-    st.setHours(st.getHours());
-    var et=new Date();
-    //console.log(st.getHours());
-    et.setHours(et.getHours()+1);
-    $scope.endtime = et;
-    $scope.starttime = st;
-
-    $scope.hstep = 1;
-    $scope.mstep = 15;
-
-    $scope.options = {
-        hstep: [1, 2, 3],
-        mstep: [1, 5, 10, 15, 25, 30]
-    };
-
-    $scope.ismeridian = false;
-    $scope.toggleMode = function() {
-        $scope.ismeridian = ! $scope.ismeridian;
-    };
-
-    $scope.update = function() {
-        var d = new Date();
-        d.setHours( 14 );
-        d.setMinutes( 0 );
-        $scope.starttime = d;
-        d.setHours( 15 );
-        d.setMinutes( 0 );
-        $scope.endtime = d;
-
-        console.log('st'+$scope.starttime);
-        console.log('et'+$scope.endtime);
-    };
-
-    $scope.changed = function () {
-        $log.log('Time changed to: ' + $scope.starttime);
-    };
-
-    $scope.clear = function() {
-        $scope.starttime = null;
-    };
-
-
-
-
-});
 
 
 tr.controller('addflight',function($scope,$state,$http,$cookieStore,$rootScope,$log,Upload,uibDateParser){
@@ -4390,536 +9514,6 @@ tr.controller('addflight',function($scope,$state,$http,$cookieStore,$rootScope,$
 });
 
 
-tr.controller('event',function($scope,$state,$http,$cookieStore,$rootScope){
-
-    $scope.form={};
-
-    $scope.showdetails=function(ev){
-
-        var target = ev.target || ev.srcElement || ev.originalTarget;
-
-
-        //console.log('event-name'+$(target).attr('event-name'));
-        //console.log(target);
-        $('#eventdetailpopup').find('h3.evtitle').text($(target).attr('event-name'));
-        $('#eventdetailpopup').find('h4.evttime').text($(target).attr('event-timerange'));
-        $('#eventdetailpopup').find('h4.evtdate').text($(target).attr('event-daterange'));
-        $('#eventdetailpopup').find('p.evtdesc').text($(target).attr('event-detail'));
-        ///$('#eventdetailpopup').find('h3.evtdesc').text($(target).attr('event_description'));
-        $('#eventdetailpopup').find('img.evimg').attr('src',$(target).attr('event-image'));
-        $('#eventdetailpopup').modal('show');
-    }
-
-    $scope.eventrsvpsubmit=function(){
-        $http({
-            method  : 'POST',
-            async:   false,
-            url     : $scope.adminUrl+'addeventrsvp',
-            data    : $.param($scope.form),  // pass in data as strings
-            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }) .success(function(data) {
-            $('#event-rsvp').modal('hide');
-            $('#eventconatctModal').modal('show');
-            $scope.eventrsvp.reset();
-            //$rootScope.stateIsLoading = false;
-            //console.log(data);
-            // $scope.eventlist=data;
-            // $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
-
-
-        });
-
-
-    }
-
-    $scope.currentPage=1;
-    $scope.perPage=3;
-    $scope.begin=0;
-
-    $scope.setPage = function (pageNo) {
-        $scope.currentPage = pageNo;
-        console.log($scope.currentPage);
-    };
-
-    $scope.pageChanged = function(){
-        $scope.begin=parseInt($scope.currentPage-1)*$scope.perPage;
-        $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
-    }
-    $http({
-        method  : 'POST',
-        async:   false,
-        url     : $scope.adminUrl+'eventlistfrontlisting',
-        // data    : $.param($scope.form),  // pass in data as strings
-        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }) .success(function(data) {
-        $rootScope.stateIsLoading = false;
-        console.log(data);
-        $scope.eventlist=data;
-        $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
-
-
-    });
-
-    /*   $scope.searchkey = '';
-    $scope.search = function(item){
-
-        if ( (item.event_name.indexOf($scope.searchkey) != -1) || (item.event_daterange.indexOf($scope.searchkey) != -1)  ){
-            return true;
-        }
-        return false;
-    };
-
-
-*/
-
-    $scope.genderValidator=function(){
-
-
-        console.log('in gender validator');
-        //console.log($scope.signupForm.$submitted);
-        //console.log($("input[name='drone']:checked").val());
-
-
-
-        if($scope.eventrsvp.$submitted){
-
-            if(typeof ($("input[name='gender']:checked").val()) != 'undefined' )
-            {
-                $scope.gender_error=false;
-                //console.log('in true');
-                return true ;
-            }
-            else {
-                //console.log('in false');
-                $scope.gender_error=true;
-                return '';
-
-            }
-
-        }
-
-    }
-
-    $scope.openmodal=function(ev1){
-
-        console.log('in rsvp modal');
-
-        var target1 = ev1.target || ev1.srcElement || ev1.originalTarget;
-        console.log($(target1));
-        console.log($(target1).attr('class'));
-        console.log($(target1).html());
-
-        $scope.form.event_id=$(target1).attr('event-id');
-
-        $('#event-rsvp').modal('show');
-
-        var evval=$(target1).attr('event-id');
-        console.log($(target1).attr('event-id'));
-    }
-
-
-
-});
-tr.controller('editevent', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams,Upload,$log) {
-
-    $scope.eventId = $stateParams.eventId;
-    $scope.form={};
-    $scope.event_status=false;
-    $scope.event_img=false;
-
-    $http({
-        method: 'POST',
-        async: false,
-        url: $scope.adminUrl + 'eventdetails',
-        data: $.param({'id': $scope.eventId}),  // pass in data as strings
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).success(function (data) {
-        console.log(data);
-        if(data.event_timerange=='all day') {
-            $scope.allday=true;
-        }
-        else{
-
-            var result = data.event_timerange.split('to');
-
-
-            var sttime=result[0].split(':');
-            var sthour=parseInt(sttime[0]);
-            var stmin=parseInt(sttime[1]);
-
-            var ettime=result[1].split(':');
-            var ethour=parseInt(ettime[0]);
-            var etmin=parseInt(ettime[1]);
-
-            console.log('tc='+sthour+'tm'+stmin);
-            console.log('sc='+ethour+'sm'+etmin);
-            console.log('thetc='+data.event_timerange);
-
-            var st=new Date();
-            //console.log(st.getHours());
-            st.setHours(sthour);
-            st.setMinutes(stmin);
-            var et=new Date();
-            //console.log(st.getHours());
-            et.setHours(ethour);
-            et.setMinutes(etmin);
-            $scope.endtime = et;
-            $scope.starttime = st;
-        }
-
-        $scope.form = {
-            id: data.id,
-            event_name: data.event_name,
-            event_description: data.event_description,
-            event_image: data.event_image,
-            //event_status: data.event_status,
-            event_daterange: data.event_daterange,
-            event_timerange: data.event_timerange,
-            phone_no: data.phone_no,
-            mobile_no: data.mobile_no,
-            contact_time: data.contact_time,
-        }
-
-        $scope.event_img=data.event_image;
-
-        if(data.event_status == 1 ) {
-            $scope.form.event_status=true;
-            $scope.event_status=true;
-        }
-        else{
-            $scope.form.event_status=false;
-            $scope.event_status=false;
-
-
-        }
-    });
-
-
-    $scope.$watch('event_imgupload', function (files) {
-        $scope.formUpload = false;
-        if (files != null) {
-            for (var i = 0; i < files.length; i++) {
-                $scope.errorMsg = null;
-                (function (file) {
-                    upload(file);
-                })(files[i]);
-            }
-        }
-    });
-
-    $scope.getReqParams = function () {
-        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
-        '&errorMessage=' + $scope.serverErrorMsg : '';
-    };
-
-    function upload(file) {
-        $scope.errorMsg = null;
-        uploadUsingUpload(file);
-    }
-
-    function uploadUsingUpload(file) {
-        $('#loaderDiv').addClass('ng-hide');
-        file.upload = Upload.upload({
-            url: $scope.adminUrl+'uploadeventbanner' + $scope.getReqParams(),
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            },
-            fields: {'id':$rootScope.createIdeaId},
-            file: file,
-            fileFormDataName: 'Filedata'
-        });
-
-        file.upload.then(function (response) {
-            $('.progress').removeClass('ng-hide');
-            file.result = response.data;
-
-            $scope.event_img = response.data.image_url;
-            $scope.form.event_image = response.data.image_name;
-
-            $('#loaderDiv').addClass('ng-hide');
-
-
-        }, function (response) {
-            if (response.status > 0)
-                $scope.errorMsg = response.status + ': ' + response.data;
-        });
-
-        file.upload.progress(function (evt) {
-            // Math.min is to fix IE which reports 200% sometimes
-            $('#loaderDiv').removeClass('ng-hide');
-
-            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-
-        });
-
-        file.upload.xhr(function (xhr) {
-            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
-        });
-    }
-
-
-
-    /*file upload end */
-
-
-
-
-
-
-
-
-    setTimeout(function(){
-        jQuery('input[name="event_daterange"]').daterangepicker({
-            /* timePicker: true,
-             timePickerIncrement: 30,*/
-            locale: {
-                format: 'MM/DD/YYYY h:mm A'
-            }
-        });
-
-        /*
-         $('#timepicker1').timepicker({
-         minuteStep: 1,
-         template: 'modal',
-         appendWidgetTo: 'body',
-         showSeconds: true,
-         showMeridian: false,
-         defaultTime: false
-         });
-         */
-
-    },4000);
-
-
-    $scope.addeventsForm=function(){
-
-        $http({
-            method  : 'POST',
-            async:   false,
-            url     : $scope.adminUrl+'eventupdates',
-            data    : $.param($scope.form),  // pass in data as strings
-            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }) .success(function(data) {
-            //$rootScope.stateIsLoading = false;
-            $state.go('event-list');
-            console.log(data);
-            /* if(data.status == 'error'){
-             console.log(data);
-             $('.email_div').append('<label class="control-label has-error validationMessage">This email already exists.</label>');
-             }else{
-             //console.log(data);
-             //$cookieStore.put('user_insert_id',data);
-
-             $state.go('finder-list');
-             return;
-             //console.log(data);
-             }*/
-
-        });
-
-
-
-    }
-
-
-    $scope.toggletimerange=function(){
-        //console.log($scope.allday);
-    }
-    $scope.custom=function(){
-        //console.log($scope.form);
-        $scope.timeerror=false;
-        $scope.form.event_status=$scope.event_status;
-        //console.log($scope.timediff()+"test custom");
-        if($scope.allday) {
-
-            angular.element('#timeval').val('all day');
-            $scope.form.timer='all day';
-
-            return true;
-        }
-        if($scope.timediff()>0){
-
-            console.log($scope.form.timer);
-            $scope.form.timer=angular.element('input[ng-model="hours"]').eq(0).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()) +" to "+angular.element('input[ng-model="hours"]').eq(1).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(1).val());
-
-            angular.element('#timeval').val(angular.element('input[ng-model="hours"]').eq(0).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()) +" to "+angular.element('input[ng-model="hours"]').eq(1).val()+' : ' +parseInt(angular.element('input[ng-model="minutes"]').eq(1).val()));
-            return true ;
-        }
-
-        else {
-            $scope.timeerror=true;
-            return "Please set a correct time range for your event !!" ;
-        }
-
-        return true;
-    }
-
-    $scope.timediff= function () {
-
-        /*console.log('td-'+parseInt($scope.endtime.getHours()-$scope.starttime.getHours()));
-         console.log('md-'+parseInt($scope.endtime.getMinutes()-$scope.starttime.getMinutes()));*/
-
-
-        ////console.log('td1-'+angular.element('input[ng-model="hours"]').eq(0).val());
-        // console.log('td1-'+angular.element('input[ng-model="hours"]').eq(1).val());
-        //console.log('md2-'+parseInt($scope.minutes));
-
-        var totalst=parseInt(parseInt(angular.element('input[ng-model="hours"]').eq(0).val()*60)+parseInt(angular.element('input[ng-model="minutes"]').eq(0).val()));
-        var totalet=parseInt(parseInt(angular.element('input[ng-model="hours"]').eq(1).val()*60)+parseInt(angular.element('input[ng-model="minutes"]').eq(1).val()));
-
-
-        console.log('timediff'+parseInt(totalet-totalst));
-
-        return parseInt(totalet-totalst);
-
-        //
-        /* console.log('td1-'+angular.element('input[ng-model="minutes"]').eq(0).val());
-         console.log('td1-'+angular.element('input[ng-model="minutes"]').eq(1).val());*/
-        //console.log('md2-'+parseInt($scope.minutes));
-    }
-
-
-    $scope.showtime=false;
-
-    $scope.toggletimepicker=function(){
-
-        console.log("before"+$scope.showtime);
-        $scope.showtime=! $scope.showtime ;
-        console.log("after"+$scope.showtime);
-    }
-
-
-    var st=new Date();
-    //console.log(st.getHours());
-    st.setHours(st.getHours());
-    var et=new Date();
-    //console.log(st.getHours());
-    et.setHours(et.getHours()+1);
-    $scope.endtime = et;
-    $scope.starttime = st;
-
-    $scope.hstep = 1;
-    $scope.mstep = 15;
-
-    $scope.options = {
-        hstep: [1, 2, 3],
-        mstep: [1, 5, 10, 15, 25, 30]
-    };
-
-    $scope.ismeridian = false;
-    $scope.toggleMode = function() {
-        $scope.ismeridian = ! $scope.ismeridian;
-    };
-
-    $scope.update = function() {
-        var d = new Date();
-        d.setHours( 14 );
-        d.setMinutes( 0 );
-        $scope.starttime = d;
-        d.setHours( 15 );
-        d.setMinutes( 0 );
-        $scope.endtime = d;
-
-        console.log('st'+$scope.starttime);
-        console.log('et'+$scope.endtime);
-    };
-
-    $scope.changed = function () {
-        $log.log('Time changed to: ' + $scope.starttime);
-    };
-
-    $scope.clear = function() {
-        $scope.starttime = null;
-    };
-
-
-
-
-})
-
-tr.controller('eventlist',function($scope,$state,$http,$cookieStore,$rootScope){
-
-
-
-    $scope.currentPage=1;
-    $scope.perPage=3;
-    $scope.begin=0;
-
-    $scope.setPage = function (pageNo) {
-        $scope.currentPage = pageNo;
-        console.log($scope.currentPage);
-    };
-
-    $scope.pageChanged = function(){
-        $scope.begin=parseInt($scope.currentPage-1)*$scope.perPage;
-        $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
-    }
-    $http({
-        method  : 'POST',
-        async:   false,
-        url     : $scope.adminUrl+'eventlist',
-        // data    : $.param($scope.form),  // pass in data as strings
-        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }) .success(function(data) {
-        $rootScope.stateIsLoading = false;
-        console.log(data);
-        $scope.eventlist=data;
-        $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
-
-
-    });
-
-    $scope.searchkey = '';
-    $scope.search = function(item){
-
-        if ( (item.event_name.indexOf($scope.searchkey) != -1) || (item.event_daterange.indexOf($scope.searchkey) != -1)  ){
-            return true;
-        }
-        return false;
-    };
-
-    $scope.delevent = function(item){
-        $rootScope.stateIsLoading = true;
-        var idx = $scope.eventlist.indexOf(item);
-        $http({
-            method  : 'POST',
-            async:   false,
-            url     : $scope.adminUrl+'deleteevent',
-            data    : $.param({id: $scope.eventlist[idx].id}),  // pass in data as strings
-            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }) .success(function(data) {
-            $rootScope.stateIsLoading = false;
-            $scope.eventlist.splice(idx,1);
-            $scope.eventlistp = $scope.eventlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
-
-        });
-    }
-
-
-    $scope.changeStatus = function(item){
-        $rootScope.stateIsLoading = true;
-        var idx = $scope.eventlist.indexOf(item);
-        $http({
-            method  : 'POST',
-            async:   false,
-            url     : $scope.adminUrl+'updateeventstatus',
-            data    : $.param({id: $scope.eventlist[idx].id,event_status: $scope.eventlist[idx].event_status}),  // pass in data as strings
-            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }) .success(function(data) {
-            $rootScope.stateIsLoading = false;
-            $scope.eventlist[idx].status = !$scope.eventlist[idx].status;
-        });
-    }
-
-
-
-
-
-
-});
-
-
 
 tr.controller('flightlist',function($scope,$state,$http,$cookieStore,$rootScope,uibDateParser){
 
@@ -5067,6 +9661,15 @@ tr.controller('flightlist',function($scope,$state,$http,$cookieStore,$rootScope,
 tr.controller('admin_header', function($scope,$state,$http,$cookieStore,$rootScope) {
     // $state.go('login');
     angular.element('head').append('<link id="home" href="css/admin_style.css" rel="stylesheet">');
+    $scope.sdfsdfsd = function(){
+        console.log(1212);
+        if(angular.element( document.querySelector( 'body' ) ).hasClass('sidebar-collapse')){
+            angular.element( document.querySelector( 'body' ) ).removeClass('sidebar-collapse');
+        }else{
+            angular.element( document.querySelector( 'body' ) ).addClass('sidebar-collapse');
+        }
+    }
+
 
     $scope.toggledropdown=function(){
 
@@ -5242,31 +9845,8 @@ tr.controller('services', function($scope,$state,$http,$cookieStore,$rootScope) 
 });
 
 
-tr.controller('cart', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams) {
 
-
-    if($rootScope.userid == 0)  $scope.cartuser=$cookieStore.get('randomid');
-    else
-        $scope.cartuser=$rootScope.userid;
-
-    $http({
-        method:'POST',
-        async:false,
-        url:$scope.adminUrl+'cartdetail',
-        data    : $.param({'user':$scope.cartuser}),
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-
-
-
-    $scope.cartarray=data;
-
-
-    });
-
-});
-tr.controller('productdetails', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams) {
+tr.controller('productdetails1', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams) {
 
 
     $scope.categorylist = {};
@@ -5982,926 +10562,6 @@ function convert(str) {
    // return [ date.getFullYear(), mnth, day ].join("-");
     return new Date(date).getTime() / 1000
 }
-
-
-tr.controller('addcategoryjungle1',function($scope,$state,$http,$cookieStore,$rootScope){
-
-    $http({
-        method  :   'POST',
-        async   :   false,
-
-        url :       $scope.adminUrl+'parentcategorylist',
-        // data    : $.param($scope.form),
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-        $scope.categorylist=data;
-
-    })
-
-    $scope.tinymceOptions = {
-        trusted: true,
-        theme: 'modern',
-        plugins: [
-            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
-            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
-            'save table contextmenu directionality  template paste textcolor'
-        ],
-        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
-        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
-    };
-
-
-    $scope.addcategorysubmit=function() {
-
-
-        $http({
-            method  :   'POST',
-            async   :   false,
-
-            url :       $scope.adminUrl+'addjunglecategory',
-            data    : $.param($scope.form),
-            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-        }).success(function(){
-            $state.go('category-list');
-
-        })
-
-    }
-
-
-
-
-})
-tr.controller('addcategoryjungle',function($scope,$state,$http,$cookieStore,$rootScope,Upload){
-
-    $http({
-        method  :   'POST',
-        async   :   false,
-
-        url :       $scope.adminUrl+'parentcategorylist',
-        // data    : $.param($scope.form),
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-        $scope.categorylist=data;
-
-    })
-
-    $scope.tinymceOptions = {
-        trusted: true,
-        theme: 'modern',
-        plugins: [
-            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
-            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
-            'save table contextmenu directionality  template paste textcolor'
-        ],
-        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
-        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
-    };
-
-    $scope.form= {cat_image:''};
-    $scope.getReqParams = function () {
-        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
-        '&errorMessage=' + $scope.serverErrorMsg : '';
-    };
-
-    $scope.$watch('cat_upload', function (files) {
-        $('.errormsg').html('');
-        $scope.formUpload = false;
-        if (files != null) {
-            for (var i = 0; i < files.length; i++) {
-                $scope.errorMsg = null;
-                (function (file) {
-                    upload(file);
-                })(files[i]);
-            }
-        }
-    });
-
-
-    function upload(file) {
-        $scope.errorMsg = null;
-        uploadUsingUpload(file);
-    }
-
-    function uploadUsingUpload(file) {
-
-        $('#loaderDiv').addClass('ng-hide');
-        file.upload = Upload.upload({
-            url: $scope.adminUrl+'uploadjunglecategoryimage' + $scope.getReqParams(),
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            },
-            fields: {'id':$rootScope.createIdeaId},
-            file: file,
-            fileFormDataName: 'Filedata'
-        });
-
-        file.upload.then(function (response) {
-            // console.log(response.data.status);
-            if(response.data.status=='error'){
-                $('.errormsg').html('Invalid file type.');
-            }
-            else {
-                $('.progress').removeClass('ng-hide');
-                file.result = response.data;
-
-                if(response.data.image_url!='') {
-                    $scope.cat_img_src = response.data.image_url;
-                }
-
-                $scope.form.cat_image = response.data.image_name;
-
-
-
-            }
-
-
-        }, function (response) {
-            console.log(response.status);
-            if(response.data.status>0) {
-
-                //  $scope.errorMsg = response.status + ': ' + response.data;
-            }
-
-        });
-
-        file.upload.progress(function (evt) {
-            // Math.min is to fix IE which reports 200% sometimes
-            $('#loaderDiv').removeClass('ng-hide');
-
-            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-
-        });
-
-        file.upload.xhr(function (xhr) {
-            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
-        });
-    }
-
-
-
-
-    $scope.addcategorysubmit=function() {
-
-
-        $http({
-            method  :   'POST',
-            async   :   false,
-
-            url :       $scope.adminUrl+'addjunglecategory',
-            data    : $.param($scope.form),
-            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-        }).success(function(){
-            $state.go('category-list');
-
-        })
-
-    }
-
-
-
-
-})
-
-
-
-
-tr.controller('junglecategorylist',function($scope,$state,$http,$cookieStore,$rootScope,$uibModal,$sce,$filter){
-    $scope.trustAsHtml=$sce.trustAsHtml;
-
-    $scope.predicate = 'id';
-    $scope.reverse = true;
-
-    var orderBy = $filter('orderBy');
-
-    $scope.order = function(predicate) {
-
-        console.log('pre'+predicate);
-        $scope.predicate = predicate;
-        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
-        $scope.categorylist = orderBy($scope.categorylist, predicate, $scope.reverse);
-    };
-
-
-    $rootScope.integerId= function(val) {
-        return parseInt(val, 10);
-    };
-
-    $scope.currentPage=1;
-    $scope.perPage=10;
-
-    $scope.totalItems = 0;
-
-    $scope.filterResult = [];
-
-    $http({
-        method:'POST',
-        async:false,
-        url:$scope.adminUrl+'junglecategorylist',
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-        $scope.categorylist=data;
-
-
-    })
-    $scope.searchkey = '';
-    $scope.search = function(item){
-
-        if ( (item.cat_name.indexOf($scope.searchkey) != -1) || (item.cat_desc.indexOf($scope.searchkey) != -1) || (item.type.indexOf($scope.searchkey) != -1) ||  (item.status.indexOf($scope.searchkey) != -1) || (item.parent_cat_name.indexOf($scope.searchkey) != -1)){
-            return true;
-        }
-        return false;
-    };
-
-    $scope.jungledelcategory = function(item,size){
-
-        $scope.currentindex=$scope.categorylist.indexOf(item);
-
-        $uibModal.open({
-            animation: true,
-            templateUrl: 'junglecategorydelconfirm.html',
-            controller: 'ModalInstanceCtrl',
-            size: size,
-            scope:$scope
-        });
-    }
-
-    $scope.changestatus = function(item,size){
-
-        $scope.currentindex=$scope.categorylist.indexOf(item);
-
-        $uibModal.open({
-            animation: true,
-            templateUrl: 'junglecategorystatusfirm.html',
-            controller: 'ModalInstanceCtrl',
-            size: size,
-            scope:$scope
-        });
-    }
-
-
-
-})
-
-tr.controller('editcategoryjungle1', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams){
-
-    $http({
-        method  :   'POST',
-        async   :   false,
-
-        url :       $scope.adminUrl+'parentcategorylist',
-        // data    : $.param($scope.form),
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-        $scope.categorylist=data;
-
-    })
-
-    $scope.id=$stateParams.id;
-
-    $http({
-        method  : 'POST',
-        async:   false,
-        url     :     $scope.adminUrl+'junglecategorydetails',
-        data    : $.param({'id':$scope.id}),  // pass in data as strings
-        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }) .success(function(data) {
-
-        $scope.form = {
-            id: data.id,
-
-            cat_name: data.cat_name,
-            cat_desc: data.cat_desc,
-            parent_cat: {
-                id:data.parent_cat
-            },
-            type: data.type,
-            priority: data.priority,
-
-        }
-    });
-    $scope.tinymceOptions = {
-        trusted: true,
-        theme: 'modern',
-        plugins: [
-            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
-            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
-            'save table contextmenu directionality  template paste textcolor'
-        ],
-        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
-        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
-    };
-
-    $scope.editcategorysubmit = function () {
-        console.log(1);
-        $rootScope.stateIsLoading = true;
-        $http({
-            method  : 'POST',
-            async:   false,
-            url     : $scope.adminUrl+'junglecategoryupdates',
-            data    : $.param($scope.form),  // pass in data as strings
-            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }) .success(function(data) {
-            $rootScope.stateIsLoading = false;
-            $state.go('category-list');
-            return;
-        });
-    }
-
-
-})
-
-tr.controller('editcategoryjungle', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams,Upload){
-
-    $http({
-        method  :   'POST',
-        async   :   false,
-
-        url :       $scope.adminUrl+'parentcategorylist',
-        // data    : $.param($scope.form),
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-        $scope.categorylist=data;
-
-    })
-
-    $scope.form= {cat_image:''};
-
-    $scope.id=$stateParams.id;
-
-    $http({
-        method  : 'POST',
-        async:   false,
-        url     :     $scope.adminUrl+'junglecategorydetails',
-        data    : $.param({'id':$scope.id}),  // pass in data as strings
-        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }) .success(function(data) {
-
-        $scope.form = {
-            id: data.id,
-
-            cat_name: data.cat_name,
-            cat_desc: data.cat_desc,
-            parent_cat: {
-                id:data.parent_cat
-            },
-            type: data.type,
-            priority: data.priority,
-            cat_image: data.cat_image,
-
-
-        }
-
-        $scope.cat_img_src=data.image_url;
-    });
-    $scope.tinymceOptions = {
-        trusted: true,
-        theme: 'modern',
-        plugins: [
-            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
-            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
-            'save table contextmenu directionality  template paste textcolor'
-        ],
-        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
-        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
-    };
-
-    $scope.getReqParams = function () {
-        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
-        '&errorMessage=' + $scope.serverErrorMsg : '';
-    };
-
-    $scope.$watch('cat_upload', function (files) {
-        $('.errormsg').html('');
-        $scope.formUpload = false;
-        if (files != null) {
-            for (var i = 0; i < files.length; i++) {
-                $scope.errorMsg = null;
-                (function (file) {
-                    upload(file);
-                })(files[i]);
-            }
-        }
-    });
-
-
-    function upload(file) {
-        $scope.errorMsg = null;
-        uploadUsingUpload(file);
-    }
-
-    function uploadUsingUpload(file) {
-
-        $('#loaderDiv').addClass('ng-hide');
-        file.upload = Upload.upload({
-            url: $scope.adminUrl+'uploadjunglecategoryimage' + $scope.getReqParams(),
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            },
-            fields: {'id':$rootScope.createIdeaId},
-            file: file,
-            fileFormDataName: 'Filedata'
-        });
-
-        file.upload.then(function (response) {
-            // console.log(response.data.status);
-            if(response.data.status=='error'){
-                $('.errormsg').html('Invalid file type.');
-            }
-            else {
-                $('.progress').removeClass('ng-hide');
-                file.result = response.data;
-
-
-                    $scope.cat_img_src = response.data.image_url;
-
-
-                $scope.form.cat_image = response.data.image_name;
-
-
-
-            }
-
-
-        }, function (response) {
-            console.log(response.status);
-            if(response.data.status>0) {
-
-                //  $scope.errorMsg = response.status + ': ' + response.data;
-            }
-
-        });
-
-        file.upload.progress(function (evt) {
-            // Math.min is to fix IE which reports 200% sometimes
-            $('#loaderDiv').removeClass('ng-hide');
-
-            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-
-        });
-
-        file.upload.xhr(function (xhr) {
-            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
-        });
-    }
-
-
-    $scope.editcategorysubmit = function () {
-        console.log(1);
-        $rootScope.stateIsLoading = true;
-        $http({
-            method  : 'POST',
-            async:   false,
-            url     : $scope.adminUrl+'junglecategoryupdates',
-            data    : $.param($scope.form),  // pass in data as strings
-            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }) .success(function(data) {
-            $rootScope.stateIsLoading = false;
-            $state.go('category-list');
-            return;
-        });
-    }
-
-
-})
-
-
-tr.controller('addproductjungle',function($scope,$state,$http,$cookieStore,$rootScope,Upload,$sce){
-    $scope.trustAsHtml=$sce.trustAsHtml;
-    $http({
-        method  :   'POST',
-        async   :   false,
-
-        url :       $scope.adminUrl+'junglecategorylist',
-        // data    : $.param($scope.form),
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-        $scope.categorylist=data;
-
-    })
-
-    $scope.tinymceOptions = {
-        trusted: true,
-        theme: 'modern',
-        plugins: [
-            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
-            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
-            'save table contextmenu directionality  template paste textcolor'
-        ],
-        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
-        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
-    };
-
-
-    $scope.product_video_src='';
-    $scope.product_img_src='';
-
-    $scope.form= {product_file:''};
-    $scope.getReqParams = function () {
-        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
-        '&errorMessage=' + $scope.serverErrorMsg : '';
-    };
-
-    $scope.$watch('product_upload', function (files) {
-        $('.errormsg').html('');
-        $scope.formUpload = false;
-        if (files != null) {
-            for (var i = 0; i < files.length; i++) {
-                $scope.errorMsg = null;
-                (function (file) {
-                    upload(file);
-                })(files[i]);
-            }
-        }
-    });
-
-
-    function upload(file) {
-        $scope.errorMsg = null;
-        uploadUsingUpload(file);
-    }
-
-    function uploadUsingUpload(file) {
-
-        $('#loaderDiv').addClass('ng-hide');
-        file.upload = Upload.upload({
-            url: $scope.adminUrl+'uploadjungleproductimage' + $scope.getReqParams(),
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            },
-            fields: {'id':$rootScope.createIdeaId},
-            file: file,
-            fileFormDataName: 'Filedata'
-        });
-
-        file.upload.then(function (response) {
-            // console.log(response.data.status);
-            if(response.data.status=='error'){
-                $('.errormsg').html('Invalid file type.');
-            }
-            else {
-                $('.progress').removeClass('ng-hide');
-                file.result = response.data;
-                if(response.data.video_url!='') {
-                    $sce.trustAsResourceUrl(response.data.video_url);
-                    $scope.product_video_src = response.data.video_url;
-                }
-                if(response.data.image_url!='') {
-                    $scope.product_img_src = response.data.image_url;
-                }
-
-                $scope.form.product_file = response.data.image_name;
-                console.log($scope.product_video_src);
-
-                if(typeof($scope.product_video_src)!='undefined') {
-
-                    console.log(11);
-                    setTimeout(function () {
-
-                        angular.element(document.querySelector('#maintvDiv')).html('<video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
-            <source src="' + $scope.product_video_src + '" type="video/mp4">\
-            </video>');
-                    }, 2000);
-
-                }
-
-
-
-            }
-
-
-        }, function (response) {
-            console.log(response.status);
-            if(response.data.status>0) {
-
-                //  $scope.errorMsg = response.status + ': ' + response.data;
-            }
-
-        });
-
-        file.upload.progress(function (evt) {
-            // Math.min is to fix IE which reports 200% sometimes
-            $('#loaderDiv').removeClass('ng-hide');
-
-            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-
-        });
-
-        file.upload.xhr(function (xhr) {
-            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
-        });
-    }
-
-
-    console.log($scope.product_video_src);
-
-
-
-    $scope.addproductsubmit=function() {
-
-
-        $http({
-            method  :   'POST',
-            async   :   false,
-
-            url :       $scope.adminUrl+'addjungleproduct',
-            data    : $.param($scope.form),
-            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-        }).success(function(){
-            $state.go('product-list');
-
-        })
-
-    }
-
-
-
-
-})
-tr.controller('jungleproductlist',function($scope,$state,$http,$cookieStore,$rootScope,$uibModal,$sce){
-    $scope.trustAsHtml=$sce.trustAsHtml;
-
-    $scope.predicate = 'id';
-    $scope.reverse = true;
-    $scope.order = function(predicate) {
-        $scope.predicate = predicate;
-        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
-        //$scope.friends = orderBy($scope.friends, predicate, $scope.reverse);
-    };
-    $scope.currentPage=1;
-    $scope.perPage=10;
-
-    $scope.totalItems = 0;
-
-    $scope.filterResult = [];
-
-    $http({
-        method:'POST',
-        async:false,
-        url:$scope.adminUrl+'jungleproductlist',
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-        $scope.productlist=data;
-    })
-    $scope.searchkey = '';
-    $scope.search = function(item){
-
-        if ( (item.product_name.indexOf($scope.searchkey) != -1) || (item.product_desc.indexOf($scope.searchkey) != -1)  || (item.priority.indexOf($scope.searchkey) != -1)|| (item.status.indexOf($scope.searchkey) != -1) || (item.cat_name.indexOf($scope.searchkey) != -1)){
-            return true;
-        }
-        return false;
-    };
-
-    $scope.jungledelproduct = function(item,size){
-
-        $scope.currentindex=$scope.productlist.indexOf(item);
-
-        $uibModal.open({
-            animation: true,
-            templateUrl: 'jungleproductdelconfirm.html',
-            controller: 'ModalInstanceCtrl',
-            size: size,
-            scope:$scope
-        });
-    }
-
-    $scope.changeproductstatus = function(item,size){
-
-        $scope.currentindex=$scope.productlist.indexOf(item);
-
-        $uibModal.open({
-            animation: true,
-            templateUrl: 'jungleproductstatusfirm.html',
-            controller: 'ModalInstanceCtrl',
-            size: size,
-            scope:$scope
-        });
-    }
-
-
-
-})
-
-tr.controller('editproductjungle', function($scope,$state,$http,$cookieStore,$rootScope,$stateParams,$sce,Upload){
-    $scope.trustAsHtml=$sce.trustAsHtml;
-    $scope.product_video_src='';
-    $scope.product_img_src='';
-
-    $http({
-        method  :   'POST',
-        async   :   false,
-
-        url :       $scope.adminUrl+'junglecategorylist',
-        // data    : $.param($scope.form),
-        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-    }).success(function(data){
-        $scope.categorylist=data;
-
-    })
-
-    $scope.id=$stateParams.id;
-
-    $http({
-        method  : 'POST',
-        async:   false,
-        url     :     $scope.adminUrl+'jungleproductdetails',
-        data    : $.param({'id':$scope.id}),  // pass in data as strings
-        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }) .success(function(data) {
-
-        if(data.image_url!=''){
-            $scope.product_img_src = data.image_url;
-        }
-        console.log($scope.product_img_src);
-        if(data.video_url!=''){
-
-            $scope.product_video_src = data.video_url;
-            if(typeof($scope.product_video_src)!='undefined') {
-
-                setTimeout(function () {
-
-                    angular.element(document.querySelector('#maintvDiv')).html('<video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
-            <source src="' + $scope.product_video_src + '" type="video/mp4">\
-            </video>');
-                }, 2000);
-            }
-        }
-
-
-
-
-        $scope.form = {
-            id: data.id,
-
-            product_name: data.product_name,
-            product_desc: data.product_desc,
-            category_id: {
-                id:data.category_id,
-                type:data.type,
-            },
-            product_file: data.product_file,
-            priority: data.priority,
-            price: data.price,
-
-        }
-    });
-
-
-    $scope.tinymceOptions = {
-        trusted: true,
-        theme: 'modern',
-        plugins: [
-            'advlist autolink link  lists charmap   hr anchor pagebreak spellchecker',
-            'searchreplace wordcount visualblocks visualchars code  insertdatetime  nonbreaking',
-            'save table contextmenu directionality  template paste textcolor'
-        ],
-        // toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
-        toolbar: ' undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  |   media fullpage | forecolor backcolor',
-    };
-
-
-    $scope.product_video_src='';
-    $scope.product_img_src='';
-
-    $scope.form= {product_file:''};
-    $scope.getReqParams = function () {
-        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
-        '&errorMessage=' + $scope.serverErrorMsg : '';
-    };
-
-    $scope.$watch('product_upload', function (files) {
-        $('.errormsg').html('');
-        $scope.formUpload = false;
-        if (files != null) {
-            for (var i = 0; i < files.length; i++) {
-                $scope.errorMsg = null;
-                (function (file) {
-                    upload(file);
-                })(files[i]);
-            }
-        }
-    });
-
-
-    function upload(file) {
-        $scope.errorMsg = null;
-        uploadUsingUpload(file);
-    }
-
-    function uploadUsingUpload(file) {
-
-        $('#loaderDiv').addClass('ng-hide');
-        file.upload = Upload.upload({
-            url: $scope.adminUrl+'uploadjungleproductimage' + $scope.getReqParams(),
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            },
-            fields: {'id':$rootScope.createIdeaId},
-            file: file,
-            fileFormDataName: 'Filedata'
-        });
-
-        file.upload.then(function (response) {
-            // console.log(response.data.status);
-            if(response.data.status=='error'){
-                $('.errormsg').html('Invalid file type.');
-            }
-            else {
-                $('.progress').removeClass('ng-hide');
-                file.result = response.data;
-                if(response.data.video_url!='') {
-                    $sce.trustAsResourceUrl(response.data.video_url);
-                    $scope.product_video_src = response.data.video_url;
-                }
-                if(response.data.image_url!='') {
-                    $scope.product_img_src = response.data.image_url;
-                }
-
-                $scope.form.product_file = response.data.image_name;
-                console.log($scope.product_video_src);
-
-                if(typeof($scope.product_video_src)!='undefined') {
-
-                    console.log(11);
-                    setTimeout(function () {
-
-                        angular.element(document.querySelector('#maintvDiv')).html('<video id="maintvVideo" volume="0" width="100%" height="100%" autoplay loop muted controls>\
-            <source src="' + $scope.product_video_src + '" type="video/mp4">\
-            </video>');
-                    }, 2000);
-
-                }
-
-
-
-            }
-
-
-        }, function (response) {
-            console.log(response.status);
-            if(response.data.status>0) {
-
-                //  $scope.errorMsg = response.status + ': ' + response.data;
-            }
-
-        });
-
-        file.upload.progress(function (evt) {
-            // Math.min is to fix IE which reports 200% sometimes
-            $('#loaderDiv').removeClass('ng-hide');
-
-            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-
-        });
-
-        file.upload.xhr(function (xhr) {
-            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
-        });
-    }
-
-
-
-
-
-
-    $scope.editproductsubmit=function() {
-
-
-        $http({
-            method  :   'POST',
-            async   :   false,
-
-            url :       $scope.adminUrl+'jungleproductupdates',
-            data    : $.param($scope.form),
-            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
-
-        }).success(function(){
-            $state.go('product-list');
-
-        })
-
-    }
-
-
-
-})
-
-
 
 
 

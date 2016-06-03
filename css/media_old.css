@@ -1,0 +1,1045 @@
+/* ==========================================================================
+   Media Queries for Responsive Design
+
+   @media only screen and (max-width: 640px) {img {max-width: 100%;}}
+   ========================================================================== */
+
+@media(max-width:1800px) {
+    #dolarsit{height: 493px;}
+}
+
+
+@media(max-width:1680px) {
+    #dolarsit{height: 460px;}
+    .mainmenu .navbar-nav {margin-left: 73px;}
+}
+
+@media(max-width:1666px) {
+    #dolarsit{height: 456px;}
+}
+
+@media(max-width:1666px) {
+    #dolarsit{height: 456px;}
+}
+
+@media(max-width:1660px) {
+    #dolarsit{height: 450px;}
+}
+
+@media(max-width:1366px) {
+    #dolarsit{height: 374px;}
+
+    .mainmenu .navbar-default .navbar-nav > li > a {padding: 10px 10px; margin-right: 1px; font-size: 15px;}
+
+    .mainmenu .navbar-default{ width: 830px;}
+    .contact-right {margin-top: 30px;}
+    .contact-right label{font-size: 16px;}
+}
+
+@media(max-width:1300px) {
+    #dolarsit{height: 356px;}
+}
+
+
+@media(max-width:1280px) {
+    #dolarsit{height: 351px;}
+
+
+}
+
+@media(max-width:1260px) {
+    #dolarsit{height: 345px;}
+}
+
+@media(max-width:1200px) {
+    #dolarsit{height: auto; background-color: #fff; padding-top: 28%; padding-bottom: 25px; border-bottom: solid 1px #91bdb0;}
+}
+
+
+
+
+
+
+
+
+@media(max-width:1800px) {
+    .navbar-default .navbar-nav > li > a {padding: 10px 14px; margin-right: 4px;}
+}
+
+@media(max-width:1680px) {
+    .navbar-default .navbar-nav > li > a {padding: 10px 14px; margin-right: 0px;}
+}
+
+@media(max-width:1660px) {
+    .navbar-default .navbar-nav > li > a {padding: 10px 12px; margin-right: 0px;}
+    .header-top-right {margin-right: 0px; }
+}
+
+
+
+
+@media(max-width:1600px) {
+    .navbar-default .navbar-nav > li > a {padding: 10px 11px; margin-right: 0px;}
+    .socialmedia {margin-left: 0px;}
+    .header-top-right {margin-right: 0px;}
+}
+
+/*---- responsive-design -----*/
+@media(max-width:1440px){
+    .navbar-default .navbar-nav > li > a {padding: 10px 11px; margin-right: 0px; font-size: 14px;}
+    #services .servicesright {
+        height: 159px;
+    }
+
+    .mainmenu .navbar-nav {margin-top: 13px; margin-left: 0px;}
+
+
+    .mainmenu .navbar-default {
+        background-color: transparent;
+        border-color: transparent;
+        width: 880px;
+    }
+
+    .contact-right img{ width: 50px;}
+
+    .contact-right label:last-child{ margin-top: 13px;}
+}
+@media(max-width:1366px){
+
+    .servicesright {
+        height: 159px;
+    }
+    .socialmedia {
+        margin-left: 0px;
+    }
+
+    .header-top-right {
+        margin-right: 0px;
+    }
+
+    .adminleft {
+        width: 25%;
+        float: left;
+        margin-left: 6%;
+    }
+    .admincontain {
+        width: 62%;
+        float: right;
+        margin-right: 6%;
+    }
+}
+
+@media(max-width:1360px){
+
+    .socialmedia {
+        margin-left: 0px;
+    }
+
+    .header-top-right {
+        margin-right: 0px;
+    }
+    .blogleft{margin-right: 0px; }
+}
+
+@media(max-width:1280px){
+
+    .contact-right label:last-child{ margin-top: 13px; font-size: 15px;}
+    .sitamet-left h1 {font-size: 65px;}
+    .sitamet-left h2 {font-size: 65px;}
+    .dolar-content .purchaseimg img {
+        display: block;
+        clear: both;
+        display: block;
+        max-width: 100%;
+    }
+    img{max-width: 100%; display: block;}
+    .mainmenu .navbar-default .navbar-nav > li > a {padding: 10px 10px; margin-right: 1px; font-size: 13px;}
+
+    .mainmenu .navbar-default{ width: 830px;}
+
+    .contact-right{ margin-top: 30px;}
+}
+
+@media(max-width:1199px) {
+
+    #dolar{margin: 12px 0px 0px 0px; clear: both; display: block;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom{ margin-top: 18px!important;}
+
+    .footer-bg-left{ text-align: center;}
+
+    .footer-bg .socialmedia{ width: 220px!important;
+        margin: 0 auto!important;
+        float: none!important; margin-top: 25px!important;}
+
+    #ftmenu{ height: auto; padding-bottom: 25px;}
+
+
+    .ftmenu{ display: block!important; margin: 0 auto!important; float: none!important;}
+
+    #ftmenu .pull-left{ width: 780px; margin: 0 auto!important; float: none!important; margin-top: 25px!important;}
+    .singletestimonials{position: relative; width: 354px; margin: 0 auto; float: none; margin-bottom: 25px;}
+
+    .logohome{ display: block; font-size: inherit; margin: 12px auto; margin-top: 25px;}
+
+    .mainmenu .navbar-default{ width: 100%;}
+    .socialmedia {
+        width: auto;
+        margin-left: 0;
+    }
+
+    .header-top-right {
+        float: none;
+        margin-right: 0;
+        text-align: center;
+    }
+    .socialmedia{margin-top: 10px;}
+    .socialmedia ul li{margin-top: 0px;}
+    .header-top-right{padding: 0;margin-top: 20px; margin-bottom: 20px;}
+    .socialmedia ul li:last-child{padding-right: 0px;}
+    img {
+        max-width: 100%;
+    }
+
+
+    #ftmenu img{ max-width: 90%;}
+	
+    .sitamet-left h1 {font-size: 65px;}
+    .sitamet-left h2 {font-size: 60px;}
+
+    .mainmenu .navbar-header {float: none;}
+    .mainmenu  .navbar-toggle {display: block;}
+    .mainmenu .navbar-collapse {border-top: 1px solid transparent; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);}
+    .mainmenu .navbar-collapse.collapse {display: none!important;}
+    .mainmenu .navbar-nav {float: none!important; margin: 7.5px -15px;}
+    .mainmenu .navbar-nav>li {float: none;}
+    .mainmenu  .navbar-nav>li>a {padding-top: 10px; padding-bottom: 10px;}
+    .mainmenu .navbar-text {float: none; margin: 15px 0;}
+    /* since 3.1.0 */
+    .mainmenu .navbar-collapse.collapse.in { display: block!important;}
+    .collapsing {overflow: hidden!important;}
+    .mainmenu .navbar-default .navbar-nav > li > a:hover, .mainmenu .navbar-default .navbar-nav > li > a:focus, .mainmenu .navbar-default .navbar-nav > li > a:active {border-radius: 0px;}
+	.col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {padding-left:0px;padding-right:0px;}
+    #roreemanlive {height: auto;}
+    .mainmenu .navbar-default .navbar-nav > li > a {padding: 10px 12px; margin-right: 0px;}
+
+    .abouttextblock1 .aboutimg1{ float: none; margin: 0 auto; max-width: 100%; margin-top: 32px;}
+
+    .abouttextblock1 .abouttextpart1{ float:none; margin: 0 auto; width: 100%; margin-top:40px;}
+
+
+
+    .abouttextblock1 .abouttextpart1 h3{ background: url(../images/about_icon3.png) no-repeat center top; margin: 0;  padding: 130px 5px 0px 5px;
+        text-align: center;  font-size: 60px; text-transform: uppercase;    font-family:'MyriadPro-Regular';}
+
+
+    .abouttextblock1 .abouttextpart1 h4{ padding: 0px 5px 0 5px;}
+
+    .abouttextblock2{ padding: 20px 0px;}
+
+    .abouttextpart2{ width: auto; float: none; text-align: center; margin: 0; padding: 0 20px;}
+
+    .aboutvideo{ width: 80%; margin:25px auto; float: none;}
+
+    .abouttextpart3{ margin-top: 0px;  text-align: center;  padding:0 20px ;}
+
+    .abouttextblock2 h4 {
+        background: rgba(0, 0, 0, 0) url("../images/about_icon4.png") no-repeat scroll center top;
+        color: #353434;
+        font-family: "MyriadPro-Semibold";
+        font-size: 24px;
+        line-height: 30px;
+        margin: 20px 0 0;
+        padding: 109px 20px 24px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+}
+@media(min-width:1199px) {
+    .mainmenu .navbar-default .navbar-brand {display: none;}
+	
+
+
+
+}
+
+@media(max-width:1199px) {
+    .mainmenu .navbar-default .navbar-brand {display: block;}
+    .mainmenu .navbar-header {background-color: #333;}
+    .mainmenu .navbar-brand {padding: 12px 15px;}
+	.sitamet-left h2 {font-size: 65px;}
+	.sitamet-left h1 {font-size: 65px;}
+
+    #menu .col-xs-12 .mainmenu .col-xs-12:last-child{width: 100%}
+    .contact-right {margin-right: 25px;}
+    .dolar-content p {max-width: 703px;}
+    .dolar-content .lineimg1 img {right: -4px; bottom: -11px;}
+    .dolar-content h3 {font-size: 17px;}
+    .dolar-content h3 {max-width: 100%;}
+    .dolar-content .lineimg img, .dolar-content .lineimg1 img {display: none;}
+    .trainer-content-top h4{margin-bottom: 4px;}
+    .trainer-inner .trainer-content-top p {margin: 0px auto;}
+    .trainer-content-bottom img {height: auto; width: 100%;}
+    #trainer .trainer-content-bottom img, #personaldevlspeaker .trainer-content-bottom img {height: auto; width: 100%; }
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {margin-top: 2px;}
+    #trainer .trainer-content-top h4, #personaldevlspeaker .trainer-content-top h4 {padding-bottom: 3px;}
+    .servicesright h2 {font-size: 24px;}
+    #services .servicesright {
+        height: 132px;
+    }
+    .singletestimonials .testiimg i {padding: 17px;}
+    .singletestimonials .testiimg i {right: 65px;}
+    .mainmenu { margin: 0px 0px 20px 0px; }
+    .contact-right {float: right; margin-top: 12px;}
+
+
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(1){ width: 100%;}
+
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(2){ width: 100%;}
+
+    .contact-right {
+        float: none;
+        height: 85px;
+        margin: 0 auto;
+        margin-top: 12px;
+
+        width: 160px;
+    }
+
+    .contact-right img{ width: auto;}
+
+    .contact-right label:last-child {
+        font-size: 18px;  margin-top: 15px;
+    }
+
+    .mainmenu .navbar-toggle{ margin-top: 5px !important; color: #fff;}
+
+
+    .mainmenu .navbar-default .navbar-nav > .active > a, .mainmenu .navbar-default .navbar-nav > .active > a:hover, .mainmenu .navbar-default .navbar-nav > .active > a:focus{ border-radius: 0px!important;}
+
+    .mainmenu .navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus{ border-radius: 0px!important;}
+    .mainmenu .navbar-default .navbar-nav > li > a{ text-align: center;  font-size: 20px;}
+
+    .mainmenu .navbar-right{ background: #fff;  border-top: solid 1px #68d2c8;}
+
+    .mainmenu .navbar-default .navbar-nav > li{ border-bottom: solid 1px #68d2c8; padding: 0;}
+
+    .mainmenu .navbar-default .navbar-nav > li a{ padding: 15px 0;}
+
+    .mainmenu .dropdown-menu{ width: 100%; text-align: center; border-radius: 0px; position: inherit; border: none; margin-bottom: 15px;}
+
+    .mainmenu .dropdown-menu li{ border-bottom: solid 1px #68d2c8; padding: 0;}
+
+    .mainmenu .dropdown-menu li a{ padding: 15px 0;}
+    #trainer .trainer-content-top, #personaldevlspeaker .trainer-content-top {max-width: 480px;padding: 1px 10px 1px 10px;}
+    #trainer .trainer-content-top h2 span, #personaldevlspeaker .trainer-content-top h2 span {font-size: 24px;}
+    #trainer .trainer-content-top h2, #personaldevlspeaker .trainer-content-top h2 {font-size: 24px;}
+    .trainer-content-top h4 {line-height: 22px;font-size: 15px;}
+    #trainer .trainer-content-top p, #personaldevlspeaker .trainer-content-top p {font-size: 16px;}
+    .pageinner {
+        margin-right: auto;
+        padding: 0 0 0 15px;
+    }
+    .blogleft{margin-right: 28px; width: 47%;}
+    .blogrightheader h3 {font-size: 29px;}
+
+}
+
+
+@media(max-width:1080px){
+    .sitamet-left h1 {font-size: 65px;}
+    .sitamet-left h2 {font-size: 60px;}
+
+}
+@media(max-width:1024px){
+    img{max-width: 100%; margin: 0 auto;}
+    .dolar-content {margin-top: 30px;}
+
+    .trainer-content-top {max-width: 100%; margin: 20px 0px;}
+    .sitamet_content .inner-info-top h1{font-size: 65px;}
+    .sitamet_content .inner-info-top h2 {font-size: 60px;}
+    .trainer-inner{ margin: 30px 0px 0px;}
+    .servicesright h2 {font-size: 24px;}
+    #services .servicesright {height: 132px; }
+    #dolarsit{ margin-top: 20px;}
+    .trainer-content-bottom {margin-top:10px;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {height: 163px;}
+}
+
+@media(max-width:1023px){    
+    .dolar-content p {text-align: left;}
+}
+
+@media(max-width:991px){
+
+    .roreemanlive_content .inner-info-top p{ text-align: center; padding-bottom: 25px; padding-left: 10px;  padding-right: 10px;}
+    .productslist {
+        max-width: 649px;
+        margin: 0 auto;
+        padding-top: 30px;
+    }
+
+
+    #slider .item {
+        margin: 0px 0 0 -834px;
+        width: 210%;
+    }
+	.trainer-content-bottom {margin: 0 auto;}
+	#services img{width:100%;}
+	.servicesright {
+		height: auto;
+		padding: 0px 0px 18px 0px;
+	}
+    .singletestimonials {padding-top: 0px;}
+    #personaldevlspeaker .trainer-inner img {
+        float: none;
+    }
+    #trainer .trainer-content-top, #personaldevlspeaker .trainer-content-top {max-width: 100%; margin: 0 auto;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {max-width: 100%; margin: 0 auto;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {height: 260px;}
+    .trainer-inner {
+        margin: 20px 0px 0px;
+    }
+
+
+    .affiliatpagebody1 .affiliate_img1{ display: block; float: none;   margin: 0 0 20px 0; width: 100%;}
+
+    .affiliatpagebody1 .affiliate_img1 img{ display: block; margin: 0 auto; max-width: 100%;}
+
+    .affiliatpagebody1 ol li{ text-align: center;}
+
+    .affiliatpagebody1 h2{ text-align: center;}
+
+
+    .affiliatpagebody2 h2{ text-align: center;}
+
+    .affiliatpagebody2 .affiliate_textblock{ text-align: center;}
+
+    .affiliatpagebody2 .affiliate2_img2{ display: block; float: none;   margin: 0 auto; margin-bottom: 20px; width: 100%;}
+
+    .affiliatpagebody2 .affiliate2_img2 img{ display: block; margin: 0 auto; max-width: 100%;}
+    .blogleft{width: 98%; margin-right: auto; margin-left: auto; }
+    .blogright{width: 98%; margin-right: auto; margin-left: auto; }
+    .blogright{margin-top: 30px;}
+    .blogleft img, .embed-responsive .embed-responsive-item, .embed-responsive iframe,
+    .embed-responsive embed, .embed-responsive object  {
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+    .readmore {margin-bottom: 30px;}
+    .blogpagebodyheader h2{text-align: center; margin-top: 20px;}
+
+
+    .adminleft {
+        width: 90%;
+        float: none;
+        margin: 25px auto;
+    }
+
+    .admincontain {
+        width: 90%;
+        float: none;
+        margin: 25px auto;
+    }
+
+}
+
+@media(max-width:950px) {
+    #slider .item {
+        margin: 0px 0 0 -740px;
+        width: 210%;
+    }
+}
+@media(max-width:900px) {
+    #slider .item {
+        margin: 0px 0 0 -716px;
+        width: 210%;
+    }
+
+    .roreemanlive_content .inner-info-top h2{ padding-left: 5px; padding-right: 5px;}
+
+    .roreemanlive_content .inner-info-top h3{ padding-left: 5px; padding-right: 5px;}
+}
+@media(max-width:800px){
+
+    .header-top-right .cart{ width: 35px;}
+    .header-top-right .cart label:first-child{display: block;}
+    .header-top-right .cart label:last-child{display: none;}
+    #slider .item {
+        margin: 0px 0 0 -710px;
+        width: 218%;
+    }
+    .servicesright {
+        height: 151px;
+    }
+
+    #dolarsit{ width: 96%; margin: 12px auto;}
+
+ }
+
+@media(max-width:767px){
+    .blogpagebody{
+        width: 90%; margin-left: auto; margin-right: auto;}
+}
+
+@media(max-width:768px){
+
+
+    .pull-left .socialmedia {
+        margin: 0 auto!important;
+        width: 222px!important;
+    }
+
+    .header-top .pull-right {
+        float: none !important;
+        margin: 0 auto !important;
+        width:196px !important;
+        margin-top: 44px!important;
+    }
+
+    .signupmainbody{ width: 90%}
+
+    .signupformgroup{ padding:40px 30px; width:auto; margin:0 auto;  }
+
+    .about_icon2 {
+        display: block;
+        margin: -52px auto 0;
+    }
+
+    #ftmenu .pull-left{ width: 100%; margin: 0 auto!important; float: none!important; margin-top: 0px!important;}
+
+    #ftmenu .pull-right{ margin-top: 20px!important;}
+    .mainmenu  .navbar-nav {background-color: #fff;}
+    .mainmenu  .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > ul > li > a:hover{
+        border-radius:0px;
+    }
+    .mainmenu  .nav > li > a {
+        padding: 10px 8px;
+        margin-top: 0;
+        text-align: center;
+    }
+    .mainmenu .navbar-toggle {margin-top: 0px;}
+    .footer-bg {text-align: center;}
+    .dolar-content .lineimg img, .dolar-content .lineimg1 img { display: none;}
+
+    #dolarsit .dolarsitimgright img{margin-bottom: 0px;}
+    #dolarsit .dolarsitimgleft img {margin-bottom: 10px;}
+    #dolarsit .dolatsit_content .inner-info-top h2{margin-bottom: 30px;}
+    #roreemanlive{height: auto; margin-bottom: 0px; }
+
+    #roreemanlive{ margin: 10px auto;}
+
+    .btnview .btneye{ background:  #c800c8 url(../images/newviewicon.png)no-repeat 22px center; padding: 15px 0px; border:0; color:#fff; font-family: 'PTSans-Bold'; font-weight: bold;  font-size: 18px; text-transform: uppercase; border-radius: 40px; width: 260px; margin: 0 auto; text-align: left; padding-left: 71px;}
+
+    .sitamet_content .btnview .btneye{padding: 15px 0 15px 62px!important;  background: #c800c8 url("../images/icon-joining.png") no-repeat scroll 24px center !important; width: 232px!important;}
+    #sitamet .btneye{background: #c800c8 url("../images/icon-joining.png") no-repeat scroll 24px center !important;}
+
+    img{max-width: 100%;}
+    #sitamet {
+        height: auto;
+        padding-bottom: 30px;
+        margin-bottom: 20px;
+    }
+
+    .sitamet-right{background-color: rgba(255, 255, 255, 0.8); width: 100%; padding: 10px;}
+    .sitamet-right p{padding-top: 0px;text-align: center;}
+    .sitamet-right .btnview {max-width: 288px; float: none;}
+    .dolar-content .purchaseimg img { max-width: 600px; margin: 0 auto; display: block; clear: both;}
+    .dolar-content h3{max-width: 100%;}
+    .dolar-content p { max-width: 100%; text-align: left;}
+    .trainer-content-bottom img {
+        height: auto;
+        width: auto;
+        margin-bottom: 10px;
+    }
+    .trainer-inner {
+        margin-top: 20px;
+    }
+    .dolatsit_content .inner-info-top h2 span {font-size: 33px;}
+    .singletestimonials {margin-bottom: 0px;}
+    .productslist {
+        max-width: 434px;
+        margin: 0 auto;
+        padding-top: 30px;
+    }
+    .productdetail{margin-bottom: 25px;}
+    #trainer {padding: 20px 0px 0px;}
+	.dolar-content ul {margin-bottom: 30px;}
+
+	.dolatsit_content {margin-top: 20px;}
+    .sitamet_content .inner-info-top h1{font-size: 43px; margin-left: 0px;}
+    .sitamet_content .inner-info-top h2 {font-size: 34px;}
+    /*.col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    */
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .dolar-content {margin-top: 0px;}
+    .header-top-right .cart label:first-child{display: block;}
+    .header-top-right .cart label:last-child{display: none;}
+
+
+    #menu .col-xs-12 .mainmenu .col-xs-12:last-child{width: 100%}
+    #slider .item {
+        margin: 0px 0 0 -685px;
+        width: 218%;
+    }
+    #ftmenu ul.ftmenu {margin: 0 auto; padding: 10px 0;}
+    #ftmenu ul.ftmenu li {display: block; float: left;  width: 100%;  text-align: center; border-bottom: 1px solid #c3c3c3; padding: 4px 0px 8px 0; }
+    #ftmenu ul.ftmenu li::after{display: none;}
+    .singletestimonials .testiimg i {right: 0px;padding: 17px;}
+    #ftmenu .logofooter {margin: 0 auto;}
+    .socialmedia {width: auto; }
+    .footer-bg .socialmedia {float: none;}
+    .mainmenu {
+        margin: 0px 0px;
+    }
+    .contact-right {margin-top: 10px;     height: 78px;}
+	.navbar-default .navbar-nav > li > a {font-size: 20px; line-height: 26px;}
+	#ftmenu {height: auto;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
+        height: 250px;
+    }
+    #personaldevlspeaker .col-xs-12.col-sm-12.col-md-12.col-lg-12 #trainer .col-xs-12.col-sm-12.col-md-12.col-lg-12 {padding-left: 0px;  padding-right: 0px;}
+.aboutpagebody{ width: 90%; padding: 0;}
+
+    .aboutpageheading h2{ background:none; width: 100%; text-align: center;}
+
+    .aboutpageheading{ height: auto;}
+
+
+    .affiliateageheading h2{ background:none; width: 100%; text-align: center;}
+
+    .affiliateageheading{ height: auto;}
+
+    .abouttextblock1 .abouttextpart1 h3{ font-size: 48px;}
+
+    .aboutpageheading h2{ font-size: 60px!important;}
+
+    .affiliateageheading h2{ font-size: 60px!important;}
+
+    .affiliatpagebody1{ width: 90%;}
+
+    .affiliatpagebody2{ width: 90%;}
+
+
+
+
+    .signupheading h2{ background:none; width: 100%; text-align: center;  font-size: 60px!important;}
+
+    .signupheading{ height: auto;}
+
+    .blogpageheading {height: auto;}
+    .blogpageheading h2 { background:none; font-size: 60px !important;text-align: center;width: 100%;}
+
+}
+
+@media(max-width:720px){
+    #slider .item {
+        margin: 0px 0 0 -639px;
+        width: 218%;
+    }
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
+        height: 232px;
+    }
+}
+@media(max-width:700px){
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
+        height: 225px;
+    }
+}
+
+@media(max-width:680px){
+    #slider .item {
+        margin: 0px 0 0 -600px;
+        width: 216%;
+    }
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
+        height: 215px;
+    }
+}
+
+@media(max-width:640px){
+    .header-top-right {
+        width: 96%;
+        margin-left:auto;
+        margin-right: auto;
+    }
+    .inner-info-top h2 {
+        font-size: 34px; margin-bottom: 31px;
+    }
+
+    .trainer-content-bottom img {
+        height: auto;
+        width: auto;
+        margin-bottom: 10px;
+    }
+    .dolar-content .purchaseimg img {
+        max-width: 100%;
+        margin: 0 auto;
+        margin-top: 0px;
+    }
+    .sitamet-left h1{font-size: 36px;}
+    .sitamet-left h2{font-size: 28px;margin: 9px 0px 15px 0px;}
+    .row{margin:0px;}
+    .mainmenu {margin: 0px 0px;}
+
+
+    .singletestimonials {position: relative; max-width: 293px; margin: 0 auto; margin-bottom: 20px!important;}
+    #ftmenu ul.ftmenu { margin-top: 10px;}
+    #services .servicesright {height: auto;}
+    .testimonialslist {
+        max-width: 298px;
+        margin: 0 auto;
+    }
+    #testimonials {
+        margin: 10px 0px 0px 0px;
+    }
+
+    .socialmedia {
+        width: auto;
+        margin: 0;
+    }
+    .socialmedia {margin-top: 9px;}
+
+    #slider .item {
+        margin: 0px 0 0 -547px;
+        width: 210%;
+    }
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
+        height: 206px;
+    }
+    #rorreelive {margin-top: 21px;}
+    #dolar {margin: -10px 0px 0px 0px;}
+    .inner-info-top h2 {margin-bottom: 21px;}
+    .inner-info-top p {margin-bottom: 21px;}
+    .dolar-content ul {margin-bottom: 21px;}
+    .dolatsit_content {margin-top: 0px;}
+    #trainer {padding: 5px 0px 0px;}
+    #roreemanlive {
+        margin-top: 21px;
+        margin-bottom: 0px;
+    }
+    #personaldevlspeaker .trainer-inner {
+        margin-top: 21px;
+    }
+    .trainer-inner {
+        margin-top: 0px;
+    }
+    #services {
+        margin: 21px 0px 21px 0;
+    }
+    .sitamet_content .inner-info-top h1 {padding-top: 21px;}
+    .sitamet_content .inner-info-top h2 {line-height: 40px;}
+    .sitamet_content .inner-info-top p {margin: 5px 15px;}
+    #sitamet {margin-bottom: 11px;}
+    #testimonials .inner-info-top p {margin-bottom: 21px;}
+    .sitamet_content .inner-info-top h2 {padding-bottom: 0px !important;}
+    .trainer-inner .trainer-content-top h2 {padding: 21px 0 11px 0;}
+}
+@media(max-width:600px){
+    #slider .item {
+        margin: 0px 0 0 -520px;
+        width: 216%;
+    }
+
+}
+
+
+@media(max-width:560px){
+    #slider .item {
+        margin: 0px 0 0 -478px;
+        width: 216%;
+    }
+
+
+
+    .sitamet_content .inner-info-top h1{ padding-top: 15px; font-size: 26px;}
+    .sitamet_content .inner-info-top h2{ font-size: 23px; margin-bottom: 0px; padding-bottom: 0px;}
+
+}
+
+@media(max-width:520px){
+    #slider .item {
+        margin: 0px 0 0 -463px;
+        width: 216%;
+    }
+
+    .trloginwrapper{ width: 90%;  padding:0 5% 30px 5%; }
+
+
+    .trloginwrapper .checkboxdiv{ width: 135px; float: none; margin: 0 auto;}
+
+    .trloginwrapper .forgotpassword{ width: 180px; float: none; margin: 0 auto; margin-top: 10px;}
+
+
+}
+@media(max-width:500px){
+    #slider .item {
+        margin: 0px 0 0 -449px;
+        width: 216%;
+    }
+
+}
+
+
+@media(max-width:480px){
+
+    .signupformgroup{ padding:40px 20px; width:auto; margin:0 auto;  }
+    .signupformgroup .col-md-4{ width:100%; padding: 0; }
+    .signupformgroup .col-md-3{ width:100%; margin-bottom: 10px;  padding: 0;}
+
+    .signupformgroup .col-md-5{ width:100%; margin-bottom: 10px; padding: 0; }
+
+
+    #personaldevlspeaker .trainer-content-bottom img {
+        height: auto;
+        width: 100%;
+
+    }
+
+    #sitamet{ margin-top: 0px;}
+
+    #ftmenu .col-md-12{ padding-left: 0px; padding-right: 0px;}
+    .servicesright h2:after{content: ''; width: 115px; height: 2px; position: inherit; left: 0; margin-left: 0; background-color: #fff; clear: both;  top: 0px; display: block; margin: 0 auto; display: block; margin-top: 5px;}
+
+
+    #trainer .trainer-content-bottom img{ height: auto; overflow: hidden; max-height: 160px;}
+    .singletestimonials .testiimg i {
+        padding: 17px;
+    }
+    .roreemanlive_content .inner-info-top h3 {
+        font-size: 28px;
+    }
+    .roreemanlive_content {
+        margin-top: 36px;
+    }
+    .testimonialslist {
+        max-width: 298px;
+        margin: 0 auto;
+    }
+
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(1){width: 100%}
+    #menu .col-xs-12 .menubar .col-xs-12:nth-child(2){width: 100%}
+    #menu .col-xs-12 .mainmenu .col-xs-12:last-child{width: 100%}
+
+
+    #slider .item {
+        margin: 0px 0 0 -466px;
+        width: 230%;
+    }
+    .rorreeliveMRL{width: 190%; margin: 0 0 0 -337px;}
+    .btnview {width: 260px; margin: 0 auto;}
+    .servicesright h2 {font-size: 26px;}
+    .servicesright:last-child h2::after{top: 82px;}
+    #trainer .trainer-content-bottom img, #personaldevlspeaker .trainer-content-bottom img {
+        height: auto;
+        width: 100%;
+    }
+    #trainer .trainer-inner, #personaldevlspeaker .trainer-inner{margin-top: 20px;}
+    .sitamet_content .btnview {width: 220px;}
+    .sitamet_content .btneye img, .btneye i {margin-top: 0px;}
+    .sitamet_content .btnview .btneye {font-size: 16px;}
+    .singletestimonials .testiimg i {right: 0px;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {height: 136px;}
+}
+
+@media(max-width:470px) {
+    #slider .item {
+        margin: 0px 0 0 -415px;
+        width: 218%;
+    }
+    .rorreeliveMRL{width: 190%; margin: 0 0 0 -286px;}
+	.servicesright:last-child h2::after{top: 55px;}
+}
+
+@media(max-width:450px){
+    #slider .item {
+        margin: 0px 0 0 -382px;
+        width: 216%;
+    }
+    .rorreeliveMRL{width: 190%; margin: 0 0 0 -286px;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
+        height: 128px;
+    }
+}
+
+@media(max-width:430px) {
+    #slider .item {
+        margin: 0px 0 0 -382px;
+        width: 227%;
+    }
+
+    .sitamet_content .inner-info-top h1 {
+        font-size: 32px;
+    }
+    .sitamet_content .inner-info-top h2 {
+        font-size: 28px; line-height: 46px;
+    }
+    .rorreeliveMRL{width: 200%; margin: 0 0 0 -300px;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
+        height: 121px;
+    }
+}
+@media(max-width:390px) {
+    #slider .item {
+        margin: 0px 0 0 -362px;
+        width: 227%;
+    }
+    .rorreeliveMRL{width: 193%; margin: 0 0 0 -247px;}
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {
+        height: 113px;
+    }
+}
+
+@media(max-width:360px) {
+    #slider .item {
+        margin: 1px 0 0 -348px;
+        width: 228%;
+    }
+    .rorreeliveMRL{width: 209%; margin: 0 0 0 -267px;}
+
+    .footer-bg .socialmedia{ width: 190px!important;}
+
+    .socialmedia ul li {
+        display: inline-block;
+        padding-right: 5px;
+    }
+    #trainer .trainer-content-bottom, #personaldevlspeaker .trainer-content-bottom {height: 92px;}
+}
+
+@media(max-width:320px){
+    #slider .item {
+        margin: 1px 0 0 -308px;
+        width: 228%;
+    }
+    .rorreeliveMRL{width: 189%;  margin: 0 0 0 -206px;}
+
+    .singletestimonials .testiimg img{ width: 214px; height: 214px;}
+
+    .singletestimonials .testiimg i{  top: 34%; right: 35px !important;}
+    #personaldevlspeaker .trainer-content-bottom {
+        height: 94px;
+    }
+    #trainer .trainer-content-bottom {
+        height: 83px;
+    }
+}
+/*--//responsive-design---*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media print,
+(-webkit-min-device-pixel-ratio: 1.25),
+(min-resolution: 1.25dppx),
+(min-resolution: 120dpi) {
+
+}
+
+/* ==========================================================================
+   Print styles
+   ========================================================================== */
+
+@media print {
+    *,
+    *:before,
+    *:after,
+    *:first-letter,
+    *:first-line {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    a[href^="#"]:after,
+    a[href^="javascript:"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}

@@ -1,0 +1,254 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Event Manager
+
+        </h1>
+        <ol class="breadcrumb">
+           <li><a ui-sref="dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active"><a ui-sref="event-list">Manage Event </a></li>
+            <li><a href="javascript:void(0)" class="active"> Edit Event </a></li>
+        </ol>
+    </section>
+
+
+
+
+    <section class="content">
+        <div class="row">
+
+
+            <!-- left column -->
+            <div class="col-md-12">
+
+                <!-- general form elements -->
+                <div class="box box-primary" style="overflow:hidden; padding-bottom:40px;">
+
+                    <div class="box-header with-border">
+                        <h3 class="box-title"></h3>
+                        <h3 class="box-title">Edit Event</h3>
+                    </div><!-- /.box-header -->
+                    <!-- form start -->
+
+                    <div class="formsection">
+                        <form angular-validator-submit="addeventsForm()" id="add_event" name="add_event" role="form" novalidate angular-validator>
+                            <div class="box-body">
+
+                                <div class="form-group">
+                                    <label >Event Name* :</label>
+                                    <input type="text" class="form-control" placeholder="Event Name " name="event_name"
+
+                                           ng-model="form.event_name"
+                                           required-message="'Event name can not be blank.'"
+                                           required>
+
+                                    <!-- <span class="errormsg">erroe msg</span>-->
+                                </div>
+                                <div class="form-group">
+                                    <label >Event Description* :</label>
+                     <textarea rows="3" class="form-control" placeholder="Event Description" name="event_description"
+
+                               ng-model="form.event_description"
+                               requirde-message="'event description can not be blank.'"
+                               required
+                             ></textarea>
+
+                                    <!-- <span class="errormsg">erroe msg</span>-->
+                                </div>
+                                <div class="form-group">
+                                    <label >Event Location* :</label>
+                                    <input type="text" class="form-control" placeholder="Event Location " name="event_location"
+
+                                           ng-model="form.event_location"
+                                           required-message="'Event location can not be blank.'"
+                                           required>
+
+                                    <!-- <span class="errormsg">erroe msg</span>-->
+                                </div>
+
+                                <div class="form-group" >
+                                    <!--ng-show="form.category_id.type=='Stock Image' || form.category_id.type=='Stock Video'"-->
+                                    <label >Event Image(jpg,png,gif)* :</label>
+                                    <div class="clearfix"></div>
+                                    <img ng-if="event_img!=false" src="{{event_img}}">
+                                    <!--<div ng-if="product_video_src!=false" id="maintvDiv"></div>-->
+
+
+                                    <div class="clearfix"></div>
+                                    <input type="button" class="uploadbtn btn  btn-md"   value="Upload" ngf-drop ngf-select ng-model="event_imgupload" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-multiple="false" ngf-allow-dir="true" accept="'video/*'" ngf-drop-available="dropAvailable" ngf-capture="camera">
+                                    <div class="progress" ng-show="event_imgupload[0].progress >= 0"> <div style="width:{{product_upload[0].progress}}%; background:#00c0ef;" ng-bind="event_imgupload[0].progress + '%'"></div></div>
+                                    <div class="clearfix"></div>
+                                    <span class="errormsg has-error validationMessage"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label >Event Date Range* :</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="glyphicon glyphicon-calendar"></i>
+                                        </div>
+
+
+
+
+                                        <input type="text" class="form-control pull-right" id="reservation" value="02/11/2016 - 03/25/2016" placeholder="Event Date Range" name="event_daterange"
+
+                                               ng-model="form.event_daterange"
+                                               required-message="'Please select event date range.'"
+                                               required
+                                                ></div>
+
+                                    <!-- <span class="errormsg">erroe msg</span>-->
+                                </div>
+                                <div class="form-group">
+                                    <label >Event Time Range* :</label>
+
+                                    <div class="input-group">
+                                        <!--<div class="input-group-addon">
+                                            <i class="fa fa-clock-o"></i>
+                                        </div>-->
+
+                                        <!--<input type="text" class="form-control pull-right" placeholder="Event Time Range" name="event_timerange" id="reservationtime"
+
+                                               ng-model="form.event_timerange"
+                                               required-message="'Please select event time range.'"
+                                               required
+                                                >-->
+
+                                        <div>
+                                            <span>All Day </span>
+                                            <input type="checkbox" value="1" ng-model="allday" name="event_timerange"  ng-change="toggletimerange()"
+
+                                                   ng-model="form.event_timerange"
+                                                   validator = "custom()===true"
+                                                   invalid-message = "custom()"
+
+                                                    >
+
+
+                                            <!-- <input type="hidden" id="timeval" name="event_timer" value="1"
+
+                                                    ng-model="form.event_timer"
+
+                                                     >-->
+
+                                        </div>
+
+                                        <div ng-controller="admin_header" ng-show="!allday" >
+
+
+                                            <uib-timepicker ng-model="starttime" ng-change="changed()" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian"></uib-timepicker>
+
+                                            <pre class="alert alert-info">Time is: {{starttime | date:'shortTime' }}</pre>
+
+
+                                            <uib-timepicker ng-model="endtime" ng-change="changed()" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian"></uib-timepicker>
+
+                                            <pre class="alert alert-info">Time is: {{endtime | date:'shortTime' }}</pre>
+                                        </div>
+
+                                    </div>
+
+
+
+
+
+                                    <!-- <span class="errormsg">erroe msg</span>-->
+                                </div>
+                                <div class="clearfix"></div>
+                                <span class="errormsg has-error validationMessage" ng-show="{{timeerror}}">Please select a valid time range.</span>
+
+                                <!-- <div class="checkbox">
+                                     <label>
+                                         <input type="checkbox"
+                                                ng-model="form.event_status"
+                                                required-message="'Please select status.'"
+                                                required
+                                                 >
+                                         <span style="font-size:13px;">Publish in front end ?</span>
+                                     </label>-->
+
+                                <div class="form-group ">
+                                    <!-- &lt;!&ndash;<label >Event Image* :</label>&ndash;&gt;-->
+                                    <div class="checkbox">
+                                        <input type="checkbox"  name="event_status"
+
+                                               ng-model="event_status"
+
+                                                >
+                                        <span>Publish in frontend ?</span>
+
+
+                                    </div>
+                                </div>
+
+                                <!-- <div class="form-group">
+
+
+                                    <label>Text Disabled</label>
+                                     <input type="text" class="form-control" placeholder="Enter ...">
+
+                                 </div>
+
+
+
+                                    <div class="form-group">
+
+                                 <label>Textarea Disabled</label>
+                                   <textarea class="form-control" rows="3" placeholder="Enter ..."  style="resize:none;"></textarea>
+
+
+                                   </div>
+
+                                   <div class="form-group">
+                                   <label>Select</label>
+                                   <select class="form-control">
+                                     <option>option 1</option>
+                                     <option>option 2</option>
+                                     <option>option 3</option>
+                                     <option>option 4</option>
+                                     <option>option 5</option>
+                                   </select>
+
+                                 </div>
+
+                                 <div class="form-group">
+                                   <label for="exampleInputFile" style="font-size:13px;">File input</label>
+                                   <input type="file" id="exampleInputFile" style="font-size:13px;">
+
+                                 </div>
+                                 <div class="checkbox">
+                                   <label>
+                                     <input type="checkbox"> <span style="font-size:13px;">Check me out</span>
+                                   </label>
+
+                                   <label>
+                                     <input type="radio"> <span style="font-size:13px;">Check me out</span>
+                                   </label>
+
+                                 </div>
+                               -->
+                            </div><!-- /.box-body -->
+
+                            <div class="box-footer" style="background:none; height:auto; padding-bottom:0px; padding-top:0px;">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div><!-- /.box -->
+
+
+                    <div style="clear:both;"></div>
+                </div>
+
+            </div>   <!-- /.row -->
+        </div>
+    </section>
+
+
+
+
+</div>
+
+
+

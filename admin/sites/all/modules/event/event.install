@@ -1,0 +1,87 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for event
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function event_schema() {
+    $schema = array();
+
+    $schema['event'] = array(
+        'description' => 'event Table',
+        'fields' => array(
+            'id' => array(
+                'description' => 'Primary Key id',
+                'type' => 'serial',
+                'not null' => TRUE,
+            ),
+             'user_id' => array(
+                 'description' => 'user id',
+                 'type' => 'int',
+                 'not null' => TRUE,
+             ),
+
+            'event_name' => array(
+                'description' => 'event name',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+                'default' => '',
+
+            ),
+             'event_description' => array(
+                 'description' => 'event description',
+                  'type' => 'text',
+                 'not null' => false,
+             ),
+            'event_location' => array(
+                'description' => 'event location',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+                'default' => '',
+
+            ),
+
+              'event_image' => array(
+                  'description' => 'event image',
+                   'type' => 'text',
+                  'not null' => false,
+              ),
+
+            'event_status' => array(
+                'description' => 'event status',
+                 'type' => 'int',
+                 'length' => '11',
+                'not null' => TRUE,
+                 'default' => '0',
+            ),
+            'event_daterange' => array(
+                 'description' => 'event daterange',
+                   'type' => 'text',
+                  'not null' => false,
+            ),
+            'event_timerange' => array(
+                 'description' => 'event timerange',
+                   'type' => 'text',
+                  'not null' => false,
+            ),
+
+
+            'event_create_time' => array(
+                'description' => 'create time',
+                 'type' => 'varchar',
+                'length' => '255',
+                 'default' => '',
+            ),
+
+
+        ),
+        'primary key' => array('id'),
+
+    );
+    return $schema;
+}

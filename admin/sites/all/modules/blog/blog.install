@@ -1,0 +1,76 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for blog
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function blog_schema() {
+    $schema = array();
+
+    $schema['blog'] = array(
+        'description' => 'blog Table',
+        'fields' => array(
+            'id' => array(
+                'description' => 'Primary Key id',
+                'type' => 'serial',
+                'not null' => TRUE,
+            ),
+             'user_id' => array(
+                 'description' => 'user id',
+                 'type' => 'int',
+                 'not null' => TRUE,
+             ),
+
+            'blog_name' => array(
+                'description' => 'blog name',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+                'default' => '',
+
+            ),
+             'blog_description' => array(
+                 'description' => 'blog description',
+                  'type' => 'text',
+                 'not null' => false,
+             ),
+             'blog_asset' => array(
+                 'description' => 'blog asset',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+                'default' => '',
+             ),
+
+              'blog_file' => array(
+                  'description' => 'blog image',
+                   'type' => 'text',
+                  'not null' => false,
+              ),
+
+            'blog_status' => array(
+                'description' => 'blog status',
+                 'type' => 'int',
+                 'length' => '11',
+                'not null' => TRUE,
+                 'default' => '0',
+            ),
+
+
+            'blog_create_time' => array(
+                'description' => 'create time',
+                 'type' => 'varchar',
+                'length' => '255',
+                 'default' => '',
+            ),
+
+
+        ),
+        'primary key' => array('id'),
+
+    );
+    return $schema;
+}

@@ -1,0 +1,84 @@
+<div class="container-fluid contactmeheading">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h2><content name='contactmeheadingh2265' id='265' > </content></h2>
+        </div>
+    </div>
+</div>
+
+<div class="container contactmedetailbody1">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="about_icon2" style="margin-top: -80px;">
+                <img src="images/contact_icon2.png" alt="#" >
+            </div>
+            <div class="contactme_block_wrapper">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 contactmeblockleft">
+                        <content name='contactmedetailbody1leftimage266' id='266' > </content>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 contactmeblockright">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                <h2><content name='contactmedetailbody1righth2268' id='268' > </content></h2>
+                                <content name='contactmedetailbody1rightlogo269' id='269' > </content>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                <div class="customersrv"><p><content name='customersrv270' id='270' > </content></p></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <form role="form">
+                                    <div ng-show="errormsg" class="alert alert-danger alert-dismissible">{{errormsg}}</div>
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Full Name" name="full_name"
+                                                   ng-model="form.full_name"
+                                                   required-message="'Full Name can not be blank.'"
+                                                   required>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Email" name="email"
+                                                   ng-model="form.email"
+                                                   required-message="'Email can not be blank.'"
+                                                   required>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Phone" name="phone"
+                                                   ng-model="form.phone"
+                                                   required-message="'Phone can not be blank.'"
+                                                   required>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" placeholder="Message" name="message"
+                                                   ng-model="form.message"
+                                                   required-message="'Message can not be blank.'"
+                                                   required>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row captuablock">
+                                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                                    <label >Enter Code*</label>
+                                                </div>
+                                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 imgcapture">
+                                                    <img src="../images/img-captua.png">
+                                                </div>
+                                                <div class="col-lg-5 col-md-5 col-sm-4 col-xs-12">
+                                                    <input type="text" class="form-control" placeholder="" name="" required>
+                                                </div>
+                                        </div>
+                                        <div class="box-footer text-right" style="background:none; height:auto; padding-bottom:0px; padding-top:0px;">
+                                            <button type="submit" class="btn btn-primary btn-submit">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -485,7 +485,7 @@ a:focus {
 }
 .content-header {
   position: relative;
-  padding: 15px 15px 0 15px;
+  padding: 15px 45px 0 15px;
 }
 .content-header > h1 {
   margin: 0;
@@ -5515,6 +5515,10 @@ table.text-center th {
         width: 100% !important;}
 
 }
+@media screen and (min-width: 992px){
+  .daterangepicker {top: 750px; right: 424.633px; left: auto; display: block;}
+}
+
 @media screen and (max-width:991px){
 .navbar-custom-menu .nav > li > a{ line-height: 35px;}
 }
@@ -5539,13 +5543,23 @@ table.text-center th {
     .main-header .logo img{ width: 263px!important; display: block; margin: 0 auto;}
 
     .content-wrapper{  padding-top: 60px!important; margin-top: 0px!important;}
+
 }
 
 
 @media screen and (max-width:640px){
 .content .col-xs-6{ width: 100%;}
-    .small-box h3{ width: 160px;}
+  .small-box h3{ width: 160px;}
+
 }
 
 
 .pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus{ background: #44aba2!important; border:none!important;}
+#add_event .input-group input[type=text]{text-align: left; padding-left: 12px;}
+
+
+
+
+table td:last-of-type  a{ display: block; text-align: center; background: #68d3c9; color: #1b1b1b!important; padding: 5px 8px; border-radius: 2px; margin: 1px; }
+
+table td:last-of-type  .btn{ display: block; text-align: center; background: #68d3c9; color: #1b1b1b!important; padding: 5px 8px; border-radius: 2px; margin: 1px; }
