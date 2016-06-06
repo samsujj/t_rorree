@@ -113,6 +113,14 @@ function cart_menu()
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
+    $items['cart/duplicatemail'] = array(
+        'title' => 'Add junglecategory',
+        'page callback' => 'duplicatemail',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
 
     return $items;
 }
@@ -480,8 +488,6 @@ function checkout(){
             $orderquery->join('state', 'bs', 'bs.id = od.bill_state');
             $orderquery->join('state', 'ss', 'ss.id = od.ship_state');
             $orderquery->fields('od');
-
-            $orderquery->fields('od');
             $orderquery->addExpression("bc.s_name", 'bill_country');
             $orderquery->addExpression("sc.s_name", 'ship_country');
             $orderquery->addExpression("bs.s_st_name", 'bill_state');
@@ -833,6 +839,297 @@ function getPrevAddr(){
     }
 
     echo json_encode($arr);
+
+
+}
+
+function duplicatemail(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    set_time_limit(0);
+
+    $order_id = $_POST['id'];
+
+
+    $orderquery = db_select('order_details','od');
+    $orderquery->join('country', 'bc', 'bc.id = od.bill_country');
+    $orderquery->join('country', 'sc', 'sc.id = od.ship_country');
+    $orderquery->join('state', 'bs', 'bs.id = od.bill_state');
+    $orderquery->join('state', 'ss', 'ss.id = od.ship_state');
+    $orderquery->fields('od');
+    $orderquery->addExpression("bc.s_name", 'bill_country');
+    $orderquery->addExpression("sc.s_name", 'ship_country');
+    $orderquery->addExpression("bs.s_st_name", 'bill_state');
+    $orderquery->addExpression("ss.s_st_name", 'ship_state');
+
+    $orderquery->condition('od.id', intval($order_id), '=');
+    $orderqueryre = $orderquery->execute();
+    $orderrecordu_arr = $orderqueryre->fetchAssoc();
+    $orderdate=date('d/m/Y',$orderrecordu_arr['order_time']);
+    $invoicedate=date('jS,F Y',$orderrecordu_arr['order_time']);
+
+
+    $orderproductquery = db_select('order_product_details','opd');
+    $orderproductquery->fields('opd');
+    $orderproductquery->condition('order_id', intval($order_id), '=');
+    $orderproqueryre = $orderproductquery->execute();
+    if ($orderproqueryre->rowCount() > 0) {
+        $productlisthtml='';
+        $productsubtotal=0.00;
+        while ($recorduorderpro = $orderproqueryre->fetchAssoc()) {
+            $productsubtotal =$recorduorderpro['quantity']*$recorduorderpro['product_price'];
+            $productlisthtml .='<tr>
+                        <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">'.$recorduorderpro['product_id'].'</td>
+                        <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >'.$recorduorderpro['product_name'].'</td>
+                        <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >'.$recorduorderpro['quantity'].'</td>
+                        <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"><span style="display:inline-block; text-align:right; width:76px;">$'.$productsubtotal.'</span></td>
+                      </tr>';
+
+        }
+        $shipping1=0.00;
+        $tax1=0.00;
+        $total=$productsubtotal+$shipping1+$tax1;
+
+    }
+
+    $productlisthtml .='
+                    <tr>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                    <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                    <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <span style="display:inline-block; padding-right:5px; text-align:right; width:76px;">Sub total</span>          <span style="display:inline-block; text-align:right;  width:76px;">$'.$orderrecordu_arr['order_subtotal'].'</span></td>
+                  </tr>
+
+                   <tr>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                    <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                    <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <span style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Shipping </span>          <span style="display:inline-block; text-align:right; width:76px;"> $'.$orderrecordu_arr['shipping_charge'].'</span></td>
+                  </tr>
+                   <tr>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                    <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                    <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <span style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Tax Rate </span>           <span style="display:inline-block; text-align:right; width:76px;">$'.$orderrecordu_arr['tax'].'</span></td>
+                  </tr>
+                  <tr>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                    <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                    <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                    <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <span style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Total </span>           <span style="display:inline-block; text-align:right; width:76px;">$'.$orderrecordu_arr['order_total'].'</span></td>
+                  </tr>';
+
+
+
+
+    $mail_body='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TOTALLY RORREE</title>
+</head>
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+    <td align="center">
+      <table width="600" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:14px;">
+  <tr>
+    <td colspan="2" align="center" valign="middle" style=" background:#fff; border-bottom:solid 2px #fff; padding:15px 0;"><a href="#"><img src="http://tr.influxiq.com/images/logo-totallyrorree.png"  alt="#"/></a></td>
+       </tr>
+
+    <tr>
+    <td style="border-top:solid 2px #40bbaf; width:48%; padding:15px 0 0 2%;" align="left">
+    <strong style="font-size:26px; color:#363636; font-weight:normal; font-style:italic;">Invoice '.$order_id.'</strong><br />
+
+    <span style="font-size:14px; color:#40bbaf;">'.$invoicedate.'</span>
+    </td>
+     <td style="border-top:solid 2px #40bbaf; width:48%; padding:15px 2% 0 0; font-size:14px; color:#363636; line-height:25px;" align="right">
+     Order ID: '.$order_id.'<br />
+
+Order Date: '.$orderdate.'
+     </td>
+  </tr>
+
+  <tr>
+    <td style=" width:48%; padding:25px 0 0 2%;" align="left" valign="top">
+     <span style="background:#40bbaf; width:89%; padding:8px 0 7px 5%;  font-size:18px; color:#fff; display:block;">Bill To</span>
+
+     </td>
+     <td style=" width:48%; padding:25px 2% 0 0;" align="right" >
+
+      <span style="background:#40bbaf; width:89%; padding:8px 0 7px 5%;  font-size:18px; color:#fff; text-align:left; display:block;">Ship To</span>
+      </td>
+  </tr>
+
+  <tr>
+    <td style=" width:48%; padding:0px 0 0 2%;" align="left" valign="top">
+   <table width="94%" border="0" cellspacing="5" cellpadding="0" style="border:solid 1px #e0e0e0; font-size:14px; color:#929292; padding:1%;">
+
+  <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Name : '.$orderrecordu_arr['bill_name'].'</td>
+  </tr>
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Address : '.$orderrecordu_arr['bill_address'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">City : '.$orderrecordu_arr['bill_city'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">State : '.$orderrecordu_arr['bill_state'].'</td>
+  </tr>
+
+     <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Zip : '.$orderrecordu_arr['bill_zip'].'</td>
+  </tr>
+    <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Country : '.$orderrecordu_arr['bill_country'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Email : '.$orderrecordu_arr['bill_email'].'</td>
+  </tr>
+
+</table>
+    </td>
+     <td style=" width:48%; padding:0px 2% 0 0;" align="right">
+
+     <table width="94%" border="0" cellspacing="5" cellpadding="0" style="border:solid 1px #e0e0e0; font-size:14px; color:#929292; padding:1%;">
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Name : '.$orderrecordu_arr['ship_name'].'</td>
+  </tr>
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Address : '.$orderrecordu_arr['ship_address'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">City : '.$orderrecordu_arr['ship_city'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">State : '.$orderrecordu_arr['ship_state'].'</td>
+  </tr>
+
+     <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Zip : '.$orderrecordu_arr['ship_zip'].'</td>
+  </tr>
+    <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Country : '.$orderrecordu_arr['ship_country'].'</td>
+  </tr>
+
+   <tr>
+    <td style="background:#ececec; width:90%; padding:6px;">Email : '.$orderrecordu_arr['ship_email'].'</td>
+  </tr>
+
+
+</table>
+
+
+
+     </td>
+  </tr>
+
+  <tr>
+    <td colspan="2" align="center" valign="middle" style=" font-size:18px; color:#40bbaf; padding:15px 0;">Shipping Method: Standard Shipping (Residential)</td>
+       </tr>
+
+
+         <tr>
+    <td colspan="2" align="center" valign="middle">
+
+    <table width="96%" border="0" cellspacing="0" cellpadding="0" style="margin:5px 0; border:solid 1px #c6c6c6; border-bottom:none; font-size:13px;">
+  <tr>
+    <th width="15%"  align="left" valign="middle" style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Item</th>
+    <th   width="15%" align="left" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Name</th>
+    <th  width="34%" align="left" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Quantity</th>
+    <th  width="36%" align="right" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Amount</th>
+  </tr>'.$productlisthtml.'
+
+</table>
+
+
+
+    </td>
+          </tr>
+
+
+          <tr>
+    <td colspan="2" align="center" valign="middle">
+
+    <table width="96%" border="0" cellspacing="0" cellpadding="0" style="margin:5px 0; border:solid 1px #c6c6c6; font-size:13px;">
+  <tr>
+    <th  align="left" valign="middle" style="background:#40bbaf; color:#fff; font-size:18px; padding:10px 2%; font-family:Arial, Helvetica, sans-serif; ">Download</th>
+
+  </tr>
+
+   <tr>
+    <td style="padding:10px 2% 30px 2%;">
+    <h2 style="font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#000; font-weight:normal;">New product <span style="color:#868484;">like can be downloaded 7 times</span></h2>
+
+
+    <a href="#" style=" color:#40bbaf; font-size:14px; border-bottom:dotted 2px #40bbaf; display:inline-block; margin:8px 0 0 0; text-decoration:none;">Download Product1.pdf</a><br />
+
+
+     <a href="#" style=" color:#40bbaf; font-size:14px; border-bottom:dotted 2px #40bbaf; display:inline-block; margin:8px 0 0 0; text-decoration:none;">Download Product2.pdf</a>
+
+
+    </td>
+
+  </tr>
+
+
+
+
+
+</table>
+
+
+
+    </td>
+          </tr>
+
+
+          <tr>
+    <td colspan="2" align="center" valign="middle"><a href="'.CUSTOM_URL.'/products" style="background:#40bbaf; display:inline-block; color:#fff; font-size:16px; font-weight:bold; padding:15px 18px; margin:20px auto; text-decoration:none; border: solid 1px #31a499;">Continue Shopping</a></td>
+       </tr>
+
+       <tr>
+    <td colspan="2" align="center" valign="middle" style="font-size:12px; color:#fff; text-align:center; background:#1b1b1b; padding:25px 10px;">&copy; Copyright 2016 Totally Roree. All Rights Reserved. </td>
+       </tr>
+
+</table>
+
+
+    </td>
+  </tr>
+</table>
+
+
+
+</body>
+</html>
+';
+
+    $to =$orderrecordu_arr['bill_email'];
+
+    $subject = "Duplicate Mail - Your order details";
+
+
+    $output=$mail_body;
+    //  $headers= "From: info@spectrumiq.com\r\nReply-To: info@spectrumiq.com";
+    $headers  = 'MIME-Version: 1.0' . "\r\n";
+    $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+    $x=@mail($to, $subject, $output, $headers);
+
+
+
 
 
 }

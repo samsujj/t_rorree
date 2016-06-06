@@ -117,26 +117,72 @@ function orderdetails(){
     header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+    //echo $_POST['orderid'];
+    if(isset($_POST['orderid']) && $_POST['orderid']>0){
+        $order_id=$_POST['orderid'];
+    }
+    $orderquery = db_select('order_details','od');
+    $orderquery->leftjoin('admin', 'ad', 'ad.user_id = od.affiliate_id');
+    $orderquery->join('country', 'bc', 'bc.id = od.bill_country');
+    $orderquery->join('country', 'sc', 'sc.id = od.ship_country');
+    $orderquery->join('state', 'bs', 'bs.id = od.bill_state');
+    $orderquery->join('state', 'ss', 'ss.id = od.ship_state');
+    $orderquery->fields('od');
+    $orderquery->fields('ad',array('fname','lname'));
+    $orderquery->addExpression("bc.s_name", 'bill_country');
+    $orderquery->addExpression("sc.s_name", 'ship_country');
+    $orderquery->addExpression("bs.s_st_name", 'bill_state');
+    $orderquery->addExpression("ss.s_st_name", 'ship_state');
 
-    $queryu = db_select('order', 'ca');
-    $queryu->fields('ca')
-        ->condition('ca.id', $_POST['id'], '=');
-    $resultu = $queryu->execute();
+    $orderquery->condition('od.id', intval($order_id), '=');
+    $orderqueryre = $orderquery->execute();
+    $orderrecordu_arr = $orderqueryre->fetchAssoc();
+    $orderrecordu_arr['order_status1']='Pending';
+    if($orderrecordu_arr['order_status']==1){
+        $orderrecordu_arr['order_status1']='Pending';
+    }
+    if($orderrecordu_arr['order_status']==2){
+        $orderrecordu_arr['order_status1']='In Progress';
+    }
 
-    while($recordu = $resultu->fetchAssoc()) {
-        $temparray=$recordu;
+    if($orderrecordu_arr['order_status']==3){
+        $orderrecordu_arr['order_status1']='Confirmed';
+    }
 
-        if($recordu['cat_image']!='') {
+    if($orderrecordu_arr['order_status']==4){
+        $orderrecordu_arr['order_status1']='Canceled';
+    }
+    if($orderrecordu_arr['fname']!='' && $orderrecordu_arr['lname']!='' ){
+        $orderrecordu_arr['affiliate_name']=$orderrecordu_arr['fname'].' '.$orderrecordu_arr['lname'];
+    }
 
+    $orderrecordu_arr['order_date']=date('d/m/Y',$orderrecordu_arr['order_time']);
+    $orderrecordu_arr['order_timee']=$invoicedate=date('jS F, Y',$orderrecordu_arr['order_time']);
+    $orderproductquery = db_select('order_product_details','opd');
+    $orderproductquery->fields('opd');
+    $orderproductquery->condition('order_id', intval($order_id), '=');
+    $orderproqueryre = $orderproductquery->execute();
+    $orderlist=array();
+    if ($orderproqueryre->rowCount() > 0) {
+        $i = 0;
 
-                 $temparray['image_url'] = image_style_url('large', (@$recordu['cat_image']));
-
+        $productsubtotal = 0.00;
+        while ($recorduorderpro = $orderproqueryre->fetchAssoc()) {
+            $temparray = $recorduorderpro;
+            $temparray['product_subtotal']=floatval($recorduorderpro['quantity']*$recorduorderpro['product_price']);
+            $orderlist[$i]= $temparray;
+            $i++;
         }
+    }
+        $orderrecordu_arr['productdet']=$orderlist;
 
-                $orderlist=$temparray;
-     }
-    echo json_encode(@$orderlist);
 
+
+
+
+
+
+        echo json_encode(@$orderrecordu_arr);
 }
 
 
@@ -156,12 +202,18 @@ function orderlist()
     $queryu->join('admin', 'a', 'a.user_id = o.user_id');
     $queryu->fields('o');
     $queryu->fields('a', array('fname', 'lname'));
-
-
-    if(isset($_POST['type']) && $_POST['type']!=''){
-        $queryu->condition('ca.type',$_POST['type'],'=')  ;
+    if(isset($_POST['userid']) && $_POST['userid']>0){
+        $queryu->condition('o.user_id',$_POST['userid'],'=')  ;
+    }
+    if(isset($_POST['affiliateid']) && $_POST['affiliateid']>0){
+        $queryu->condition('o.affiliate_id',$_POST['affiliateid'],'=')  ;
     }
 
+
+ /*   if(isset($_POST['type']) && $_POST['type']!=''){
+        $queryu->condition('ca.type',$_POST['type'],'=')  ;
+    }*/
+    $queryu->orderBy('o.order_time','desc');
 
       $resultu = $queryu->execute();
 
@@ -179,23 +231,37 @@ function orderlist()
 
                     while ($recorduaffi = $resultuaffi->fetchAssoc()) {
                         $affiliatename= $recorduaffi['fname'].' '.$recorduaffi['lname'];
+
+
+
                         $temparray['affiliatename']=$affiliatename;
                     }
                 }
 
             }
-
-
-
-        if($recordu['fname']!='' && $recordu['fname']!=''){
-            $temparray['orderby']=$recordu['fname'].' '.$recordu['lname'];
-        }
+            if($recordu['fname']!='' && $recordu['fname']!=''){
+                $temparray['orderby']=$recordu['fname'].' '.$recordu['lname'];
+            }
 
             if($recordu['order_time']!=''){
                 $temparray['orderdate']=date('d F Y H:i:s',$recordu['order_time']);
             }
+            $recordu['order_status1']='Pending';
+            if($recordu['order_status']==1){
+                $temparray['order_status1']='Pending';
+            }
+            if($recordu['order_status']==2){
+                $temparray['order_status1']='In Progress';
+            }
 
+            if($recordu['order_status']==3){
+                $temparray['order_status1']='Confirmed';
+            }
 
+            if($recordu['order_status']==4){
+                $temparray['order_status1']='Canceled';
+            }
+            $temparray['dd_order_status']['id']=intval($recordu['order_status']);
             $orderlist[$i]= $temparray;
             $i++;
 
@@ -279,7 +345,7 @@ function orderupdatestatus(){
     header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
-    $status=1-intval($_POST['status']);
+    $status=intval($_POST['status']['id']);
     $query=db_update('order_details')
         ->fields(array('order_status'=>@$status))
         ->condition('id', intval($_POST['id']))

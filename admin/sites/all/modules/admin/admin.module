@@ -179,6 +179,15 @@ function admin_menu()
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
+    $items['getgrabcode'] = array(
+        'title' => 'Get getgrabcode',
+        'page callback' => 'getgrabcode',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
 
 
 
@@ -307,6 +316,9 @@ function adminlist()
             $userlist[$i]['mail'] = $recordu['mail'];
             $userlist[$i]['fname'] = $recordu['fname'];
             $userlist[$i]['lname'] = $recordu['lname'];
+            if($recordu['fname'] !='' && $recordu['lname']!=''){
+                $userlist[$i]['name']=$recordu['fname'].' '.$recordu['lname'];
+            }
             $userlist[$i]['phone_no'] = $recordu['phone_no'];
             $userlist[$i]['mobile_no'] = $recordu['mobile_no'];
             $userlist[$i]['address'] = $recordu['address'];
@@ -325,6 +337,14 @@ function adminlist()
     echo json_encode(@$userlist);
 
 
+
+}
+function getgrabcode(){
+    $id='';
+    if(isset($_POST['user_id']) && $_POST['user_id']>0 ){
+       $id= base64_encode(base64_encode($_POST['user_id']));
+    }
+    echo $id;
 
 }
 
@@ -611,19 +631,35 @@ header('Content-type: text/html');
 
     $userlist = array();
 
+
+    $sql ="SELECT `ahd`.`affiliate_hit_id`,`a`.`fname`,`a`.`lname`, COUNT(`ahd`.`affiliate_hit_id`) AS `total_hit`,IFNULL(`aff_order`.`tot_header`,0) AS `total_o` FROM `affiliate_hit_details` AS `ahd` JOIN `admin` AS `a` ON `a`.`user_id` = `ahd`.`affiliate_id` LEFT JOIN (SELECT `affiliate_id`, COUNT(*) as `tot_header` FROM `order_details` GROUP BY `affiliate_id` ) AS `aff_order` ON `aff_order`.`affiliate_id` =`ahd`.`affiliate_id`   GROUP BY `ahd`.`affiliate_id`";
+
+    $resultu = db_query($sql);
+
+    /*$orderquery=db_select('order_details','od')
+        ->fields('od',array('affiliate_id,COUNT(od.id)'))
+
+        ->groupBy('affiliate_id');
+
+   // $orderquery = $orderquery->addExpression('COUNT(od.id)','tota');
+
     $queryu = db_select('affiliate_hit_details', 'ahd');
     $queryu->join('admin','ad','ad.user_id=ahd.affiliate_id');
+    $queryu->leftjoin($orderquery,'odn','odn.affiliate_id=ahd.affiliate_id');
     $queryu->fields('ahd', array('affiliate_hit_id'));
     $queryu->fields('ad', array('id','user_id', 'fname','lname'));
     $queryu->addExpression('COUNT(ahd.affiliate_hit_id)', 'total_hit');
-    $queryu->groupBy('ad.user_id');
+    $queryu->addExpression('IFNULL(odn.affiliate_id,0)', 'total_order');
+    $queryu->groupBy('ahd.affiliate_id');
 
-    $resultu = $queryu->execute();
+    $resultu = $queryu->fetchAssoc();;*/
 
+    $affiliatetrack =array();
 
     if ($resultu->rowCount() > 0) {
         $i = 0;
         $temparray =array();
+
         while ($recordu = $resultu->fetchAssoc()) {
             $temparray =$recordu;
             $temparray['affiliate_name']=$recordu['fname'].' '.$recordu['lname'];

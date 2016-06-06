@@ -1,6 +1,6 @@
 <div  class="admincontain maordermanagerblock">
     <div class="mah2block">
-        <h3>My Order:</h3>
+        <h3>Order Manager:</h3>
         <div class="clear"></div>
         <div class="searchcon2" style="width: 526px;">
             <span style="float: left; margin:10px auto;">Search By Date :</span>
@@ -10,10 +10,10 @@
         <div class="newblock1">
             <!--<a ui-sref="add-admin" class="addfrinderbtn">Add Admin</a>-->
             <!--<input type="text" name="search" ng-model="searchkey" class="search1" placeholder="Search General User">-->
-            Search By Affiliate : <select ng-change="searchbyaffiliate(affiliate)"   name="affiliate" class ="form-control" validate-on="dirty" ng-model = "affiliate"  ng-options="itemaffiliate.name for itemaffiliate in affiliatelist track by itemaffiliate.uid" style="background:#fff none repeat scroll 0 0 !important;  padding: 0 0 0 0px!important;"  >
+            <!--Search By Affiliate : <select ng-change="searchbyaffiliate(affiliate)"   name="affiliate" class ="form-control" validate-on="dirty" ng-model = "affiliate"  ng-options="itemaffiliate.name for itemaffiliate in affiliatelist track by itemaffiliate.uid" style="background:#fff none repeat scroll 0 0 !important;  padding: 0 0 0 0px!important;"  >
             <option value="">Select Affiliate Name</option>
 
-        </select>
+        </select>-->
             Search By Status : <select ng-change="searchbyOrderStatus(orderstat)"   name="orderstat" class ="form-control" validate-on="dirty" ng-model = "orderstat"  ng-options="itemstatus.text for itemstatus in orderstatuslist track by itemstatus.id" style="background:#fff none repeat scroll 0 0 !important;  padding: 0 0 0 0px!important;"  >
             <option value="">Select Order Status</option>
 
@@ -28,9 +28,12 @@
                     <thead>
                     <tr>
                         <th>Transaction Id</th>
+                        <th>Order By</th>
+
+
+
                         <th>Order Total</th>
                         <th>Order Date</th>
-                        <th>Affiliate Name</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -39,10 +42,11 @@
                     <tr ng-repeat=" item in  filterResult = (orderlist | filter:search|filter:search1|filter:searchdate) | startFrom:(currentPage-1)*perPage | limitTo:perPage | orderBy:predicate:reverse">
 
                         <td>{{item.transaction_id}}</td>
+                        <td>{{item.orderby}}</td>
 
                         <td> {{item.order_total}}</td>
                         <td>{{item.orderdate}}</td>
-                        <td>{{item.affiliatename}}</td>
+
                         <td>{{item.order_status1}}</td>
                         <td><a href="javascript:void(0)" ui-sref="myaccount-order-details({orderid:item.id})" >Order Details</a></td>
                     </tr>

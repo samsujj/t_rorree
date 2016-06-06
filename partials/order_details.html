@@ -1,0 +1,280 @@
+<div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+           Order Details
+
+          </h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+          <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+              <!-- general form elements -->
+              <div class="box box-primary">
+                <div class="box-header with-border">
+                <!--  <h3 class="box-title">Order List</h3>-->
+                </div><!-- /.box-header -->
+
+
+
+
+
+
+
+
+
+
+
+                <div style="width:96%; margin:15px auto;">
+
+
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-family:Arial, Helvetica, sans-serif; font-size:16px;  border: 1px solid #c6c6c6; border-bottom:none;">
+
+                        <tr>
+                            <td  align="left" valign="middle" style=" font-size:16px; color:#333; padding:15px 15px;  border-bottom: 1px solid #c6c6c6;">Order Date : <span style="color:#40bbaf;">{{orderdetails.order_timee}}</span></td>
+                        </tr>
+                        <tr>
+                            <td  align="left" valign="middle" style=" font-size:16px; color:#333; padding:15px 15px;  border-bottom: 1px solid #c6c6c6;">Order Status : <span style="color:#40bbaf;">{{orderdetails.order_status1}}</span></td>
+                        </tr>
+
+
+                        <tr ng-show="orderdetails.affiliate_name">
+                            <td  align="left" valign="middle" style=" font-size:16px; color:#333; padding:15px 15px;  border-bottom: 1px solid #c6c6c6;">Affiliate Name : <span style="color:#40bbaf;">{{orderdetails.affiliate_name}}</span></td>
+                        </tr>
+                        <tr ng-show="orderdetails.aff_commission_value && orderdetails.affiliate_name">
+                            <td  align="left" valign="middle" style=" font-size:16px; color:#333; padding:15px 15px;  border-bottom: 1px solid #c6c6c6;">Affiliate Commission : <span style="color:#40bbaf;">{{orderdetails.aff_commission_value}}%</span></td>
+                        </tr>
+                        <tr ng-show="orderdetails.aff_commission_amount && orderdetails.affiliate_name">
+                            <td  align="left" valign="middle" style=" font-size:16px; color:#333; padding:15px 15px;  border-bottom: 1px solid #c6c6c6;">Affiliate Commission Amount : <span style="color:#40bbaf;">${{orderdetails.aff_commission_amount}}</span></td>
+                        </tr>
+
+                    </table>
+
+
+
+
+
+                    <div style=" font-size:18px; color:#40bbaf; padding:30px 0 15px 0; text-align:center;">Shipping Method: Standard Shipping (Residential)</div>
+
+
+
+
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:5px 0; border:solid 1px #c6c6c6; border-bottom:none; font-size:13px;">
+                        <tr>
+                            <th width="15%"  align="left" valign="middle" style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Item</th>
+                            <th   width="15%" align="left" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Name</th>
+                            <th  width="34%" align="left" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%;">Quantity</th>
+                            <th  width="36%" align="right" valign="middle"  style="background:#40bbaf; color:#fff; font-size:14px; padding:10px 2%; text-align:right;">Amount</th>
+                        </tr>
+                        <tr ng-repeat="item in orderdetails.productdet">
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">{{item.id}}</td>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >{{item.product_name}}</td>
+                            <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >{{item.quantity}}</td>
+                            <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"><span style="display:inline-block; text-align:right; width:76px; color:#40bbaf;">${{item.product_subtotal}}</span></td>
+                        </tr>
+                        <tr>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                            <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                            <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <strong style="display:inline-block; padding-right:5px; text-align:right; width:76px;">Sub total</strong>          <span style="display:inline-block; text-align:right;  width:76px; color:#40bbaf;">${{orderdetails.order_subtotal}}</span></td>
+                        </tr>
+
+                        <tr>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                            <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                            <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <strong style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Shipping </strong>          <span style="display:inline-block; text-align:right; width:76px; color:#40bbaf;"> ${{orderdetails.shipping_charge}}</span></td>
+                        </tr>
+                        <tr>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                            <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                            <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <strong style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Tax Rate </strong>           <span style="display:inline-block; text-align:right; width:76px; color:#40bbaf;">${{orderdetails.tax}}</span></td>
+                        </tr>
+                        <tr>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle">&nbsp;</td>
+                            <td  width="15%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp;</td>
+                            <td  width="34%" style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="left" valign="middle" >&nbsp; </td>
+                            <td  width="36% " style="border-bottom:solid 1px #c6c6c6;  padding:8px 2%;" align="right" valign="middle"> <strong style="display:inline-block; padding-right:5px; text-align:right; width:76px;"> Total </strong>           <span style="display:inline-block; text-align:right; width:76px; color:#40bbaf; ">${{orderdetails.order_total}}</span></td>
+                        </tr>
+                    </table>
+
+
+
+                    <div style=" font-size:18px; color:#40bbaf; padding:30px 0 15px 0; text-align:center;">Billing Shipping Information</div>
+
+
+
+
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:5px 0; border-bottom:none; font-size:13px;">
+
+                        <tr>
+                            <td style=" width:48%; padding:0px 0 0 0;" align="left" valign="top">
+                                <table width="100%" border="0" cellspacing="5" cellpadding="0" style="border:solid 1px #e0e0e0; font-size:14px; color:#333; padding:1%;">
+                                    <tr>
+                                        <td> <span style="background:#40bbaf; width:100%; padding:8px 0 7px 6px;  font-size:18px; color:#fff; display:block;">Bill To</span></td>
+                                    </tr>
+
+
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">Name : <span style=" color:#40bbaf;">{{orderdetails.bill_name}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">Address : <span style=" color:#40bbaf;">{{orderdetails.bill_address}}</span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">City : <span style=" color:#40bbaf;">{{orderdetails.bill_city}}</span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">State : <span style=" color:#40bbaf;">{{orderdetails.bill_state}}</span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">Zip : <span style=" color:#40bbaf;">{{orderdetails.bill_zip}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">Country : <span style=" color:#40bbaf;">{{orderdetails.bill_country}}</span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px;">Email : <span style=" color:#40bbaf;">{{orderdetails.bill_email}}</span></td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                            <td style="width:3%; background:#fff;">&nbsp;</td>
+
+                            <td style=" width:48%; padding:0px 0 0 0;" align="right">
+
+                                <table width="100%" border="0" cellspacing="5" cellpadding="0" style="border:solid 1px #e0e0e0; font-size:14px; color:#333; padding:1%;">
+                                    <tr>
+                                        <td> <span style="background:#40bbaf; width:100%; padding:8px 0 7px 6px;  font-size:18px; color:#fff; display:block;">Ship To</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">Name : <span style=" color:#40bbaf;">{{orderdetails.ship_name}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">Address : <span style=" color:#40bbaf;">{{orderdetails.ship_address}}</span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">City : <span style=" color:#40bbaf;">{{orderdetails.ship_city}}</span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">State : <span style=" color:#40bbaf;">{{orderdetails.ship_state}}</span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">Zip : <span style=" color:#40bbaf;">{{orderdetails.ship_zip}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px; border-bottom:solid 1px #fff;">Country : <span style=" color:#40bbaf;">{{orderdetails.ship_country}}</span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background:#ececec; width:90%; padding:6px;">&nbsp;</td>
+                                    </tr>
+
+
+
+                                </table>
+
+
+
+                            </td>
+
+                        </tr>
+
+
+
+
+
+                    </table>
+
+
+
+
+
+
+
+
+
+                </table>
+
+                <div style="width:100%; height:40px;"></div>
+
+              <!--  <div style="width:100%; padding-bottom:10px; margin-bottom:10px;">
+
+                    <strong style="font-size:20px; color:#40bbaf; font-weight:normal; padding-bottom:15px; display: block;">Notes:</strong>
+
+                    <div style="border-bottom:solid 1px #d7d7d7;  padding-bottom:10px; margin-bottom:20px;">
+
+                        <h2 style="width:100%; margin:0; padding:0 0 10px 0; font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#40bbaf; font-weight:normal;">User Name <span style="font-size:13px; color:#c0bfbf;">Date Time</span></h2>
+
+                        <p style="font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#333; line-height:18px;">Bajaj is a very reputed company in the field of Home Appliances. But in this product I am disappointed because the non-stick coating of the heating plate has come off in places just after the first use. Otherwise the the product looks good and built qualty is also not bad. May be this is a one of case but people should check before purchasing. </p>
+
+                    </div>
+
+                    <div style="border-bottom:solid 1px #d7d7d7;  padding-bottom:10px; margin-bottom:20px;">
+
+                        <h2 style="width:100%; margin:0; padding:0 0 10px 0; font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#40bbaf; font-weight:normal;">User Name <span style="font-size:13px; color:#c0bfbf;">Date Time</span></h2>
+
+                        <p style="font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#333; line-height:18px;">Bajaj is a very reputed company in the field of Home Appliances. But in this product I am disappointed because the non-stick coating of the heating plate has come off in places just after the first use. Otherwise the the product looks good and built qualty is also not bad. May be this is a one of case but people should check before purchasing. </p>
+
+                    </div>
+
+
+
+
+                    <textarea style="width:100%; resize:none; height:130px; border:solid 1px #c6c6c6; margin:10px 0;"></textarea>
+
+                    <a href="#" style="background:#40bbaf; display:inline-block; color:#fff; font-size:16px; font-weight:normal; padding:8px 25px; margin:0; text-decoration:none; border-radius:4px;">Reply</a>
+
+
+                </div>-->
+
+
+
+
+
+                <div style="width:100%; height:40px;"></div>
+                </div>
+
+
+
+              </div><!-- /.box -->
+
+
+
+            </div>
+           
+          </div>   <!-- /.row -->
+        </section><!-- /.content -->
+      </div>
+
+
+<script type="text/ng-template" id="delconfirm.html">
+    <div class="confirm_delpopup" >
+        <a ng-click="cancel()" class="shutter-close2 ng-scope" href="javascript:void(0)"><img src="images/popup-Close.png"> </a>
+        <div class="clearfix"></div>
+        <h2 class="ng-scope">Are you sure you want to delete this account?</h2>
+        <div class="confirm_delbtn ng-scope text-center">
+            <input type="button" ng-click="confirmdeladmin()" class="subbtn" value="Confirm">
+            <input type="button" ng-click="cancel()" class="subbtn" value="Cancel">
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</script>

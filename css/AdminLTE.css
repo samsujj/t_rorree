@@ -1265,7 +1265,7 @@ a:focus {
 .navbar-nav > .user-menu > .dropdown-menu > li.user-header > p {
   z-index: 5;
   color: #fff;
-  color: rgba(255, 255, 255, 0.8);
+  color: #0dc6b4;
   font-size: 17px;
   margin-top: 10px;
 }
@@ -1699,7 +1699,7 @@ a:focus {
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 .box.box-primary {
-  border-top-color: #69d3c9!important;
+  border-top-color: #69d3c9!important; font-family: arial!important;
 }
 .box.box-info {
   border-top-color: #00c0ef;
@@ -1887,11 +1887,13 @@ a:focus {
   position: relative;
 }
 .box-header.with-border {
-  border-bottom: 1px solid #f4f4f4;
+
 }
 .collapsed-box .box-header.with-border {
   border-bottom: none;
 }
+
+.user-header{ color: #0dc6b4!important;}
 .box-header > .fa,
 .box-header > .glyphicon,
 .box-header > .ion,
@@ -4920,7 +4922,7 @@ table.text-center th {
 .logo-lg img{ width:100%!important; }
 
 
-.main-header .logo{ width: 230px!important; margin: 0!important; padding:2px 0 10px 0!important; background: #eaeaea!important;}
+.main-header .logo{ width: 230px!important; margin: 0!important; padding:2px 0 70px 0!important; background: #eaeaea!important;}
 
 
 .sidebar{ padding-top:10px;}
@@ -5038,7 +5040,7 @@ table.text-center th {
 
 .skin-blue .main-header li.user-header{ background-color: #1b1b1b!important;}
 
-
+.main-header a{ color:#333;}
 
 .btn-default {
 
@@ -5337,7 +5339,11 @@ table.text-center th {
 
 
 
-.treeview-menu{background:#c20100!important; padding:0px!important;}
+.treeview-menu{ padding:0px!important; color: #FFFFFF !important;}
+
+.treeview-menu > li{background:#2fc3b5!important;}
+.treeview-menu > li:hover{background:#c700c7!important;}
+.treeview-menu > li > a {color: #FFFFFF !important;}
 
 
 
@@ -5373,7 +5379,7 @@ table.text-center th {
 
 
 
-.left_treemenu li a{background:#9c0404!important; padding-right:0px!important; border-bottom:1px solid #ed0909!important;}
+.left_treemenu li a{ padding-right:0px!important; border-bottom:1px solid #FFFFFF!important;}
 
 
 
@@ -5563,3 +5569,13 @@ table.text-center th {
 table td:last-of-type  a{ display: block; text-align: center; background: #68d3c9; color: #1b1b1b!important; padding: 5px 8px; border-radius: 2px; margin: 1px; }
 
 table td:last-of-type  .btn{ display: block; text-align: center; background: #68d3c9; color: #1b1b1b!important; padding: 5px 8px; border-radius: 2px; margin: 1px; }
+
+
+.newsearch1{ width: 40%; float:left; margin: 20px 0 10px 2.1%;}
+
+.newsearch1 .form-control{ margin: 0 0 8px !important;}
+
+
+.newsearch2{ width: 40%; float:right; margin: 20px 0 10px 0;}
+
+.newsearch2 .form-control{margin: 0 0 8px !important}

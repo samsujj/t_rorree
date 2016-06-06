@@ -10,10 +10,26 @@
            <li><a href="javascript:void(0)" class="active">Manage Order </a></li>
             
           </ol>
-            <div class="newblock1">
+            <div class="clear"></div>
+            <div class="searchcon2 newsearch1">
+                <span style="float: left; margin:10px auto;">Search By Date :</span>
+                <input  class ="form-control"type="text" ng-focus="open1()" ng-blur="setDate()" max-date="maxDate" min-date="minDate" close-text="Close" show-weeks="false" ng-required="false" is-open="opened" uib-datepicker-popup="MM/dd/yyyy" ng-model="form.from_date" class="searchbox2 ng-pristine ng-untouched ng-valid ng-isolate-scope ng-valid-date ng-valid-required" style="margin:0 5px;" placeholder="From Date"><!-- ngIf: isOpen -->
+                <input  class ="form-control" type="text" ng-keydown="open11()" ng-keypress="open11()" ng-keyup="open11()" ng-focus="open11()" ng-blur="setDate1()" min-date="minDate1" show-weeks="false" close-text="Close" ng-required="false" is-open="opened1" uib-datepicker-popup="MM/dd/yyyy" ng-model="form.to_date" class="searchbox2 ng-pristine ng-untouched ng-valid ng-isolate-scope ng-valid-date ng-valid-required" style="margin:0 5px;" placeholder="To Date"><!-- ngIf: isOpen -->
+            </div>
+
+            <div class="newblock1 newsearch2">
  <!--<a ui-sref="add-admin" class="addfrinderbtn">Add Admin</a>-->
-            <input type="text" name="search" ng-model="searchkey" class="search1" placeholder="Search General User">
-               
+            <!--<input type="text" name="search" ng-model="searchkey" class="search1" placeholder="Search General User">-->
+                Search By Affiliate : <select ng-change="searchbyaffiliate(affiliate)"   name="affiliate" class ="form-control" validate-on="dirty" ng-model = "affiliate"  ng-options="itemaffiliate.name for itemaffiliate in affiliatelist track by itemaffiliate.uid" style="background:#fff none repeat scroll 0 0 !important;  padding: 0 0 0 0px!important;"  >
+                <option value="">Select Affiliate Name</option>
+
+            </select>
+                Search By Status : <select ng-change="searchbyOrderStatus(orderstat)"   name="orderstat" class ="form-control" validate-on="dirty" ng-model = "orderstat"  ng-options="itemstatus.text for itemstatus in orderstatuslist track by itemstatus.id" style="background:#fff none repeat scroll 0 0 !important;  padding: 0 0 0 0px!important;"  >
+                <option value="">Select Order Status</option>
+
+            </select>
+
+
                 <div class="clear"></div>
             </div>
             <div class="clear"></div>
@@ -59,7 +75,7 @@
                     </thead>
                     <tbody>
 
-                      <tr ng-repeat=" item in  orderlist = (orderlist | filter:search) | startFrom:(currentPage-1)*perPage | limitTo:perPage | orderBy:predicate:reverse">
+                      <tr ng-repeat=" item in  filterResult = (orderlist | filter:search|filter:search1|filter:searchdate) | startFrom:(currentPage-1)*perPage | limitTo:perPage | orderBy:predicate:reverse">
 
                           <td>{{item.transaction_id}}</td>
                           <td>{{item.orderby}}</td>
@@ -70,8 +86,15 @@
 
 
 
-                          <td><a href="javascript:void(0)" ng-click="changeStatus(item)"> {{(item.status==1) ? 'Paid' : 'Pending'}}</a> </td>
-                          <td><a href="javascript:void(0)" ng-click="deladmin(item)" >Delete</a></td>
+
+                          <td>
+                              <select ng-change="changeOrderStatus(item)"   name="order_status" class ="form-control" validate-on="dirty" ng-model = "item.dd_order_status"  ng-options="itemstatus.text for itemstatus in orderstatuslist track by itemstatus.id" style="background:#fff none repeat scroll 0 0 !important;  padding: 0 0 0 0px!important;"  >
+
+
+                              </select>
+
+                              </td>
+                          <td><a href="javascript:void(0)" ui-sref="order-details({orderid:item.id})" >Order Details</a>&nbsp;&nbsp;<a href="javascript:void(0)" ng-click="duplicate_mail(item.id)" >Duplicate Mail</a></td>
                       </tr>
 
                     </tbody>
@@ -94,7 +117,7 @@
                   <div ng-if="orderlist.length == 0" class="callout callout-danger">
                       <h4>Sorry</h4>
 
-                      <p>No General User exists in system right now !!.</p>
+                      <p>No Order exists in system right now !!.</p>
                   </div>
 
 

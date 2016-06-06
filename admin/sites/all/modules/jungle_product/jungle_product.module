@@ -930,6 +930,9 @@ function jungleproductlist()
         $queryu->condition('jp.id',$_POST['productid'],'<>')  ;
         $queryu->condition('jp.status',1,'=')  ;
     }
+
+
+
     //print_r($_POST['productidss']);
      if(@$_POST['productidss']!='' && @$_POST['carttype']=='cart'){
          $productss=array();

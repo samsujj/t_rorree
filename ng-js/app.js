@@ -940,6 +940,29 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
                 }
             }
         )
+        .state('order-details',{
+                url:"/order-details/:orderid",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/admin_top_menu.html' ,
+                        controller: 'admin_header'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/admin_left.html' ,
+                        //  controller: 'admin_left'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/admin_footer.html' ,
+                    },
+                    'content': {
+                        templateUrl: 'partials/order_details.html' ,
+                        controller: 'orderdetails'
+                    },
+
+                }
+            }
+        )
 
 
         .state('addcontent',{
@@ -1378,6 +1401,33 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
                 }
             }
         )
+        .state('myaccount-order-details',{
+                url:"/myaccount-order-details/:orderid",
+                views: {
+
+                    'admin_header': {
+                        templateUrl: 'partials/myaccount-header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/myaccount-footer.html' ,
+                        controller:'footer'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/myaccount-left.html' ,
+                        //  controller:'footer'
+                    },
+
+                    'content': {
+                        templateUrl: 'partials/myaccount_order_details.html' ,
+                        controller: 'myaccountorderdetails'
+                    },
+
+                }
+            }
+        )
+
+
         .state('myaccount-order',{
                 url:"/myaccount-order",
                 views: {
@@ -1404,7 +1454,31 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
             }
         )
 
+        .state('myaccount-order-manager',{
+                url:"/myaccount-order-manager",
+                views: {
 
+                    'admin_header': {
+                        templateUrl: 'partials/myaccount-header.html' ,
+                        controller: 'header'
+                    },
+                    'admin_footer': {
+                        templateUrl: 'partials/myaccount-footer.html' ,
+                        controller:'footer'
+                    },
+                    'admin_left': {
+                        templateUrl: 'partials/myaccount-left.html' ,
+                        //  controller:'footer'
+                    },
+
+                    'content': {
+                        templateUrl: 'partials/myaccount_order_manager.html' ,
+                        controller: 'myaccountordermanager'
+                    },
+
+                }
+            }
+        )
 
 
 
@@ -1543,14 +1617,35 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
                     // templateUrl: 'partials/admin_top_menu.html',
                     controller:'header'
                 },
-                 'admin_footer':{
+                'admin_footer':{
                     // templateUrl:'partials/admin_footer.html',
-                     controller:'footer'
+                    controller:'footer'
                 },
 
                 'content':{
                     //   templateUrl:'partials/affiliate_list.html',
                     controller:'affiliates'
+                },
+
+            }
+
+        } )
+
+        .state('affiliates1', {
+            url: "/affiliates1/:pid/:code",
+            views:{
+                'admin_header': {
+                    // templateUrl: 'partials/admin_top_menu.html',
+                    controller:'header'
+                },
+                'admin_footer':{
+                    // templateUrl:'partials/admin_footer.html',
+                    controller:'footer'
+                },
+
+                'content':{
+                    //   templateUrl:'partials/affiliate_list.html',
+                    controller:'affiliates1'
                 },
 
             }
@@ -3326,7 +3421,7 @@ tr.controller('profile', function($compile,$scope,contentservice,$state,$http,$c
     }
 */
 });
-tr.controller('myaccountaffiliate', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+tr.controller('myaccountaffiliate', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$uibModal) {
     $scope.interval=600;
     $scope.contentupdated=false;
     var myVar =setInterval(function(){
@@ -3373,13 +3468,13 @@ tr.controller('myaccountaffiliate', function($compile,$scope,contentservice,$sta
              }*/
 
 
-            console.log(($rootScope.contentdata[x].content));
+           // console.log(($rootScope.contentdata[x].content));
             $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
             if($rootScope.contentdata[x].parentid!=0){
 
                 var z=parseInt($rootScope.contentdata[x].parentid);
-                console.log(z);
-                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+                //console.log(z);
+               // console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
 
                 $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
 
@@ -3394,6 +3489,67 @@ tr.controller('myaccountaffiliate', function($compile,$scope,contentservice,$sta
 
 
     },$scope.interval);
+    if(typeof ($cookieStore.get('userid'))!='undefined'){
+
+        $rootScope.userid=$cookieStore.get('userid');
+
+    }
+
+
+    $scope.affiliatestring='';
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'getgrabcode',
+         data    : $.param({user_id:$rootScope.userid}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.affiliatestring=data;
+        //$scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.accountaffiliatecode = function(code){
+        $scope.productcode=$scope.baseUrl+'affiliates/'+$scope.affiliatestring;
+        //$('.url_text').val('http://influx.spectrumiq.com/products/'+item.product_affiliate_code);
+//console.log('http://influx.spectrumiq.com/products/'+item.product_affiliate_code);
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'accountffiliate.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+        });
+    }
+
+
+    $scope.productlist = [{'id':0,'product_name':'Product Page'}];
+
+    $http({
+        method:'POST',
+        async:false,
+        url:$scope.adminUrl+'jungleproductlist',
+        data    : $.param({'type':'front'}),
+        headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+    }).success(function(data){
+        $scope.productlist=$scope.productlist.concat(data);
+    });
+    $scope.productaffiliatecode=function(id){
+        $scope.productcode=$scope.baseUrl+'affiliates1/'+id+'/'+$scope.affiliatestring;
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'accountffiliate.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+        });
+    }
+
+
 
 });
 
@@ -3444,13 +3600,13 @@ tr.controller('myaccountorder', function($compile,$scope,contentservice,$state,$
              }*/
 
 
-            console.log(($rootScope.contentdata[x].content));
+           // console.log(($rootScope.contentdata[x].content));
             $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
             if($rootScope.contentdata[x].parentid!=0){
 
                 var z=parseInt($rootScope.contentdata[x].parentid);
-                console.log(z);
-                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+              //  console.log(z);
+               // console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
 
                 $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
 
@@ -3466,7 +3622,520 @@ tr.controller('myaccountorder', function($compile,$scope,contentservice,$state,$
 
     },$scope.interval);
 
+    $scope.form = {
+        from_date:'',
+        to_date:'',
+    }
+
+    $scope.format = 'MM/dd/yyyy';
+
+    $scope.setDate1 = function(){
+        if(typeof($scope.form.to_date) != 'undefined'){
+            $scope.maxDate = new Date($scope.form.to_date);
+        }
+    }
+
+    $scope.setDate = function(){
+        if(typeof($scope.form.from_date) != 'undefined'){
+            $scope.minDate1 = new Date($scope.form.from_date);
+        }
+    }
+
+    $scope.open11 = function() {
+        $scope.opened1 = true;
+    };
+
+    $scope.open1 = function() {
+        $scope.opened = true;
+    };
+
+
+    $rootScope.type='affiliate';
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'adminlist?type='+$rootScope.type,
+        // data    : $.param($scope.form),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.affiliatelist=data;
+        //$scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+    $scope.searchbyaffiliate=function(item){
+        if(typeof(item)!='undefined'){
+            $scope.searchkey = item.uid;
+        }
+        else{
+            $scope.searchkey = '';
+        }
+
+    }
+    $scope.searchbyOrderStatus=function(item){
+        console.log(item);
+        if(typeof(item)!='undefined'){
+            $scope.searchkey1 = item.id;
+        }
+        else{
+            $scope.searchkey1 = '';
+        }
+
+    }
+
+
+    $scope.orderstatuslist = [
+        {
+            'id':1,
+            'text':'Pending'
+        },
+        {
+            'id':2,
+            'text':'In Progress'
+        },
+        {
+            'id':3,
+            'text':'Confirmed'
+        },
+        {
+            'id':4,
+            'text':'Canceled'
+        }
+
+    ]
+
+    if(typeof ($cookieStore.get('userid'))!='undefined'){
+
+        $rootScope.userid=$cookieStore.get('userid');
+
+    }
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        $scope.predicate = predicate;
+    };
+    $scope.currentPage=1;
+    $scope.perPage=8;
+
+    $scope.totalItems = 0;
+
+
+    $scope.filterResult = [];    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'orderlist',
+         data    : $.param({userid:$rootScope.userid}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $rootScope.stateIsLoading = false;
+        $scope.orderlist=data;
+        // $scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.searchkey = '';
+    $scope.searchkey1 = '';
+    $scope.search = function(item){
+
+        if ( (item.affiliate_id.toString().indexOf($scope.searchkey.toString()) != -1 )){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.search1 = function(item){
+
+        if ( ( item.order_status.toString().indexOf($scope.searchkey1.toString()) != -1)){
+            return true;
+        }
+        return false;
+    };
+    $scope.searchdate = function(item){
+
+        var from_time = 0;
+        var to_time = 0;
+        if($scope.form.from_date != null && typeof($scope.form.from_date) != 'undefined' && $scope.form.from_date != ''){
+            var from_date1 = $scope.form.from_date;
+            var from_date = from_date1.getDate();
+            var from_mon = from_date1.getMonth();
+            var from_year = from_date1.getFullYear();
+            var d = new Date(from_year, from_mon, from_date, 0, 0, 0);
+            from_time = d.getTime()/1000;
+        }
+        if($scope.form.to_date != null && typeof($scope.form.to_date) != 'undefined' && $scope.form.to_date != ''){
+            var to_date1 = $scope.form.to_date;
+            var to_date = to_date1.getDate();
+            var to_mon = to_date1.getMonth();
+            var to_year = to_date1.getFullYear();
+            var d = new Date(to_year, to_mon, to_date, 23, 59, 59);
+            to_time = d.getTime()/1000;
+
+        }
+        if(from_time == 0 && to_time == 0){
+
+
+            return true;
+        }
+        else if(to_time == 0){
+            if  (item.order_time > from_time) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+        else if(from_time == 0){
+            if (item.order_time < to_time){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            if ( (item.order_time > from_time && item.order_time < to_time) ){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    };
+
 });
+tr.controller('myaccountordermanager', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            // console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                //  console.log(z);
+                // console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+    $scope.form = {
+        from_date:'',
+        to_date:'',
+    }
+
+    $scope.format = 'MM/dd/yyyy';
+
+    $scope.setDate1 = function(){
+        if(typeof($scope.form.to_date) != 'undefined'){
+            $scope.maxDate = new Date($scope.form.to_date);
+        }
+    }
+
+    $scope.setDate = function(){
+        if(typeof($scope.form.from_date) != 'undefined'){
+            $scope.minDate1 = new Date($scope.form.from_date);
+        }
+    }
+
+    $scope.open11 = function() {
+        $scope.opened1 = true;
+    };
+
+    $scope.open1 = function() {
+        $scope.opened = true;
+    };
+
+
+    $rootScope.type='affiliate';
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'adminlist?type='+$rootScope.type,
+        // data    : $.param($scope.form),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.affiliatelist=data;
+        //$scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+    $scope.searchbyaffiliate=function(item){
+        if(typeof(item)!='undefined'){
+            $scope.searchkey = item.uid;
+        }
+        else{
+            $scope.searchkey = '';
+        }
+
+    }
+    $scope.searchbyOrderStatus=function(item){
+        console.log(item);
+        if(typeof(item)!='undefined'){
+            $scope.searchkey1 = item.id;
+        }
+        else{
+            $scope.searchkey1 = '';
+        }
+
+    }
+
+
+    $scope.orderstatuslist = [
+        {
+            'id':1,
+            'text':'Pending'
+        },
+        {
+            'id':2,
+            'text':'In Progress'
+        },
+        {
+            'id':3,
+            'text':'Confirmed'
+        },
+        {
+            'id':4,
+            'text':'Canceled'
+        }
+
+    ]
+
+    if(typeof ($cookieStore.get('userid'))!='undefined'){
+
+        $rootScope.userid=$cookieStore.get('userid');
+
+    }
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        $scope.predicate = predicate;
+    };
+    $scope.currentPage=1;
+    $scope.perPage=8;
+
+    $scope.totalItems = 0;
+
+
+    $scope.filterResult = [];    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'orderlist',
+        data    : $.param({affiliateid:$rootScope.userid}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $rootScope.stateIsLoading = false;
+        $scope.orderlist=data;
+        // $scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+
+    $scope.searchkey = '';
+    $scope.searchkey1 = '';
+    $scope.search = function(item){
+
+        if ( (item.affiliate_id.toString().indexOf($scope.searchkey.toString()) != -1 )){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.search1 = function(item){
+
+        if ( ( item.order_status.toString().indexOf($scope.searchkey1.toString()) != -1)){
+            return true;
+        }
+        return false;
+    };
+    $scope.searchdate = function(item){
+
+        var from_time = 0;
+        var to_time = 0;
+        if($scope.form.from_date != null && typeof($scope.form.from_date) != 'undefined' && $scope.form.from_date != ''){
+            var from_date1 = $scope.form.from_date;
+            var from_date = from_date1.getDate();
+            var from_mon = from_date1.getMonth();
+            var from_year = from_date1.getFullYear();
+            var d = new Date(from_year, from_mon, from_date, 0, 0, 0);
+            from_time = d.getTime()/1000;
+        }
+        if($scope.form.to_date != null && typeof($scope.form.to_date) != 'undefined' && $scope.form.to_date != ''){
+            var to_date1 = $scope.form.to_date;
+            var to_date = to_date1.getDate();
+            var to_mon = to_date1.getMonth();
+            var to_year = to_date1.getFullYear();
+            var d = new Date(to_year, to_mon, to_date, 23, 59, 59);
+            to_time = d.getTime()/1000;
+
+        }
+        if(from_time == 0 && to_time == 0){
+
+
+            return true;
+        }
+        else if(to_time == 0){
+            if  (item.order_time > from_time) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+        else if(from_time == 0){
+            if (item.order_time < to_time){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            if ( (item.order_time > from_time && item.order_time < to_time) ){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    };
+
+});
+
+tr.controller('myaccountorderdetails', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$stateParams) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            // console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                //  console.log(z);
+                // console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+    $scope.orderid=$stateParams.orderid;
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'orderdetails',
+        data    : $.param({orderid:$scope.orderid}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.orderdetails=data;
+
+    });
+
+
+});
+
 
 
 tr.controller('editprofile', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
@@ -3977,6 +4646,7 @@ tr.controller('affiliate', function($compile,$scope,contentservice,$state,$http,
 
 
 });
+
 tr.controller('affiliates', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$stateParams,$window) {
 
     $scope.interval=600;
@@ -4010,7 +4680,7 @@ tr.controller('affiliates', function($compile,$scope,contentservice,$state,$http
                 }
                 $rootScope.contentdata[x].content=(contentw);
             }
-             $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
             if($rootScope.contentdata[x].parentid!=0){
 
                 var z=parseInt($rootScope.contentdata[x].parentid);
@@ -4029,7 +4699,7 @@ tr.controller('affiliates', function($compile,$scope,contentservice,$state,$http
 
     $scope.code=$stateParams.code;
     $cookieStore.put('affiliatecode',$scope.code);
-   // $window.location.href = $scope.baseUrl+'home';
+    // $window.location.href = $scope.baseUrl+'home';
 
     $http({
         method  : 'POST',
@@ -4041,6 +4711,87 @@ tr.controller('affiliates', function($compile,$scope,contentservice,$state,$http
         console.log(data.affiliate_hit_id);
         if(data.affiliate_hit_id>0){
             $window.location.href = $scope.baseUrl+'home';
+        }
+
+
+    });
+
+
+
+});
+
+tr.controller('affiliates1', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$stateParams,$window) {
+
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+                console.log(z);
+                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+        }
+
+
+    },$scope.interval);
+
+
+    $scope.pid=$stateParams.pid;
+    $scope.code=$stateParams.code;
+    $cookieStore.put('affiliatecode',$scope.code);
+    // $window.location.href = $scope.baseUrl+'home';
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'addaffiliatehit',
+        data    : $.param({'code':$scope.code}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        console.log(data.affiliate_hit_id);
+        if(data.affiliate_hit_id>0){
+
+            if($scope.pid > 0){
+                $window.location.href = $scope.baseUrl+'product-details/'+$scope.pid;
+            }else{
+                $window.location.href = $scope.baseUrl+'products';
+            }
+
+
         }
 
 
@@ -8520,6 +9271,87 @@ tr.controller('generaluserlist', function($scope,$state,$http,$cookieStore,$root
     //console.log('in add admin form ');
 });
 tr.controller('orderlist', function($scope,$state,$http,$cookieStore,$rootScope,$uibModal) {
+    $scope.form = {
+        from_date:'',
+        to_date:'',
+    }
+
+    $scope.format = 'MM/dd/yyyy';
+
+    $scope.setDate1 = function(){
+        if(typeof($scope.form.to_date) != 'undefined'){
+            $scope.maxDate = new Date($scope.form.to_date);
+        }
+    }
+
+    $scope.setDate = function(){
+        if(typeof($scope.form.from_date) != 'undefined'){
+            $scope.minDate1 = new Date($scope.form.from_date);
+        }
+    }
+
+    $scope.open11 = function() {
+        $scope.opened1 = true;
+    };
+
+    $scope.open1 = function() {
+        $scope.opened = true;
+    };
+
+
+    $rootScope.type='affiliate';
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'adminlist?type='+$rootScope.type,
+        // data    : $.param($scope.form),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.affiliatelist=data;
+        //$scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
+
+
+    });
+    $scope.searchbyaffiliate=function(item){
+        if(typeof(item)!='undefined'){
+            $scope.searchkey = item.uid;
+        }
+        else{
+            $scope.searchkey = '';
+        }
+
+    }
+    $scope.searchbyOrderStatus=function(item){
+        console.log(item);
+        if(typeof(item)!='undefined'){
+            $scope.searchkey1 = item.id;
+        }
+        else{
+            $scope.searchkey1 = '';
+        }
+
+    }
+
+
+    $scope.orderstatuslist = [
+        {
+            'id':1,
+            'text':'Pending'
+        },
+        {
+            'id':2,
+            'text':'In Progress'
+        },
+        {
+            'id':3,
+            'text':'Confirmed'
+        },
+        {
+            'id':4,
+            'text':'Canceled'
+        }
+
+    ]
     $scope.predicate = 'id';
     $scope.reverse = true;
     $scope.order = function(predicate) {
@@ -8539,7 +9371,6 @@ tr.controller('orderlist', function($scope,$state,$http,$cookieStore,$rootScope,
         headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
     }) .success(function(data) {
         $rootScope.stateIsLoading = false;
-        console.log(data);
         $scope.orderlist=data;
        // $scope.userlistp = $scope.userlist.slice($scope.begin, parseInt($scope.begin+$scope.perPage));
 
@@ -8547,53 +9378,113 @@ tr.controller('orderlist', function($scope,$state,$http,$cookieStore,$rootScope,
     });
 
     $scope.searchkey = '';
+    $scope.searchkey1 = '';
     $scope.search = function(item){
 
-        if ( (item.fname.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) || (item.lname.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ||(item.mail.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)||(item.mobile_no.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)||(item.phone_no.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ||(item.address.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1)){
+        if ( (item.affiliate_id.toString().indexOf($scope.searchkey.toString()) != -1 )){
             return true;
         }
         return false;
     };
 
-/*
-     $scope.deladmin = function(item,size){
+    $scope.search1 = function(item){
 
-     $scope.currentindex=$scope.orderlist.indexOf(item);
+        if ( ( item.order_status.toString().indexOf($scope.searchkey1.toString()) != -1)){
+            return true;
+        }
+        return false;
+    };
+    $scope.searchdate = function(item){
 
-     $uibModal.open({
-     animation: true,
-     templateUrl: 'delconfirm.html',
-     controller: 'ModalInstanceCtrl',
-     size: size,
-     scope:$scope
-     });
-     }
-     */
+        var from_time = 0;
+        var to_time = 0;
+        if($scope.form.from_date != null && typeof($scope.form.from_date) != 'undefined' && $scope.form.from_date != ''){
+            var from_date1 = $scope.form.from_date;
+            var from_date = from_date1.getDate();
+            var from_mon = from_date1.getMonth();
+            var from_year = from_date1.getFullYear();
+            var d = new Date(from_year, from_mon, from_date, 0, 0, 0);
+            from_time = d.getTime()/1000;
+        }
+        if($scope.form.to_date != null && typeof($scope.form.to_date) != 'undefined' && $scope.form.to_date != ''){
+            var to_date1 = $scope.form.to_date;
+            var to_date = to_date1.getDate();
+            var to_mon = to_date1.getMonth();
+            var to_year = to_date1.getFullYear();
+            var d = new Date(to_year, to_mon, to_date, 23, 59, 59);
+            to_time = d.getTime()/1000;
 
-    $scope.changeStatus = function(item){
+        }
+        if(from_time == 0 && to_time == 0){
+
+
+            return true;
+        }
+        else if(to_time == 0){
+            if  (item.order_time > from_time) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+        else if(from_time == 0){
+            if (item.order_time < to_time){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            if ( (item.order_time > from_time && item.order_time < to_time) ){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    };
+
+
+    $scope.changeOrderStatus = function(item){
         $rootScope.stateIsLoading = true;
         var idx = $scope.orderlist.indexOf(item);
         $http({
             method  : 'POST',
             async:   false,
-            url     : $scope.adminUrl+'updatestatus',
-            data    : $.param({id: $scope.orderlist[idx].id}),  // pass in data as strings
+            url     : $scope.adminUrl+'orderupdatestatus',
+            data    : $.param({id: $scope.orderlist[idx].id,status:$scope.orderlist[idx].dd_order_status}),  // pass in data as strings
             headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
         }) .success(function(data) {
             $rootScope.stateIsLoading = false;
-            if($scope.orderlist[idx].status == 0){
-                $scope.orderlist[idx].status = 1;
-            }else{
-                $scope.orderlist[idx].status = 0;
-            }
-            // $scope.userlist[idx].status = !$scope.userlist[idx].status;
         });
     }
+    $scope.duplicate_mail=function(id){
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'cart/duplicatemail',
+            data    : $.param({id: id}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+        });
 
+    }
+});
+tr.controller('orderdetails', function($scope,$state,$http,$cookieStore,$rootScope,$uibModal,$stateParams) {
 
+    $scope.orderid=$stateParams.orderid;
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'orderdetails',
+         data    : $.param({orderid:$scope.orderid}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.orderdetails=data;
+        console.log($scope.orderdetails.productdet);
 
+    });
 
-    //console.log('in add admin form ');
 });
 
 
@@ -9659,10 +10550,17 @@ tr.controller('flightlist',function($scope,$state,$http,$cookieStore,$rootScope,
 });
 
 tr.controller('admin_header', function($scope,$state,$http,$cookieStore,$rootScope) {
+    if (typeof($cookieStore.get('userrole')) != 'undefined' && $cookieStore.get('userrole') > 0) {
+        $rootScope.userrole=$cookieStore.get('userrole');
+        if($rootScope.userrole!=4){
+            $state.go('home');
+        }
+
+    }
     // $state.go('login');
     angular.element('head').append('<link id="home" href="css/admin_style.css" rel="stylesheet">');
     $scope.sdfsdfsd = function(){
-        console.log(1212);
+        //console.log(1212);
         if(angular.element( document.querySelector( 'body' ) ).hasClass('sidebar-collapse')){
             angular.element( document.querySelector( 'body' ) ).removeClass('sidebar-collapse');
         }else{
