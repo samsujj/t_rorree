@@ -7,128 +7,18 @@
     </div>
 </div>
 
-
 <div class="container allcategoriespagebody1">
-
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
             <div class="about_icon2" style="margin-top: -80px;">
                 <img src="images/productcategory_topicon.png" alt="#" >
             </div>
 
             <div class="categories_block_wrapper">
-        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-            <div class="categories_box">
-            <img src="images/productcategory_1.png" alt="#" >
-
-            <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Books</span></a></div>
-              </div>
-
-        </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block" ng-repeat="item in categoryList">
                     <div class="categories_box">
-                    <img src="images/productcategory_2.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>CD Series</span></a></div>
-
-                      </div>
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-                    <div class="categories_box">
-                    <img src="images/productcategory_3.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>CDs</span></a></div>
-                      </div>
-
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-                    <div class="categories_box">
-                    <img src="images/productcategory_4.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Cards</span></a></div>
-                   </div>
-
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-                    <div class="categories_box">
-                    <img src="images/productcategory_5.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Digitals</span></a></div>
-                       </div>
-
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-                    <div class="categories_box">
-                    <img src="images/productcategory_6.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Workshops</span></a></div>
-                   </div>
-
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-                    <div class="categories_box">
-                    <img src="images/productcategory_7.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Retreats</span></a></div>
-
-                       </div>
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-                    <div class="categories_box">
-                    <img src="images/productcategory_8.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Courses</span></a></div>
-
-                    </div>
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-                    <div class="categories_box">
-                    <img src="images/productcategory_9.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Courses</span></a></div>
-                     </div>
-
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-
-
-                    <div class="categories_box">
-                    <img src="images/productcategory_10.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Coaching</span></a></div>
-                   </div>
-
-                </div>
-
-
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 categories_block">
-
-
-                    <div class="categories_box">
-
-                    <img src="images/productcategory_11.png" alt="#" >
-
-                    <div class="categories_viewblock"><a href="javascript:void(0)"> View <span>Sessions</span></a></div>
-
+                        <img src="{{item.image_url}}" alt="" >
+                        <div class="categories_viewblock"><a ui-sref="productbycategory({categoryId:item.id})"> View <span>{{item.cat_name}}</span></a></div>
                     </div>
                 </div>
 

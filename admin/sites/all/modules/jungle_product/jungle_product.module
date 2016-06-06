@@ -147,6 +147,14 @@ function jungle_product_menu()
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
+    $items['jungle_product/listbycategory'] = array(
+        'title' => 'jungleproduct File Upload',
+        'page callback' => 'jungleproductlistbycategory',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
 
 
 
@@ -1019,6 +1027,8 @@ function jungleproductlist()
     echo json_encode(@$jungleproductlist,JSON_NUMERIC_CHECK);
 
 }
+
+
 function parentproductlist()
 {
     header('Content-type: text/html');
@@ -1375,6 +1385,94 @@ drupal_add_http_header('Content-disposition', 'attachment; filename=' .($filePat
 
 
 
+
+}
+
+
+
+
+function jungleproductlistbycategory()
+{
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+    $category_name = 'PRODUCTS';
+
+    $queryu1 = db_select('junglecategory', 'jc');
+    $queryu1->fields('jc',array('cat_name'));
+    $queryu1->condition('jc.id',$_POST['categoryId'],'=');
+    $resultu1 = $queryu1->execute()->fetchAssoc();
+
+    $category_name = $resultu1['cat_name'];
+
+
+    $jungleproductlist = array();
+
+    $queryu = db_select('jungleproduct', 'jp');
+    $queryu->fields('jp');
+    $queryu->condition('jp.status',1,'=');
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        while ($recordu = $resultu->fetchAssoc()) {
+
+            $category_arr = json_decode($recordu['category_id'],true);
+
+            $category_id_arr = array();
+
+            if(count($category_arr)){
+                foreach($category_arr as $row){
+                    $category_id_arr[] = $row['id'];
+                }
+            }
+
+            $key = array_search($_POST['categoryId'], $category_id_arr);
+
+            if($key !== false){
+
+                $temparray=$recordu;
+                $temparray['textdesc']=strip_tags($recordu['product_desc']);
+                $temparray['payout']=number_format(floatval($recordu['payout']), 2, '.', '');
+                $temparray['credits']=number_format(floatval($recordu['credits']), 2, '.', '');
+                $temparray['price']=number_format(floatval($recordu['price']), 2, '.', '');
+
+                $temparray['is_video'] = 0;
+                $temparray['image_url'] = 'images/product_default.png';
+                $temparray['video_url'] = '';
+
+
+                if($recordu['product_file']!='') {
+                    $productextns = explode('.', $recordu['product_file']);
+
+                    if ($productextns['1'] == 'mp4') {
+                        $temparray['is_video'] = 1;
+                        $uri = 'public://'.$productextns['0'].'.jpg';
+                        if (file_exists($uri)) {
+                            $temparray['image_url'] = image_style_url('frontimage', $uri);
+                        }
+                        $temparray['video_url'] = file_create_url('public://'.$recordu['product_file']);
+                    } else {
+                        $temparray['is_video'] = 0;
+                        $uri = @$recordu['product_file'];
+                        if (file_exists($uri)) {
+                            $temparray['image_url'] = image_style_url('frontimage',$uri );
+                        }
+
+                    }
+                }
+
+                $jungleproductlist[]= $temparray;
+            }
+        }
+    }
+
+    echo json_encode(array('category_name'=>$category_name,'productlist'=>$jungleproductlist));
 
 }
 

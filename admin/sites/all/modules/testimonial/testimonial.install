@@ -1,0 +1,69 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for blog
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function testimonial_schema() {
+    $schema = array();
+
+    $schema['testimonial'] = array(
+        'description' => 'testimonial Table',
+        'fields' => array(
+            'id' => array(
+                'description' => 'Primary Key id',
+                'type' => 'serial',
+                'not null' => TRUE,
+            ),
+             'user_id' => array(
+                 'description' => 'user id',
+                 'type' => 'int',
+                 'not null' => TRUE,
+             ),
+
+            'user_name' => array(
+                'description' => 'user name',
+                 'type' => 'varchar',
+                'length' => '255',
+                'not null' => TRUE,
+                'default' => '',
+
+            ),
+              'user_image' => array(
+                  'description' => 'user image',
+                   'type' => 'varchar',
+                   'length' => '255',
+                   'not null' => TRUE,
+                   'default' => '',
+              ),
+             'body' => array(
+                 'description' => 'description',
+                  'type' => 'text',
+                 'not null' => false,
+             ),
+
+            'testimonial_status' => array(
+                'description' => 'testimonial status',
+                 'type' => 'int',
+                 'length' => '11',
+                'not null' => TRUE,
+                 'default' => '0',
+            ),
+
+
+            'testimonial_create_time' => array(
+                'description' => 'create time',
+                 'type' => 'int',
+                 'not null' => TRUE,
+            ),
+
+
+        ),
+        'primary key' => array('id'),
+
+    );
+    return $schema;
+}

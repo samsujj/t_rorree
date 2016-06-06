@@ -379,15 +379,20 @@ content{position: relative;}
     background-color: #68d2c8!important; border-radius: 20px!important; color: #fff!important;
 }
 
+.nav-header{font-family: 'PTSans-Bold'; font-size: 40px; color: #fff;padding-left: 15px; }
+.nav-header span{font-family: 'PTSans-Bold'; text-transform: uppercase; color:#5ab5ac;}
 
-.mainmenu .dropdown-menu{ background: #ececec; border: solid 1px #68d2c8; padding-top: 0px; padding-bottom: 0;}
+.mainmenu .dropdown-menu{position: absolute; left: 0%; background: #ececec url(../images/img-dropdownshop.png) no-repeat right top; width: 500px; min-height: 400px;border-top: solid 3px #5ab5ac;border-left: solid 1px #fff;border-right: solid 1px #fff; border-bottom: solid 1px #fff; padding-top: 0px; padding-bottom: 0;}
 
-.mainmenu .dropdown-menu li{ margin: 0px;}
+.mainmenu .dropdown-menu ul{padding-left: 15px;}
+.mainmenu .dropdown-menu li{ margin: 0px; width:207px;}
+.mainmenu .dropdown-menu li:first-of-type{width: 100%;}
 
-.mainmenu .dropdown-menu a{color: #1b1b1b; font-family: 'PTSans'; font-size: 18px;}
+.mainmenu .dropdown-menu a{color: #1b1b1b; font-family: 'PTSans'; font-size: 16px;}
 
-.mainmenu .dropdown-menu a:hover{ background-color: #68d2c8!important; border-radius: 0px!important; color: #fff!important;}
-
+.mainmenu .dropdown-menu a:hover{ /* IE10+ */
+    background: url(../images/img-dropdownh.png) no-repeat; width:100%; border-radius: 0px!important; color: #5ab5ac!important;}
+.fa-angle-down{margin-left: 3px;}
 
 /*--Footer css--*/
 #ftmenu{height: 104px; width:100%; border-top:2px solid #91bdb0; }
@@ -1286,6 +1291,17 @@ a:hover.readmore{color:#c800c9;}
     display: block;
     font-family: arial;
     font-size: 14px;
+}
 
+.contactpopup .trloginwrapper{ margin: 7px auto 0; padding: 20px;}
+.trloginwrapper label {width: 25%;float: left; line-height: 41px;}
+.trloginwrapper .form-control {width: 75%;}
+.contactpopup .closebtn{float: right;}
+.contactpopup h2{margin-top: 0px;}
+.trloginwrapper .form-control{height: auto;}
 
-    }
+.modal-content {
+    border: solid 5px #44aba2;
+    padding: 20px 5px 20px 5px;
+    position: relative;
+}

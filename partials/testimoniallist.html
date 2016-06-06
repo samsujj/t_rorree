@@ -1,0 +1,65 @@
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>Testimonial Manager</h1>
+        <ol class="breadcrumb">
+            <li><a ui-sref="dashboard"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active">Testimonial List</li>
+        </ol>
+        <div class="newblock1">
+            <input type="text" name="search" ng-model="searchkey" class="search1" placeholder="Search By User">
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Testimonial List</h3>
+                    </div>
+
+                    <table ng-if="testimoniallist.length > 0" id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Testimonial</th>
+                            <th>Posted By </th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat=" item in testimoniallist | filter:search">
+                            <td>{{item.body}}</td>
+                            <td>{{item.user_name}}</td>
+                            <td><a href="javascript:void(0)" ng-click="changeStatus(item)"> {{(item.testimonial_status==1) ? 'Active' : 'Blocked'}}</a> </td>
+                            <td><a href="javascript:void(0)" ng-click="deltestimonial(item)" >Delete</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div ng-if="testimoniallist.length == 0" class="callout callout-danger">
+                      <h4>Sorry</h4>
+
+                      <p>No blog exists in system right now !!.</p>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+<script type="text/ng-template" id="testimonialconfirm.html">
+    <div class="confirm_delpopup" >
+        <a ng-click="cancel()" class="shutter-close2 ng-scope" href="javascript:void(0)"><img src="images/popup-Close.png"> </a>
+        <div class="clearfix"></div>
+        <h2 class="ng-scope">Are you sure you want to delete this testimonial?</h2>
+        <div class="confirm_delbtn ng-scope text-center">
+            <input type="button" ng-click="confirmtestidelete()" class="subbtn" value="Confirm">
+            <input type="button" ng-click="cancel()" class="subbtn" value="Cancel">
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</script>

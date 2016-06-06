@@ -342,9 +342,10 @@
 
     .mainmenu .navbar-default .navbar-nav > li a{ padding: 15px 0;}
 
-    .mainmenu .dropdown-menu{ width: 100%; text-align: center; border-radius: 0px; position: inherit; border: none; margin-bottom: 15px;}
+    .mainmenu .dropdown-menu{ background: #c6c4c4; width: 100%; text-align: center; border-radius: 0px; position: inherit; border: none; padding: 10px; margin-bottom: 10px;}
 
-    .mainmenu .dropdown-menu li{ border-bottom: solid 1px #68d2c8; padding: 0;}
+    .mainmenu .dropdown-menu li{ border-bottom: solid 1px #68d2c8; padding: 0; width: 100%;}
+    .mainmenu .dropdown-menu a:hover{background: #dddad9;}
 
     .mainmenu .dropdown-menu li a{ padding: 15px 0;}
     #trainer .trainer-content-top, #personaldevlspeaker .trainer-content-top {max-width: 480px;padding: 1px 10px 1px 10px;}

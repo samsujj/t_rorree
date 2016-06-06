@@ -1,0 +1,220 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: debasis
+ * Date: 16/6/15
+ * Time: 12:04 AM
+ */
+header('Content-type: text/html');
+header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+function testimonial_init() // init function called by defaulted when this module loaded by system
+{
+
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+}
+
+function testimonial_menu()
+{
+    $items = array();
+
+    $items['testimonial/add'] = array(
+        'title' => 'Add testimonial',
+        'page callback' => 'addtestimonial',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['testimonial/list'] = array(
+        'title' => 'Add testimonial',
+        'page callback' => 'listtestimonial',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['testimonial/updatestatus'] = array(
+        'title' => 'Add testimonial',
+        'page callback' => 'updatestatustestimonial',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['testimonial/delete'] = array(
+        'title' => 'Add testimonial',
+        'page callback' => 'deletetestimonial',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    $items['testimonial/uploaduserimage'] = array(
+        'title' => 'Add testimonial',
+        'page callback' => 'uploaduserimagetestimonial',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
+
+    return $items;
+}
+
+function addtestimonial(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+
+    $query = db_insert('testimonial')->fields(array('user_id','user_name','user_image','body','testimonial_status','testimonial_create_time'));
+
+    $query->values(array($_POST['user_id'],$_POST['name1'],$_POST['image'],$_POST['body'],0, time()));
+
+    $query->execute();
+
+}
+
+function listtestimonial(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+
+    $testimoniallist = array();
+
+    $queryu = db_select('testimonial', 't1');
+    $queryu->leftJoin('admin','u','u.user_id = t1.user_id');
+    $queryu->fields('t1');
+    $queryu->fields('u',array('fname','lname'));
+
+    if(isset($_POST['front']) && intval($_POST['front']) == 1){
+        $queryu->condition('t1.testimonial_status', 1, '=');
+    }
+
+    $queryu->orderBy('t1.testimonial_create_time', 'ASC');
+
+    $resultu = $queryu->execute();
+
+
+    while($recordu = $resultu->fetchAssoc()) {
+
+        $temparray = $recordu;
+
+        $temparray['image_url'] = "images/default_user.png";
+
+        if($recordu['user_id']){
+            $temparray['user_name'] = $recordu['fname']." ".$recordu['lname'];
+        }else{
+            if(!empty($recordu['user_image'])){
+                $temparray['image_url'] = image_style_url('testimonial_user_image', (@$recordu['user_image']));
+            }
+        }
+
+        $testimoniallist[] = $temparray;
+    }
+
+    echo json_encode($testimoniallist);
+
+}
+
+function updatestatustestimonial(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $_status=1-intval($_POST['status']);
+
+    db_update('testimonial')
+        ->fields(array( 'testimonial_status'=>@$_status))
+        ->condition('id', intval($_POST['id']))
+        ->execute();
+
+}
+
+function deletetestimonial(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $num_deleted = db_delete('testimonial')
+        ->condition('id', @$_POST['id'])
+        ->execute();
+
+}
+
+function uploaduserimagetestimonial(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    set_time_limit(0);
+
+    $target_dir = realpath(dirname(__FILE__))."/uploads/";
+    $path_parts = pathinfo($_FILES['Filedata']['name']);
+    $filename = rand().'_'.time().'.'.$path_parts['extension'];
+
+
+    if (move_uploaded_file($_FILES["Filedata"]["tmp_name"], $target_dir.$filename)) {
+
+        $filepath = ($target_dir.$filename);
+
+        $file = (object) array(
+            'uid' => 1,
+            'uri' => $filepath,
+            'filemime' => file_get_mimetype($filepath),
+            'status' => 1,
+        );
+        if ($file) {
+
+            if ($file = file_move($file, 'public://')) {
+                $file->status = FILE_STATUS_PERMANENT;
+                $file = file_save($file);
+                //set the extra values needed to make node_save work
+                $file->display = 1;
+                $file->description = "";
+            }
+
+        }
+
+    }
+
+    $data['image_url'] = image_style_url('testimonial_user_image', (@$file->uri));
+    $data['image_name']= (@$file->uri);
+    echo json_encode(@$data) ;
+
+}

@@ -103,6 +103,14 @@ function jungle_category_menu()
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
+    $items['jungle_category/frontcatlist'] = array(
+        'title' => 'junglecategory frontcatlist',
+        'page callback' => 'frontcatlist',
+        'access callback' => TRUE,
+        'access arguments' => array('Anonymous Actions.'),
+        'expanded' => TRUE,
+        //'type'=>MENU_NORMAL_ITEM,
+    );
 
 
 
@@ -437,6 +445,36 @@ function jungleupdatestatus(){
     echo "true";
 }
 
+
+function frontcatlist(){
+    header('Content-type: text/html');
+    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+    header('Access-Control-Max-Age: 1000');
+    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
+
+    $junglecategorylist = array();
+
+    $queryu = db_select('junglecategory', 'ca');
+    $queryu->fields('ca');
+    $queryu->condition('ca.status',1,'=');
+    $queryu->orderBy('priority', 'ASC');
+    $resultu = $queryu->execute();
+
+
+    if ($resultu->rowCount() > 0) {
+        while ($recordu = $resultu->fetchAssoc()) {
+            $temparray=$recordu;
+
+            $temparray['image_url'] = image_style_url('front_category_381x203', ($recordu['cat_image']));
+
+            $junglecategorylist[]= $temparray;
+        }
+    }
+    echo json_encode($junglecategorylist);
+
+}
 
 
 

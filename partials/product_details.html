@@ -9,170 +9,113 @@
 
 
 <div class="container productdetailbody1">
-
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
             <div class="about_icon2" style="margin-top: -80px;">
-                <img src="images/chakeout_headingicon2.png" alt="#" >
+                <img src="images/chakeout_headingicon2.png" alt="" >
             </div>
 
-
-
             <div class="product_block_wrapper">
-
                 <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 productmainimg">
-                  <img src="{{product_img_src}}" alt="#" >
-                   <!--<img src="images/cdproduct2.png" alt="#" >-->
+                    <img src="{{product_img_src}}" alt="#" >
                 </div>
 
                 <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 productmaintext">
-                 <!--<h2>Meditation 101 CD</h2>-->
-                 <h2>{{productdetails.product_name}}</h2>
-                    <!--<h3>Price : $12.97</h3>-->
+                    <h2>{{productdetails.product_name}}</h2>
                     <h3>Price : ${{productdetails.price}}</h3>
-
                     <div class="product-description_text">
-
-
-                   <p ng-bind-html="trustAsHtml(productdetails.product_desc)">
-
-<!--
-                   The Meditation 101 CD series has two discs. You will learn the benefits of meditation and the basic tools used to clear out the chatter and the monkey mind so that you can hear the messages that are for you.  The tools will help you to release stress and tension, decrease anxiety, energize your life, improve your ability to focus, and refresh you body and your mind.
--->
-                   </p>
-
+                        <p ng-bind-html="trustAsHtml(productdetails.product_desc)"></p>
                         <a href="javascript:void(0)" class="instock">In Stock</a>
-
                     </div>
-
-
                     <div class="Quantity_block">
-
                         <label>Quantity</label>
-
                         <div class="Quantity_box">
-                        <a href="javascript:void(0)" ng-click="removequantity()"  class="Quantitybtn">-</a>
-                        <input type="text" value="1" id="quantity" class="productqui">
-
-                        <a href="javascript:void(0)" ng-click="addquantity()" class="Quantitybtn">+</a>
-
+                            <a href="javascript:void(0)" ng-click="removequantity()"  class="Quantitybtn">-</a>
+                            <input type="text" value="1" id="quantity" class="productqui">
+                            <a href="javascript:void(0)" ng-click="addquantity()" class="Quantitybtn">+</a>
                             <div class="clearfix"></div>
                         </div>
                     </div>
 
-
-
                     <a href="javascript:void(0)" class="cartbtn" ng-click="addtocartfromdet(id)">ADD TO CART</a>
 
-                    <a href="javascript:void(0)" class="cartbtn_download">[ Click Here For Digital Download Version ]</a>
+
+                    <a href="javascript:void(0)" class="cartbtn" ng-click="addtestimonial()" style="background: #69d3c9 none repeat scroll 0 0; margin-left: 10px;padding-left: 0; text-align: center;">WRITE A TESTIMONIAL</a>
+
+                    <!--<a href="javascript:void(0)" class="cartbtn_download">[ Click Here For Digital Download Version ]</a>-->
 
                     <div class="clearfix"></div>
-
                 </div>
-
-
                 <div class="clearfix"></div>
 
-
-  <div class="featured_product_body">
-
-      <h4>FEATURED PRODUCTS</h4>
-
-      <div class="featured_product_block">
-
-          <div class="featured_product_con" ng-repeat="item in productlist  | limitTo : 4">
-
-              <div class="featured_imgbox">
-
-             <!-- <img src="images/cdproduct.png" alt="#" >-->
-              <img src="{{item.feature_image_url}}" alt="#" >
-
-                  </div>
-
-             <!-- <h2>Healing Your Life MeditationCD</h2>-->
-              <h2>{{item.product_name}}</h2>
-
-
-              <div class="productprice">${{item.price}}</div>
-
-              <div class="productview">   <a ui-sref="product-details({id:item.id})" href="javascript:void(0)">View Now</a></div>
-
-              <div class="clearfix"></div>
-
-          </div>
-<!--
-          <div class="featured_product_con">
-
-              <div class="featured_imgbox">
-
-                  <img src="images/cdproduct.png" alt="#" >
-
-              </div>
-
-              <h2>Healing Your Life MeditationCD</h2>
-
-
-              <div class="productprice">$12.97</div>
-
-              <div class="productview">   <a href="javascript:void(0)">View Now</a></div>
-
-              <div class="clearfix"></div>
-
-          </div>
-          <div class="featured_product_con">
-
-              <div class="featured_imgbox">
-
-                  <img src="images/cdproduct.png" alt="#" >
-
-              </div>
-
-              <h2>Healing Your Life MeditationCD</h2>
-
-
-              <div class="productprice">$12.97</div>
-
-              <div class="productview">   <a href="javascript:void(0)">View Now</a></div>
-
-              <div class="clearfix"></div>
-
-          </div>
-          <div class="featured_product_con">
-
-              <div class="featured_imgbox">
-
-                  <img src="images/cdproduct.png" alt="#" >
-
-              </div>
-
-              <h2>Healing Your Life MeditationCD</h2>
-
-
-              <div class="productprice">$12.97</div>
-
-              <div class="productview">   <a href="javascript:void(0)">View Now</a></div>
-
-              <div class="clearfix"></div>
-
-          </div>
--->
-
-
-
-          <div class="clearfix"></div>
-
-      </div>
-
-
-  </div>
-
-
-
-
+                <div class="featured_product_body">
+                    <h4>FEATURED PRODUCTS</h4>
+                    <div class="featured_product_block">
+                        <div class="featured_product_con" ng-repeat="item in productlist  | limitTo : 4">
+                            <div class="featured_imgbox">
+                                <img src="{{item.feature_image_url}}" alt="#" >
+                            </div>
+                            <h2>{{item.product_name}}</h2>
+                            <div class="productprice">${{item.price}}</div>
+                            <div class="productview">   <a ui-sref="product-details({id:item.id})" href="javascript:void(0)">View Now</a></div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
                 </div>
-
-
+            </div>
         </div>
     </div>
 </div>
+
+
+
+<script type="text/ng-template" id="addtestimonial">
+    <div class="contactpopup">
+        <a href="javascript:void(0);" ng-click="cancel()" >
+            <img src=images/newloginclose.png alt=#  class="closebtn"/>
+        </a>
+        <h2>Write A Testimonial</h2>
+        <form angular-validator-submit="addtestim()"  name="loginForm"  class="trloginwrapper" novalidate angular-validator>
+
+            <div class="form-group" ng-hide="testimonialuser">
+                <label>Name</label>
+                <input type="text" class="form-control" name="name1" ng-model="form.name1"
+                       required-message="'Name can not be blank.'"
+                       ng-required="!testimonialuser">
+            </div>
+            <div class="form-group" ng-hide="testimonialuser">
+                <label>User Image</label>
+                <input type="button" class="uploadbtn btn  btn-md"   value="Upload" ngf-drop ngf-select ng-model="t_user_image" ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" ngf-multiple="false" ngf-allow-dir="true" accept="'*'" ngf-drop-available="dropAvailable" ngf-capture="camera">
+                <div class="clearfix"></div>
+                <div class="progress" ng-show="t_user_image[0].progress >= 0" style="height: 36px; margin-bottom: 0; padding: 10px 0;"> <div style="width:{{t_user_image[0].progress}}%; background:#69cec6;" ng-bind="t_user_image[0].progress + '%'"></div></div>
+                
+                <div ng-if="up_image" style="margin: 5px 0;">
+                    <img src="{{up_image}}">
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label>Body</label>
+                <textarea class="form-control" name="body" ng-model="form.body" rows="4"
+                required-message="'Body can not be blank.'"
+                required></textarea>
+            </div>
+
+
+            <button class="btn btn-primary loginbtn" type="submit">Submit</button>
+        </form>
+
+
+
+    </div>
+</script>
+
+
+
+<script type="text/ng-template" id="addtestimonialsuc">
+    <div class="contactpopup">
+        <h2>Testimonial submitted successfully, Awaiting admin approval</h2>
+    </div>
+</script>

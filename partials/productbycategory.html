@@ -1,0 +1,48 @@
+<div class="container-fluid bookheading">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h2>
+                <!--<content name='BOOKSheading204' id='204' > </content>-->
+                {{category_name}}
+            </h2>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container bookspagebody1">
+    <div class="row">
+
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+            <div class="about_icon2" style="margin-top: -80px;">
+                <img src="images/bookheadingicon.png" alt="#" >
+            </div>
+
+
+            <div class="book_wrapper_body">
+
+
+
+            <div class="book_wrapper" ng-if="productlist.length>0" ng-repeat="item in productlist">
+                 <!--<div class="book_img"><img alt="#" src="images/book_img.png"></div>-->
+                 <a  ui-sref="product-details({id:item.id})"><div class="book_img"><img alt="" src="{{item.image_url}}"></div></a>
+                 <!-- <h2>Recipe for Prosperity</h2>-->
+                <a  ui-sref="product-details({id:item.id})"><h2>{{item.product_name}}</h2></a>
+                 <!--<h3><span>$7.00</span></h3>-->
+                 <h3><span>${{item.price}}</span></h3>
+                 <a href="javascript:void(0)" ng-click="addtocart(item.id)" class="bookcartbtn"> ADD TO CART </a>
+
+             </div>
+
+            <div class="clearfix"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+

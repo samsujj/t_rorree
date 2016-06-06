@@ -818,6 +818,32 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
         )
 
 
+        .state('testimoniallist',{
+            url:"/testimonial-list",
+            views: {
+
+                'admin_header': {
+                    templateUrl: 'partials/admin_top_menu.html' ,
+                    controller: 'admin_header'
+                },
+                'admin_left': {
+                    templateUrl: 'partials/admin_left.html' ,
+                    //  controller: 'admin_left'
+                },
+                'admin_footer': {
+                    templateUrl: 'partials/admin_footer.html' ,
+                },
+
+                'content':{
+                    templateUrl:'partials/testimoniallist.html',
+                    controller:'testimoniallist'
+                },
+
+            }
+        }
+    )
+
+
         .state('product-list',{
                 url:"/product-list",
                 views: {
@@ -1217,25 +1243,45 @@ tr.config(function($stateProvider, $urlRouterProvider,$locationProvider) {
             }
         )
         .state('productcategory',{
-                url:"/productcategory",
-                views: {
+            url:"/product-category",
+            views: {
 
-                    'admin_header': {
-                        templateUrl: 'partials/header.html' ,
-                        controller: 'header'
-                    },
-                    'admin_footer': {
-                        templateUrl: 'partials/front_footer.html' ,
-                        controller:'footer'
-                    },
-                    'content': {
-                        templateUrl: 'partials/productcategory.html' ,
-                        controller: 'productcategory'
-                    },
+                'admin_header': {
+                    templateUrl: 'partials/header.html' ,
+                    controller: 'header'
+                },
+                'admin_footer': {
+                    templateUrl: 'partials/front_footer.html' ,
+                    controller:'footer'
+                },
+                'content': {
+                    templateUrl: 'partials/productcategory.html' ,
+                    controller: 'productcategory'
+                },
 
-                }
             }
-        )
+        }
+    )
+        .state('productbycategory',{
+            url:"/product-by-category/:categoryId",
+            views: {
+
+                'admin_header': {
+                    templateUrl: 'partials/header.html' ,
+                    controller: 'header'
+                },
+                'admin_footer': {
+                    templateUrl: 'partials/front_footer.html' ,
+                    controller:'footer'
+                },
+                'content': {
+                    templateUrl: 'partials/productbycategory.html' ,
+                    controller: 'productbycategory'
+                },
+
+            }
+        }
+    )
         .state('cart',{
                 url:"/cart",
                 views: {
@@ -1739,7 +1785,7 @@ jungledrone.directive('myCustomer', function() {
 });*/
 
 
-tr.controller('ModalInstanceCtrl', function($scope,$state,$cookieStore,$http,$uibModalInstance,$rootScope,Upload) {
+tr.controller('ModalInstanceCtrl', function($scope,$state,$cookieStore,$http,$uibModalInstance,$rootScope,Upload,$uibModal,$timeout) {
     $scope.cancel = function () {
 
         $uibModalInstance.dismiss('cancel');
@@ -1828,6 +1874,7 @@ tr.controller('ModalInstanceCtrl', function($scope,$state,$cookieStore,$http,$ui
 
         });
     }
+
     $scope.confirmblogdelete = function() {
         $uibModalInstance.dismiss('cancel');
         var idx = $scope.currentindex;
@@ -1877,6 +1924,111 @@ tr.controller('ModalInstanceCtrl', function($scope,$state,$cookieStore,$http,$ui
 */
 
 
+
+    $scope.confirmtestidelete = function() {
+        $uibModalInstance.dismiss('cancel');
+        var idx = $scope.currentindex;
+        $http({
+            method: 'POST',
+            async: false,
+            url: $scope.adminUrl + 'testimonial/delete',
+            data: $.param({id: $scope.testimoniallist[idx].id}),  // pass in data as strings
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function (data) {
+            $scope.testimoniallist.splice(idx, 1);
+        });
+    }
+
+
+    $scope.$watch('t_user_image', function (files) {
+        if (files != null) {
+            for (var i = 0; i < files.length; i++) {
+                $scope.errorMsg = null;
+                (function (file) {
+                    t_upload(file);
+                })(files[i]);
+            }
+        }
+    });
+
+    $scope.getReqParams1 = function () {
+        return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+        '&errorMessage=' + $scope.serverErrorMsg : '';
+    };
+
+    function t_upload(file) {
+        $scope.errorMsg = null;
+        t_uploadUsingUpload(file);
+    }
+
+    function t_uploadUsingUpload(file) {
+        $scope.up_image = '';
+        file.upload = Upload.upload({
+            url: $scope.adminUrl+'testimonial/uploaduserimage' + $scope.getReqParams1(),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            fields: {},
+            file: file,
+            fileFormDataName: 'Filedata'
+        });
+
+        file.upload.then(function (response) {
+
+           // file.progress = -1;
+
+
+            $scope.form.image = response.data.image_name;
+            $scope.up_image = response.data.image_url;
+
+
+        }, function (response) {
+            console.log(response.status);
+            if(response.data.status>0) {
+
+                //  $scope.errorMsg = response.status + ': ' + response.data;
+            }
+
+        });
+
+        file.upload.progress(function (evt) {
+            // Math.min is to fix IE which reports 200% sometimes
+            $('#loaderDiv').removeClass('ng-hide');
+
+            file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+
+        });
+
+        file.upload.xhr(function (xhr) {
+            // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+        });
+    }
+
+    $scope.addtestim = function(){
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'testimonial/add',
+            data    : $.param($scope.form),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $uibModalInstance.dismiss('cancel');
+
+            $scope.uinsucc = $uibModal.open({
+                animation: true,
+                templateUrl: 'addtestimonialsuc',
+                //controller: 'ModalInstanceCtrl',
+                size: 'lg',
+                scope:$scope
+            });
+
+            $timeout(function(){
+              //  $scope.uinsucc.close();
+            },3000);
+
+        });
+    }
 
 
 });
@@ -2362,7 +2514,7 @@ tr.controller('eventdetails', function($compile,$scope,contentservice,$state,$ht
     })
 })
 
-tr.controller('productdetails', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$stateParams) {
+tr.controller('productdetails', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$stateParams,$uibModal) {
     $scope.interval=600;
     $scope.contentupdated=false;
     var myVar =setInterval(function(){
@@ -2513,6 +2665,37 @@ tr.controller('productdetails', function($compile,$scope,contentservice,$state,$
 
 
     }
+
+
+
+
+    $scope.testimonialuser = $rootScope.userid;
+
+    $scope.addtestimonial = function(){
+
+        $scope.form = {
+            user_id : $scope.testimonialuser,
+            name1 : '',
+            image : '',
+            body : '',
+        }
+
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'addtestimonial',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+        });
+    }
+
+
+
+
+
+
+
 
 
 
@@ -2819,13 +3002,13 @@ tr.controller('testimonial', function($compile,$scope,contentservice,$state,$htt
              }*/
 
 
-            console.log(($rootScope.contentdata[x].content));
+         //   console.log(($rootScope.contentdata[x].content));
             $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
             if($rootScope.contentdata[x].parentid!=0){
 
                 var z=parseInt($rootScope.contentdata[x].parentid);
-                console.log(z);
-                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+           //     console.log(z);
+          //      console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
 
                 $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
 
@@ -2841,7 +3024,20 @@ tr.controller('testimonial', function($compile,$scope,contentservice,$state,$htt
 
     },$scope.interval);
 
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'testimonial/list',
+        data    : $.param({front:1}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.testimoniallist=data;
+    });
+
 });
+
+
 tr.controller('contactme', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$uibModal,$window) {
     $scope.interval=600;
     $scope.contentupdated=false;
@@ -3073,6 +3269,127 @@ tr.controller('books', function($compile,$scope,contentservice,$state,$http,$coo
     }
 
 });
+
+
+
+tr.controller('productbycategory', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$stateParams) {
+    $scope.interval=600;
+    $scope.contentupdated=false;
+    var myVar =setInterval(function(){
+
+        $rootScope.contentdata=contentservice.getcontent( $scope.adminUrl+'contentlist');
+
+
+        //console.log('in setInterval'+$scope.interval);
+        //console.log( $rootScope.contentdata);
+        var x;
+        var y;
+        if(typeof ($rootScope.contentdata)!='undefined' && $scope.contentupdated){
+
+            $scope.interval=999990;
+
+            clearInterval(myVar);
+        }
+
+        $scope.contentupdated=true;
+        for (x in $rootScope.contentdata ){
+            var contentw='';
+            //console.log($rootScope.contentdata[x]);
+            //console.log(($rootScope.contentdata[x].content)+'c----n');
+            //console.log(($rootScope.contentdata[x].parentid));
+
+
+            if($rootScope.contentdata[x].ctype!='image') {
+
+                for (y in $rootScope.contentdata[x].content) {
+                    if ($rootScope.contentdata[x].ctype != 'image')
+                        contentw += ($rootScope.contentdata[x].content[y]);
+                    else {
+
+                        contentw += "<img src=" + $rootScope.contentdata[x].content[y] + " />";
+                    }
+                }
+                $rootScope.contentdata[x].content=(contentw);
+            }
+            /* else{
+
+             $rootScope.contentdata[x].content = "< img src = " + $rootScope.contentdata[x].content + " >";
+
+             //$rootScope.contentdata[x].content=$rootScope.contentdata[x].content.replace('["','').replace.(']"','');
+             }*/
+
+
+            //console.log(($rootScope.contentdata[x].content));
+            $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
+            if($rootScope.contentdata[x].parentid!=0){
+
+                var z=parseInt($rootScope.contentdata[x].parentid);
+             //   console.log(z);
+            //    console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+
+                $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
+
+            }
+
+            //var model=$parse($rootScope.contentdata[x].id);
+            //model.assign($scope, $rootScope.contentdata[x]);
+            //.id=$rootScope.contentdata[x];
+        }
+
+        //console.log('----'+$scope);
+
+
+    },$scope.interval);
+
+
+    $scope.categoryId = $stateParams.categoryId;
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'jungle_product/listbycategory',
+        data    : $.param({'categoryId':$scope.categoryId}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.productlist=data.productlist;
+        $scope.category_name=data.category_name;
+    });
+
+    $rootScope.addtocart=function(pid){
+        if($rootScope.userid == 0)  $scope.cartuser=$cookieStore.get('randomid');
+        else{
+            $scope.cartuser=$rootScope.userid;
+
+            $http({
+                method:'POST',
+                async:false,
+                url:$scope.adminUrl+'cart/updatecartuser',
+                data    : $.param({'newuserid':$rootScope.userid,'olduserid':$cookieStore.get('randomid')}),
+                headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+            }).success(function(data){
+
+            });
+        }
+
+
+        $http({
+            method:'POST',
+            async:false,
+            url:$scope.adminUrl+'cart/addtocart',
+            data    : $.param({'pid':pid,'qty':1,'userid':$scope.cartuser}),
+            headers :   { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+        }).success(function(data){
+            $rootScope.carttotal=parseInt($rootScope.carttotal)+1;
+        });
+    }
+
+});
+
+
+
+
 tr.controller('productcategory', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal) {
     $scope.interval=600;
     $scope.contentupdated=false;
@@ -3120,13 +3437,13 @@ tr.controller('productcategory', function($compile,$scope,contentservice,$state,
              }*/
 
 
-            console.log(($rootScope.contentdata[x].content));
+          //  console.log(($rootScope.contentdata[x].content));
             $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].id]=$rootScope.contentdata[x];
             if($rootScope.contentdata[x].parentid!=0){
 
                 var z=parseInt($rootScope.contentdata[x].parentid);
-                console.log(z);
-                console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
+             //   console.log(z);
+             //   console.log($rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid);
 
                 $scope[$rootScope.contentdata[x].cname+$rootScope.contentdata[x].parentid]=$rootScope.contentdata[x];
 
@@ -3141,6 +3458,18 @@ tr.controller('productcategory', function($compile,$scope,contentservice,$state,
 
 
     },$scope.interval);
+
+
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     :     $scope.adminUrl+'jungle_category/frontcatlist',
+      //  data    : $.param({'type':'front'}),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.categoryList=data;
+    });
 
 });
 tr.controller('cart', function($compile,$scope,contentservice,$state,$http,$cookieStore,$rootScope,Upload,$sce,carttotal,$uibModal) {
@@ -7879,6 +8208,86 @@ console.log($scope.form);
 
 
 })
+
+tr.controller('testimoniallist',function($scope,$state,$http,$cookieStore,$rootScope,$sce,$filter,$uibModal){
+    $scope.trustAsHtml=$sce.trustAsHtml;
+
+
+    $scope.predicate = 'id';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+        $scope.predicate = predicate;
+        $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+        //$scope.friends = orderBy($scope.friends, predicate, $scope.reverse);
+    };
+
+    $scope.currentPage=1;
+    $scope.perPage=10;
+
+    $scope.totalItems = 0;
+
+    $scope.filterResult = [];
+
+    $http({
+        method  : 'POST',
+        async:   false,
+        url     : $scope.adminUrl+'testimonial/list',
+        // data    : $.param($scope.form),  // pass in data as strings
+        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }) .success(function(data) {
+        $scope.testimoniallist=data;
+    });
+
+    $scope.searchkey = '';
+    $scope.search = function(item){
+
+        if ( (item.user_name.toString().toLowerCase().indexOf($scope.searchkey.toString().toLowerCase()) != -1) ){
+            return true;
+        }
+        return false;
+    };
+
+    $scope.deltestimonial = function(item){
+
+        $scope.currentindex=$scope.testimoniallist.indexOf(item);
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'testimonialconfirm.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'lg',
+            scope:$scope
+        });
+
+    }
+
+
+    $scope.changeStatus = function(item){
+        $rootScope.stateIsLoading = true;
+        var idx = $scope.testimoniallist.indexOf(item);
+        $http({
+            method  : 'POST',
+            async:   false,
+            url     : $scope.adminUrl+'testimonial/updatestatus',
+            data    : $.param({id: $scope.testimoniallist[idx].id,status: $scope.testimoniallist[idx].testimonial_status}),  // pass in data as strings
+            headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }) .success(function(data) {
+            $rootScope.stateIsLoading = false;
+            if($scope.testimoniallist[idx].testimonial_status == 0){
+                $scope.testimoniallist[idx].testimonial_status = 1;
+            }else{
+                $scope.testimoniallist[idx].testimonial_status = 0;
+            }
+        });
+    }
+
+
+
+
+
+
+});
+
 
 
 tr.controller('bloglist',function($scope,$state,$http,$cookieStore,$rootScope,$sce,$filter,$uibModal){

@@ -6,24 +6,25 @@
     </div>
 </div>
 
-<div class="container testimonialbody1">
+<div class="container testimonialbody1" ng-repeat="item in testimoniallist">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
             <div class="about_icon2" style="margin-top: -80px;">
-                <content name='testimonialbody1icon280' id='280' > </content>
+                <img src="images/about_icon2.png">
             </div>
-            <p><content name='testimonialbody1p282' id='282' > </content></p>
+            <p>{{item.body}}</p>
             <div class="clearfix"></div>
             <div class="divider"></div>
             <div class="testimonialperson">
-                <content name='testimonialbody1person283' id='283' > </content>
+                <img src="{{item.image_url}}">
             </div>
             <div class="clearfix"></div>
-            <h3><content name='testimonialbody1h3284' id='284' > </content></h3>
+            <h3>{{item.user_name}}</h3>
         </div>
     </div>
 </div>
 
+<!--
 <div class="container testimonialbody1">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
@@ -41,3 +42,4 @@
         </div>
     </div>
 </div>
+-->
