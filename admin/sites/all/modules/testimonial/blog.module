@@ -13,7 +13,7 @@ header('Access-Control-Max-Age: 1000');
 header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
 
 
-function event_init() // init function called by defaulted when this module loaded by system
+function blog_init() // init function called by defaulted when this module loaded by system
 {
 
     //echo $GLOBALS['theme'];
@@ -32,77 +32,77 @@ function event_init() // init function called by defaulted when this module load
 
 }
 
-function event_menu()
+function blog_menu()
 {
     $items = array();
 
-    $items['addevent'] = array(
-        'title' => 'Add event',
-        'page callback' => 'addevent',
+    $items['addblog'] = array(
+        'title' => 'Add blog',
+        'page callback' => 'addblog',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
-    $items['eventlist'] = array(
-        'title' => 'event List',
-        'page callback' => 'eventlist',
+    $items['bloglist'] = array(
+        'title' => 'blog List',
+        'page callback' => 'bloglist',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
-   $items['updateeventstatus'] = array(
+   $items['updateblogstatus'] = array(
         'title' => 'status Change',
-        'page callback' => 'updateeventstatus',
+        'page callback' => 'updateblogstatus',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
-   $items['deleteevent'] = array(
-        'title' => 'event Delete',
-        'page callback' => 'deleteevent',
+   $items['deleteblog'] = array(
+        'title' => 'blog Delete',
+        'page callback' => 'deleteblog',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
-   $items['eventdetails'] = array(
-        'title' => 'event details',
-        'page callback' => 'eventdetails',
+   $items['blogdetails'] = array(
+        'title' => 'blog details',
+        'page callback' => 'blogdetails',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
-    $items['eventupdates'] = array(
-        'title' => 'event Updates',
-        'page callback' => 'eventupdates',
+    $items['blogupdates'] = array(
+        'title' => 'blog Updates',
+        'page callback' => 'blogupdates',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
-    $items['uploadeventbanner'] = array(
-        'title' => 'event Updates',
-        'page callback' => 'uploadeventbanner',
+    $items['uploadblogbanner'] = array(
+        'title' => 'blog Updates',
+        'page callback' => 'uploadblogbanner',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
-    $items['eventlistfrontlisting'] = array(
-        'title' => 'Event',
-        'page callback' => 'eventlistfrontlisting',
+    $items['bloglistfrontlisting'] = array(
+        'title' => 'blog',
+        'page callback' => 'bloglistfrontlisting',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
         //'type'=>MENU_NORMAL_ITEM,
     );
-    $items['admineventrsvp'] = array(
-        'title' => 'Event',
-        'page callback' => 'admineventrsvp',
+    $items['adminblogrsvp'] = array(
+        'title' => 'blog',
+        'page callback' => 'adminblogrsvp',
         'access callback' => TRUE,
         'access arguments' => array('Anonymous Actions.'),
         'expanded' => TRUE,
@@ -137,57 +137,52 @@ function event_menu()
     print_r($x);
 }
 */
-function eventdetails(){
+function blogdetails(){
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
     header("Access-Control-Allow-Credentials: true");
     header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
-    $eventlist = array();
+    $bloglist = array();
 
 
-    $queryu = db_select('event', 'ev');
+    $queryu = db_select('blog', 'bl');
 
-    $queryu->fields('ev', array('id','event_name','event_description','event_location','event_image','event_status', 'event_start_date','event_end_date', 'event_timerange','event_create_time'));
-    $queryu->condition('ev.id', $_POST['id'], '=');
+    $queryu->fields('bl', array('id','blog_name','user_id','blog_description','blog_asset','blog_file','blog_status','blog_create_time'));
+    $queryu->condition('bl.id', $_POST['id'], '=');
     $resultu = $queryu->execute();
 
 
     while($recordu = $resultu->fetchAssoc()) {
 
-        $eventlist['id'] = $recordu['id'];
-        $eventlist['event_name'] = $recordu['event_name'];
-        $eventlist['event_description'] = $recordu['event_description'];
-        $eventlist['event_location'] = $recordu['event_location'];
-        $eventlist['event_image'] = $recordu['event_image'];
-        if($recordu['event_image']=='Null' ||  $recordu['event_image']==''){
-            $eventlist['image_url'] =  'images/user2-160x160.jpg';
+        $bloglist['id'] = $recordu['id'];
+        $bloglist['user_id'] = $recordu['user_id'];
+        $bloglist['blog_name'] = $recordu['blog_name'];
+        $bloglist['blog_description'] = $recordu['blog_description'];
+        $bloglist['blog_asset'] = $recordu['blog_asset'];
+        $bloglist['blog_file'] = $recordu['blog_file'];
+        if($recordu['blog_file']=='Null' ||  $recordu['blog_file']==''){
+            $bloglist['image_url'] =  'images/user2-160x160.jpg';
         }
         else{
-            $eventlist['image_url'] =  image_style_url('large',(@$recordu['event_image']));
-            $eventlist['event_details_image_url'] =  image_style_url('eventdetails_1132x421_',(@$recordu['event_image']));
+            if($bloglist['blog_asset']=='Image') {
+                $bloglist['image_url'] = image_style_url('large', (@$recordu['blog_file']));
+                $bloglist['blog_details_image_url'] = image_style_url('blogdetails_1132x421_', (@$recordu['blog_image']));
+            }
 
 
         }
 
-        $eventlist['event_status'] = $recordu['event_status'];
-        if($recordu['event_start_date']!=''){
-            $eventlist['monthh'] = date('F',strtotime($recordu['event_start_date']));
-            $eventlist['datee'] = date('d',strtotime($recordu['event_start_date']));
-
-        }
-        $eventlist['event_start_date'] = $recordu['event_start_date'];
-        $eventlist['event_end_date'] = $recordu['event_end_date'];
-        $eventlist['event_timerange'] = $recordu['event_timerange'];
-        $eventlist['event_create_time'] = $recordu['event_create_time'];
+        $bloglist['blog_status'] = $recordu['blog_status'];
+        $bloglist['blog_create_time'] = $recordu['blog_create_time'];
     }
-    echo json_encode(@$eventlist);
+    echo json_encode(@$bloglist);
 
 }
 
 
-function eventlist()
+function bloglist()
 {
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
@@ -198,82 +193,81 @@ function eventlist()
 
     $userlist = array();
 
-    $queryu = db_select('event', 'ev');
+    $queryu = db_select('blog', 'bl');
+    $queryu->join('admin', 'a', 'a.user_id = bl.user_id');
 
-    $queryu->fields('ev', array('id','user_id','event_name','event_description','event_location','event_image','event_status', 'event_start_date','event_end_date', 'event_timerange','event_create_time'));
-    //   $queryu->addExpression(strtome(SPLIT_STR(event_daterange, ' ', 1)),'daterange');
-
-
+    $queryu->fields('bl', array('id','user_id','blog_name','blog_description','blog_asset','blog_file','blog_status','blog_create_time'));
+    $queryu->fields('a', array('fname', 'lname'));
         // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
        // ->condition('ur.rid', 5, '=');
     //->condition('u.uid', 74, '=');
     //->range(0, 20);
     if(isset($_POST['type']) && $_POST['type']=='front' ){
-        $queryu->condition('ev.event_status',1,'=')  ;
-        $queryu->condition('ev.event_end_date',date('Y-m-d'),'>=')  ;
-
-
+        $queryu->condition('bl.blog_status',1,'=')  ;
     }
-    $queryu->orderBy('id','DESC');
-    if(isset($_POST['type']) && $_POST['type']=='front' ){
-        $queryu->orderBy('event_start_date','ASC');
-    }
+    $queryu->orderBy('blog_create_time','DESC');
     $resultu = $queryu->execute();
 
 
     if ($resultu->rowCount() > 0) {
         $i = 0;
         while ($recordu = $resultu->fetchAssoc()) {
-           // $picture=$recordu['event_image'];
+           // $picture=$recordu['blog_image'];
            // if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
            // else $picture='';
 
-
-                $eventlist[$i]['id'] = $recordu['id'];
-                $eventlist[$i]['user_id'] = $recordu['user_id'];
-                $eventlist[$i]['event_name'] = $recordu['event_name'];
-                $eventlist[$i]['event_description'] = $recordu['event_description'];
-                $eventlist[$i]['event_location'] = $recordu['event_location'];
-                if ($recordu['event_image'] == 'Null' || $recordu['event_image'] == '') {
-                    $eventlist[$i]['event_image'] = 'images/user2-160x160.jpg';
+            $bloglist[$i]['id'] = $recordu['id'];
+            $bloglist[$i]['user_id'] = $recordu['user_id'];
+            $bloglist[$i]['blog_name'] = $recordu['blog_name'];
+            $bloglist[$i]['blog_description'] = $recordu['blog_description'];
+            if(isset($_POST['type']) && $_POST['type']=='front' ) {
+                if (strlen($recordu['blog_description']) > 130) {
+                    $bloglist[$i]['blog_description']= substr($recordu['blog_description'], 0, strpos($recordu['blog_description'],' ',130)).'...';             //strpos to find ‘ ‘ after 30 characters.
                 } else {
-                    $eventlist[$i]['event_image'] = image_style_url('thumbnail', (@$recordu['event_image']));
-                    $eventlist[$i]['event_fron_image'] = image_style_url('eventfront_341x175_', (@$recordu['event_image']));
+                    $bloglist[$i]['blog_description']=  $recordu['blog_description'];
+                }
+            }
+
+            $bloglist[$i]['blog_file'] = $recordu['blog_file'];
+            if($recordu['fname']!='' && $recordu['lname']){
+                $bloglist[$i]['name']=$recordu['fname'].' '.$recordu['lname'];
+            }
+            $bloglist[$i]['blog_asset'] = $recordu['blog_asset'];
+            $bloglist[$i]['ps'] = $recordu['blog_asset'];
+            if($recordu['blog_file']=='Null' ||  $recordu['blog_file']==''){
+                $bloglist[$i]['blog_file_url'] =  'images/user2-160x160.jpg';
+            }
+            else{
+                if($recordu['blog_asset']=='Image'){
+                    $bloglist[$i]['blog_file_url'] =  image_style_url('blogadmin_160x130_',(@$recordu['blog_file']));
+                    $bloglist[$i]['blog_file_front_url'] =  image_style_url('blogfront_602x338_',(@$recordu['blog_file']));
+
 
                 }
-                $eventlist[$i]['event_status'] = $recordu['event_status'];
-            if($recordu['event_start_date']!=''){
-                $eventlist[$i]['monthh'] = date('F',strtotime($recordu['event_start_date']));
-                $eventlist[$i]['datee'] = date('d',strtotime($recordu['event_start_date']));
 
             }
-                $eventlist[$i]['event_start_date'] = $recordu['event_start_date'];
-                $eventlist[$i]['event_end_date'] = $recordu['event_end_date'];
+            $bloglist[$i]['blog_status'] = $recordu['blog_status'];
 
-                if ($recordu['event_timerange'] != '') {
-                    /*                $evtime=explode('to',$recordu['event_timerange']);
-                                    $eventlist[$i]['timee']=date('H:i:s A',$evtime[0]);
+            if($recordu['blog_create_time']!=''){
+/*                $evtime=explode('to',$recordu['blog_timerange']);
+                $bloglist[$i]['timee']=date('H:i:s A',$evtime[0]);
 
-                                    if($recordu['event_timerange']=='all day'){*/
-                    $eventlist[$i]['timee'] = $recordu['event_timerange'];
-                    //}
-                    // $eventlist[$i]['datee']=date('d',strtotime($evdate[0]));
-                }
-
-                $eventlist[$i]['event_timerange'] = $recordu['event_timerange'];
-                $eventlist[$i]['event_create_time'] = $recordu['event_create_time'];
-
-
-                $i++;
-
+                if($recordu['blog_timerange']=='all day'){*/
+                    $bloglist[$i]['blog_create_time']=date('d/m/y',$recordu['blog_create_time']);
+                    $bloglist[$i]['blog_create_date']=date('d F',$recordu['blog_create_time']);
+                    $bloglist[$i]['blog_create_year']=date('Y',$recordu['blog_create_time']);
+                //}
+               // $bloglist[$i]['datee']=date('d',strtotime($evdate[0]));
+            }
+            $i++;
 
     }
-        echo json_encode(@$eventlist);
+        echo json_encode(@$bloglist);
 }
 
 
 }
-function eventlistfrontlisting()
+function bloglistfrontlisting()
 {
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
@@ -282,13 +276,13 @@ function eventlistfrontlisting()
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
 
-    $eventlist = array();
-    $queryu = db_select('event', 'ev');
+    $bloglist = array();
+    $queryu = db_select('blog', 'ev');
 
-    $queryu->fields('ev', array('id','event_name','event_description','event_image','event_status', 'event_start_dtae','event_end_date', 'event_timerange','event_create_time'));
-    $queryu->condition('ev.event_status', 1, '=');
+    $queryu->fields('ev', array('id','blog_name','blog_description','blog_image','blog_status', 'blog_daterange', 'blog_timerange','blog_create_time'));
+    $queryu->condition('ev.blog_status', 1, '=');
     $queryu->range(0, 5);
-    $queryu->orderBy('event_daterange','desc');
+    $queryu->orderBy('blog_daterange','desc');
     // ->condition('ur.rid', 5, '=');
     //->condition('u.uid', 74, '=');
     //->range(0, 20);
@@ -298,73 +292,37 @@ function eventlistfrontlisting()
     if ($resultu->rowCount() > 0) {
         $i = 0;
         while ($recordu = $resultu->fetchAssoc()) {
-            // $picture=$recordu['event_image'];
+            // $picture=$recordu['blog_image'];
             // if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
             // else $picture='';
 
-            $eventlist[$i]['id'] = $recordu['id'];
-            $eventlist[$i]['user_id'] = $recordu['user_id'];
-            $eventlist[$i]['event_name'] = $recordu['event_name'];
-            $eventlist[$i]['event_description'] = $recordu['event_description'];
-            if($recordu['event_image']=='Null' ||  $recordu['event_image']==''){
-               // $eventlist[$i]['event_image'] =  'images/user2-160x160.jpg';
-                $eventlist[$i]['event_image'] =  'images/event_de.png';
+            $bloglist[$i]['id'] = $recordu['id'];
+            $bloglist[$i]['user_id'] = $recordu['user_id'];
+            $bloglist[$i]['blog_name'] = $recordu['blog_name'];
+            $bloglist[$i]['blog_description'] = $recordu['blog_description'];
+            if($recordu['blog_image']=='Null' ||  $recordu['blog_image']==''){
+               // $bloglist[$i]['blog_image'] =  'images/user2-160x160.jpg';
+                $bloglist[$i]['blog_image'] =  'images/blog_de.png';
             }
             else{
-                $eventlist[$i]['event_image'] =  image_style_url('frontend-event',(@$recordu['event_image']));
+                $bloglist[$i]['blog_image'] =  image_style_url('frontend-blog',(@$recordu['blog_image']));
 
             }
-            $eventlist[$i]['event_status'] = $recordu['event_status'];
-            $eventlist[$i]['event_start_date'] = $recordu['event_start_date'];
-            $eventlist[$i]['event_end_date'] = $recordu['event_end_date'];
-            $eventlist[$i]['event_timerange'] = $recordu['event_timerange'];
-            $eventlist[$i]['event_create_time'] = $recordu['event_create_time'];
+            $bloglist[$i]['blog_status'] = $recordu['blog_status'];
+            $bloglist[$i]['blog_daterange'] = $recordu['blog_daterange'];
+            $bloglist[$i]['blog_timerange'] = $recordu['blog_timerange'];
+            $bloglist[$i]['blog_create_time'] = $recordu['blog_create_time'];
 
 
             $i++;
 
         }
     }
-    echo json_encode(@$eventlist);
-
-}
-function admineventrsvp()
-{
-    header('Content-type: text/html');
-    header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
-    header("Access-Control-Allow-Credentials: true");
-    header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-    header('Access-Control-Max-Age: 1000');
-    header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
-
-
-    $query = db_select('event', 'ev');
-    $query->join('eventrsvp', 'evrsvp', 'ev.id = evrsvp.event_id');
-    $query->fields('ev', array('event_name'));
-    $query->fields('evrsvp',array('fname','lname','email','phone','gender','id'));
-    $query->orderBy('evrsvp.id','DESC');
-    // ->condition('u.name', '%' . db_like('john') . '%', 'LIKE')
-    //->condition('de.domain_id', 25, '=')
-    //->range(0, 20);
-    $result = $query->execute();
-    if ($result->rowCount() > 0) {
-        $i = 0;
-        while ($recordu = $result->fetchAssoc()) {
-            // $picture=$recordu['event_image'];
-            // if(isset($picture->uri))$picture= image_style_url('thumbnail', $picture->uri);
-            // else $picture='';
-
-            $eventlist[$i] = $recordu;
-            $i++;
-        }
-    }
-
-    echo json_encode(@$eventlist);
+    echo json_encode(@$bloglist);
 
 }
 
-
-function addevent(){
+function addblog(){
 
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
@@ -376,20 +334,16 @@ function addevent(){
 
     //print_r($_POST);
     ///exit;
-    if($_POST['event_status']) $_POST['event_status']=1;
-    else $_POST['event_status']=0;
-    if($_POST['user_id']) $user_id=$_POST['user_id'];
-    else $user_id=0;
-    if($_POST['event_start_date']!=''){
-        $event_start_date=date('Y-m-d',strtotime($_POST['event_start_date']));
-    }
-    if($_POST['event_end_date']!=''){
-        $event_end_date=date('Y-m-d',strtotime($_POST['event_end_date']));
+    $user_id=0;
+    $blog_status=0;
+    if(isset($_POST['user_id']) && $_POST['user_id'] ){
+        $user_id=$_POST['user_id'];
     }
 
-        $query = db_insert('event')->fields(array('user_id','event_name','event_description','event_location','event_image','event_status', 'event_start_date','event_end_date', 'event_timerange','event_create_time'));
+
+        $query = db_insert('blog')->fields(array('user_id','blog_name','blog_description','blog_asset','blog_file','blog_status','blog_create_time'));
         //foreach ($values as $record) {
-        $query->values(array($user_id,@$_POST['event_name'],@$_POST['event_description'],@$_POST['event_location'],@$_POST['event_image'],@$_POST['event_status'],@$event_start_date,@$event_end_date,@$_POST['timer'], time()));
+        $query->values(array($user_id,@$_POST['blog_name'],@$_POST['blog_description'],@$_POST['blog_asset'],@$_POST['blog_file'],@$blog_status, time()));
         //}
         $query->execute();
 
@@ -398,7 +352,7 @@ function addevent(){
      echo json_encode($data);
     return;
 }
-function eventupdates(){
+function blogupdates(){
 
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
@@ -411,28 +365,27 @@ function eventupdates(){
         DRUPAL_AUTHENTICATED_RID => 'authenticated user',
         // 5 => 'General Users',
     );
-    $roles[5]='event';
+    $roles[5]='blog';
     $user_fields = user_load(@intval($_POST['uid']));
     $user_fields->roles=$roles;
     user_save($user_fields);*/
 
 
-    if($_POST['event_status']) $_POST['event_status']=1;
-    else $_POST['event_status']=0;
-    if($_POST['event_start_date']!=''){
-        $event_start_date=date('Y-m-d',strtotime($_POST['event_start_date']));
-    }
-    if($_POST['event_end_date']!=''){
-        $event_end_date=date('Y-m-d',strtotime($_POST['event_end_date']));
-    }
+    if($_POST['blog_status']) $_POST['blog_status']=1;
+    else $_POST['blog_status']=0;
+    db_update('blog')
+        //->expression('weight', 'weight + :weight', array(':weight' => 1))
 
-    db_update('event')
-        ->fields(array( 'user_id'=>1, 'event_name'=>@$_POST['event_name'], 'event_description'=>$_POST['event_description'], 'event_location'=>$_POST['event_location'],'event_image'=>@$_POST['event_image'],'event_status'=>@$_POST['event_status'],'event_start_date'=>@$event_start_date,'event_end_date'=>@$event_end_date,'event_timerange'=>@$_POST['timer']))
+            //$query = db_insert('blog')->fields(array('user_id','blog_name','blog_description','blog_image','blog_status', 'blog_daterange', 'blog_timerange','blog_create_time'));
+        //foreach ($values as $record) {
+       // $query->values(array(1,@$_POST['blog_name'],@$_POST['blog_description'],@$_POST['blog_image'],@$_POST['blog_status'],@$_POST['blog_daterange'],@$_POST['timer'], time()));
+        //}
+        ->fields(array('user_id'=>@$_POST['user_id'], 'blog_name'=>@$_POST['blog_name'], 'blog_description'=>$_POST['blog_description'], 'blog_asset'=>$_POST['blog_asset'],'blog_file'=>@$_POST['blog_file'],'blog_status'=>@$_POST['blog_status']))
         ->condition('id', intval($_POST['id']))
          ->execute();
 }
 
-function updateeventstatus(){
+function updateblogstatus(){
 
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
@@ -440,17 +393,17 @@ function updateeventstatus(){
     header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
-    $event_status=1-intval($_POST['event_status']);
-    db_update('event')
+    $blog_status=1-intval($_POST['blog_status']);
+    db_update('blog')
         //->expression('weight', 'weight + :weight', array(':weight' => 1))
-        ->fields(array( 'event_status'=>@$event_status))
+        ->fields(array( 'blog_status'=>@$blog_status))
         ->condition('id', intval($_POST['id']))
         ->execute();
 
     echo "true";
 }
 
-function deleteevent(){
+function deleteblog(){
 
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response
@@ -459,13 +412,13 @@ function deleteevent(){
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
 
-    $num_deleted = db_delete('event')
+    $num_deleted = db_delete('blog')
         ->condition('id', @$_POST['id'])
         ->execute();
 
 }
 
- function uploadeventbanner(){
+ function uploadblogbanner(){
 
     header('Content-type: text/html');
     header('Access-Control-Allow-Origin: '.CUSTOM_URL);  //I have also tried the * wildcard and get the same response

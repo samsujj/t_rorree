@@ -149,7 +149,57 @@ function addtocart(){
 
 
     $exec_result = $statement->execute();
+    Database::closeConnection();
 
+
+
+    $cartarr=[];
+    $i=0;
+
+    $queryu = db_select('cart', 'ca');
+    ini_set('memory_limit', '128M');
+    $queryu->innerJoin('jungleproduct', 'jp','ca.pid=jp.id');
+    $queryu->fields('ca');
+    $queryu->fields('jp')
+        ->condition('ca.userid', $_POST['userid'], '=');
+    $queryu->addField('jp', 'id', 'product_id');
+    $queryu->addField('ca', 'id', 'cart_id');
+    $resultu = $queryu->execute();
+
+    $quantity = 0;
+    $subtotal = 0.00;
+     $total    = 0.00;
+
+    while($recordu = $resultu->fetchAssoc()) {
+
+        //print_r($recordu);
+        $recordu['textdesc']=strip_tags($recordu['product_desc']);
+        //$recordu['id']=($recordu['ca.id']);
+        $recordu['cartimage'] = image_style_url('featureimage_222x174_', (@$recordu['product_file']));
+
+        $recordu['subtotal'] = floatval($recordu['price']*$recordu['qty']);
+        $recordu['subtotal'] = number_format($recordu['subtotal'], 2, '.', '');
+
+        $cartarr[]=$recordu;
+
+        $quantity += intval($recordu['qty']);
+
+        $subtotal += floatval($recordu['subtotal']);
+        // $total +=$subtotal;
+
+    }
+
+    $subtotal = number_format($subtotal, 2, '.', '');
+    // $total = number_format($total, 2, '.', '');
+    $tax=0.00;
+    $tax=number_format($tax, 2, '.', '');
+    $shipping=0.00;
+    $shipping=number_format($shipping, 2, '.', '');
+
+    $total=$subtotal+$tax+$shipping;
+    $total=number_format($total, 2, '.', '');;
+
+    echo json_encode(array('quantity'=>$quantity,'subtotal'=>$subtotal,'tax'=>$tax,'shipping'=>$shipping,'total'=>$total,'cartarr'=>$cartarr));
 
 
 }
@@ -204,6 +254,54 @@ function updatecart(){
         ->condition('pid', intval($_POST['pid']))
         ->execute();
 
+
+    $cartarr=[];
+    $i=0;
+
+    $queryu = db_select('cart', 'ca');
+    ini_set('memory_limit', '128M');
+    $queryu->innerJoin('jungleproduct', 'jp','ca.pid=jp.id');
+    $queryu->fields('ca');
+    $queryu->fields('jp')
+        ->condition('ca.userid', $_POST['userid'], '=');
+    $queryu->addField('jp', 'id', 'product_id');
+    $queryu->addField('ca', 'id', 'cart_id');
+    $resultu = $queryu->execute();
+
+    $quantity = 0;
+    $subtotal = 0.00;
+    $total    = 0.00;
+
+    while($recordu = $resultu->fetchAssoc()) {
+
+        //print_r($recordu);
+        $recordu['textdesc']=strip_tags($recordu['product_desc']);
+        //$recordu['id']=($recordu['ca.id']);
+        $recordu['cartimage'] = image_style_url('featureimage_222x174_', (@$recordu['product_file']));
+
+        $recordu['subtotal'] = floatval($recordu['price']*$recordu['qty']);
+        $recordu['subtotal'] = number_format($recordu['subtotal'], 2, '.', '');
+
+        $cartarr[]=$recordu;
+
+        $quantity += intval($recordu['qty']);
+
+        $subtotal += floatval($recordu['subtotal']);
+        // $total +=$subtotal;
+
+    }
+
+    $subtotal = number_format($subtotal, 2, '.', '');
+    // $total = number_format($total, 2, '.', '');
+    $tax=0.00;
+    $tax=number_format($tax, 2, '.', '');
+    $shipping=0.00;
+    $shipping=number_format($shipping, 2, '.', '');
+
+    $total=$subtotal+$tax+$shipping;
+    $total=number_format($total, 2, '.', '');;
+
+    echo json_encode(array('quantity'=>$quantity,'subtotal'=>$subtotal,'tax'=>$tax,'shipping'=>$shipping,'total'=>$total,'cartarr'=>$cartarr));
 }
 
 function carttotal(){
@@ -252,6 +350,7 @@ function cartdetail(){
 
     $quantity = 0;
     $subtotal = 0;
+   // $total    = 0;
 
     while($recordu = $resultu->fetchAssoc()) {
 
@@ -268,12 +367,19 @@ function cartdetail(){
         $quantity += intval($recordu['qty']);
 
         $subtotal += floatval($recordu['subtotal']);
+       // $total +=$subtotal;
 
     }
-
     $subtotal = number_format($subtotal, 2, '.', '');
+    $tax=0.00;
+    $tax=number_format($tax, 2, '.', '');
+    $shipping=0.00;
+    $shipping=number_format($shipping, 2, '.', '');
 
-    echo json_encode(array('quantity'=>$quantity,'subtotal'=>$subtotal,'cartarr'=>$cartarr));
+    $total=$subtotal+$tax+$shipping;
+    $total=number_format($total, 2, '.', '');;
+
+    echo json_encode(array('quantity'=>$quantity,'subtotal'=>$subtotal,'tax'=>$tax,'shipping'=>$shipping,'total'=>$total,'cartarr'=>$cartarr));
 }
 
 function checkout(){
@@ -583,12 +689,12 @@ Order Date: '.$orderdate.'
 
   <tr>
     <td style=" width:48%; padding:25px 0 0 2%;" align="left" valign="top">
-     <span style="background:#40bbaf; width:89%; padding:8px 0 7px 5%;  font-size:18px; color:#fff; display:block;">Bill To</span>
+     <span style="background:#40bbaf; width:89%; padding:8px 0 7px 5%;  font-size:18px; color:#fff; display:block;">Billed To</span>
 
      </td>
      <td style=" width:48%; padding:25px 2% 0 0;" align="right" >
 
-      <span style="background:#40bbaf; width:89%; padding:8px 0 7px 5%;  font-size:18px; color:#fff; text-align:left; display:block;">Ship To</span>
+      <span style="background:#40bbaf; width:89%; padding:8px 0 7px 5%;  font-size:18px; color:#fff; text-align:left; display:block;">Shipped To</span>
       </td>
   </tr>
 
@@ -662,9 +768,9 @@ Order Date: '.$orderdate.'
      </td>
   </tr>
 
-  <tr>
+  <!--<tr>
     <td colspan="2" align="center" valign="middle" style=" font-size:18px; color:#40bbaf; padding:15px 0;">Shipping Method: Standard Shipping (Residential)</td>
-       </tr>
+       </tr>-->
 
 
          <tr>

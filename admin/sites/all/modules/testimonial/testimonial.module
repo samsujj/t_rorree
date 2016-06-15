@@ -86,12 +86,22 @@ function addtestimonial(){
     header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
-
-
+    $testimonial_status=0;
+    $user_image='';
+    if(isset($_POST['user_id']) && $_POST['user_id']>0){
+        $user_id=$_POST['user_id'];
+    }
+    if(isset($_POST['image']) && $_POST['image']!=''){
+        $user_image=$_POST['image'];
+    }
+    if(isset($_REQUEST['type']) && $_REQUEST['type']=='admin'){
+        $user_id=0;
+        $testimonial_status=1;
+    }
 
     $query = db_insert('testimonial')->fields(array('user_id','user_name','user_image','body','testimonial_status','testimonial_create_time'));
 
-    $query->values(array($_POST['user_id'],$_POST['name1'],$_POST['image'],$_POST['body'],0, time()));
+    $query->values(array($user_id,$_POST['name1'],$user_image,$_POST['body'],$testimonial_status, time()));
 
     $query->execute();
 
@@ -117,7 +127,7 @@ function listtestimonial(){
         $queryu->condition('t1.testimonial_status', 1, '=');
     }
 
-    $queryu->orderBy('t1.testimonial_create_time', 'ASC');
+    $queryu->orderBy('t1.testimonial_create_time', 'DESC');
 
     $resultu = $queryu->execute();
 

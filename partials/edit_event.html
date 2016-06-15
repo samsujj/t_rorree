@@ -83,24 +83,33 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label >Event Date Range* :</label>
+                                    <label >Event Start Date* :</label>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="glyphicon glyphicon-calendar"></i>
                                         </div>
 
-
-
-
-                                        <input type="text" class="form-control pull-right" id="reservation" value="02/11/2016 - 03/25/2016" placeholder="Event Date Range" name="event_daterange"
-
-                                               ng-model="form.event_daterange"
-                                               required-message="'Please select event date range.'"
-                                               required
-                                                ></div>
+                                        <input  class ="form-control"type="text" ng-focus="open1()" ng-blur="setDate()" max-date="maxDate" min-date="minDate" close-text="Close" show-weeks="false"  is-open="opened" name="event_start_date" uib-datepicker-popup="yyyy-MM-dd" ng-model="form.event_start_date" class="searchbox2 ng-pristine ng-untouched ng-valid ng-isolate-scope ng-valid-date ng-valid-required" style="margin:0 5px;" placeholder="Event Start Date"
+                                                required-message="'Please select event start date.'"
+                                                required
+                                        ></div>
 
                                     <!-- <span class="errormsg">erroe msg</span>-->
                                 </div>
+                                <div class="form-group">
+                                    <label >Event End Date* :</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="glyphicon glyphicon-calendar"></i>
+                                        </div>
+                                        <input  class ="form-control" type="text" ng-keydown="open11()" ng-keypress="open11()" ng-keyup="open11()" ng-focus="open11()" ng-blur="setDate1()" min-date="minDate1" show-weeks="false" name="event_end_date" close-text="Close"  is-open="opened1" uib-datepicker-popup="yyyy-MM-dd" ng-model="form.event_end_date" class="searchbox2 ng-pristine ng-untouched ng-valid ng-isolate-scope ng-valid-date ng-valid-required" style="margin:0 5px;" placeholder="Event End  Date"
+                                                required-message="'Please select event end date.'"
+                                                required
+                                        ></div>
+
+                                    <!-- <span class="errormsg">erroe msg</span>-->
+                                </div>
+
                                 <div class="form-group">
                                     <label >Event Time Range* :</label>
 

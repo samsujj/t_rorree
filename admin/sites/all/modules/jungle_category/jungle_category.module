@@ -245,7 +245,7 @@ function junglecategorylist()
             $temparray['priority']=intval($recordu['priority']);
 
 
-            $queryu1 = db_select('junglecategory', 'ca');
+          /*  $queryu1 = db_select('junglecategory', 'ca');
                 $queryu1->fields('ca');
                 //$queryu1->condition('ca.parent_cat', 0, '=');
                 $queryu1->condition('ca.id', $recordu['parent_cat'], '=');
@@ -259,7 +259,7 @@ function junglecategorylist()
                 }
                 else{
                     $temparray['parent_cat_name']='';
-                }
+                }*/
 
 /*            $queryu5 = db_select('jungleproduct', 'jp');
             $queryu5->fields('jp');
@@ -378,18 +378,18 @@ function addjunglecategory(){
     header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
-    $parent_cat=0;
+    //$parent_cat=0;
     $cat_image='';
-    if(isset($_POST['parent_cat']) && $_POST['parent_cat']>0){
+/*    if(isset($_POST['parent_cat']) && $_POST['parent_cat']>0){
         $parent_cat=$_POST['parent_cat']['id'];
-    }
+    }*/
     if(isset($_POST['cat_image']) && $_POST['cat_image']!=''){
         $cat_image=$_POST['cat_image'];
     }
 
-    $query = db_insert('junglecategory')->fields(array('cat_name','cat_desc','parent_cat','cat_image','status','priority'));
+    $query = db_insert('junglecategory')->fields(array('cat_name','cat_desc','cat_image','status','priority'));
         //foreach ($values as $record) {
-        $query->values(array(@$_POST['cat_name'],@$_POST['cat_desc'],@$parent_cat,$cat_image,1,@$_POST['priority']));
+        $query->values(array(@$_POST['cat_name'],@$_POST['cat_desc'],$cat_image,1,@$_POST['priority']));
         //}
         $query->execute();
 
@@ -407,7 +407,7 @@ function junglecategoryupdates(){
     header('Access-Control-Max-Age: 1000');
     header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
     db_update('junglecategory')
-        ->fields(array('cat_name'=>@$_POST['cat_name'],'cat_desc'=>@$_POST['cat_desc'],'parent_cat'=>@$_POST['parent_cat']['id'],'cat_image'=>@$_POST['cat_image'],'priority'=>@$_POST['priority']))
+        ->fields(array('cat_name'=>@$_POST['cat_name'],'cat_desc'=>@$_POST['cat_desc'],'cat_image'=>@$_POST['cat_image'],'priority'=>@$_POST['priority']))
         ->condition('id', intval($_POST['id']))
          ->execute();
 }

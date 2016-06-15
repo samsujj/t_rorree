@@ -35,8 +35,7 @@
                                 <span class="sortorder" ng-class="{reverse:reverse}" ng-show="predicate === 'cat_name'"></span></th>
                             <th><a ng-click="order('cat_desc')" href="javascript:void(0);">Category Description</a>
                                 <span class="sortorder" ng-class="{reverse:reverse}" ng-show="predicate === 'cat_desc'"></span></th>
-                            <th><a ng-click="order('parent_cat_name')" href="javascript:void(0);">Parent Category</a>
-                                <span class="sortorder" ng-class="{reverse:reverse}" ng-show="predicate === 'parent_cat_name'"></span></th>
+
 
 
                             <th><a ng-click="order('priority')" href="javascript:void(0);">Priority</a>
@@ -55,7 +54,7 @@
                         <tr ng-repeat=" item in  filterResult = (categorylist | filter:search) | startFrom:(currentPage-1)*perPage | limitTo:perPage | orderBy:predicate:reverse">
                             <td>{{item.cat_name}}</td>
                             <td ng-bind-html="trustAsHtml(item.cat_desc)"></td>
-                            <td>{{item.parent_cat_name}}</td>
+
 
                             <td>{{item.priority}}</td>
 

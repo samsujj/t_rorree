@@ -229,7 +229,7 @@
                             <th align="right" valign="middle" style="text-align: right">PRICE</th>
                             <th align="right" valign="middle" style="text-align: right">Subtotal</th>
                         </tr>
-                        <tr ng-repeat="item in cartarray2">
+                        <tr ng-repeat="item in cartarray21">
                             <td align="left" valign="middle">{{item.product_name}}</td>
                             <td align="center" valign="middle">{{item.qty}}</td>
                             <td align="right" valign="middle"><span>${{item.price}}</span></td>
@@ -237,28 +237,31 @@
                         </tr>
                         <tr>
                             <td align="left" valign="middle" colspan="3" class="subtotalrow">Sub-Total</td>
-                            <td align="right" valign="middle" class="subtotalrow">${{cartarray.subtotal}}</td>
+                            <td align="right" valign="middle" class="subtotalrow">${{cartarray1.subtotal}}</td>
                         </tr>
                         <tr>
                             <td align="left" valign="middle" colspan="3" class="subtotalrow">Shipping</td>
-                            <td align="right" valign="middle" class="subtotalrow">$0.00</td>
+                            <td align="right" valign="middle" class="subtotalrow">${{cartarray1.shipping}}</td>
                         </tr>
                         <tr>
                             <td align="left" valign="middle" colspan="3" class="subtotalrow">Tax</td>
-                            <td align="right" valign="middle" class="subtotalrow">$0.00</td>
+                            <td align="right" valign="middle" class="subtotalrow">${{cartarray1.tax}}</td>
                         </tr>
                         <tr>
                             <td align="left" valign="middle" colspan="3" class="totalrow">Total</td>
-                            <td align="right" valign="middle" class="totalrow">${{cartarray.subtotal}}</td>
+                            <td align="right" valign="middle" class="totalrow">${{cartarray1.total}}</td>
                         </tr>
                     </table>
                 </div>
                 <div class="chakeout_blog2 termsblog" style="padding-bottom: 10px;">
                     <h2>TERMS & CONDITIONS</h2>
                     <div class="termsconditiontext">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vestibulum lobortis metus vel vulputate. Maecenas imperdiet purus a velit egestas egestas. Nullam in velit vitae massa dapibus dignissim lacinia id urna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis id quam aliquet, porttitor magna at, mattis augue. Vestibulum pellentesque aliquet fermentum. Nulla facilisi. Pellentesque at fermentum metus. Integer pulvinar massa in ligula pulvinar, molestie mattis ligula gravida. Vivamus ut sem a nulla fringilla dictum ut eu tellus. Mauris non arcu facilisis, dignissim enim vitae, pellentesque sem.</div>
-                    <div class="checkbox2"> <input type="checkbox"><span>I agree to the terms & conditions</span>
+                    <div class="checkbox2"> <input type="checkbox" name="terms" ng-model="form.terms" validator = "termsValidator() === true"
+                                                   invalid-message = "termsValidator()"><span>I agree to the terms & conditions</span>
                         <div class="clearfix"></div>
+
                     </div>
+                    <span class="clearfix validationMessage errormsg1" ng-show="terms_error"> Please checked terms and conditions !!</span>
                 </div>
                 <div class="form-button-group">
                     <a href="javascript:void(0)" class="chakeoutbtn"> back to cart </a>

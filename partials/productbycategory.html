@@ -31,7 +31,7 @@
                  <!--<div class="book_img"><img alt="#" src="images/book_img.png"></div>-->
                  <a  ui-sref="product-details({id:item.id})"><div class="book_img"><img alt="" src="{{item.image_url}}"></div></a>
                  <!-- <h2>Recipe for Prosperity</h2>-->
-                <a  ui-sref="product-details({id:item.id})"><h2>{{item.product_name}}</h2></a>
+                <a  ui-sref="product-details({id:item.id})"><h2 tooltip-placement="bottom" uib-tooltip="{{item.product_name}}">{{item.product_name | limitTo:40}} {{item.product_name.length > 40 ? '...' : ''}}</h2></a>
                  <!--<h3><span>$7.00</span></h3>-->
                  <h3><span>${{item.price}}</span></h3>
                  <a href="javascript:void(0)" ng-click="addtocart(item.id)" class="bookcartbtn"> ADD TO CART </a>

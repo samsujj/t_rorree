@@ -55,10 +55,17 @@
 
 
 <script type="text/ng-template" id="blogdetails.html">
-    <div class="confirm_delpopup" >
+    <div class="confirm_delpopup" id="blogdetailspop">
         <a ng-click="cancel()" class="shutter-close2 ng-scope" href="javascript:void(0)"><img src="images/popup-Close.png"> </a>
-        <h2 class="ng-scope">Blog Details</h2>
+        <h2 class="ng-scope">{{blog_name}}</h2>
+        <h3><span>{{blog_create_date}}</span>{{blog_create_year}}</h3>
         <div class="clearfix"></div>
+        <p>By <span>{{name}}</span></p>
+        <div class="videoWrapper">
+            <img ng-if="blog_asset=='Image'" src="{{blog_file_front_url}}">
+            <!--<iframe class="embed-responsive-item" src="//www.youtube.com/embed/ePbKGoIGAXY"></iframe>-->
+            <youtube-video ng-if="blog_asset=='Video'" class="embed-responsive-item" video-id="blog_file"></youtube-video>
+        </div>
         <p style="padding-left:10px;">{{blogdescription}}</p>
         <!--<h2 class="ng-scope">Are you sure you want to delete this blog?</h2>-->
         <div class="confirm_delbtn ng-scope text-center">
